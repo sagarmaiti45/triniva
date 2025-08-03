@@ -29,6 +29,33 @@ export const authOptions = {
 
 // Helper to get session from token
 export async function getServerSession(options: any): Promise<any> {
-  // This is a simplified version - in production, you'd parse the JWT from cookies
-  return null; // For now, return null to simulate no session
+  try {
+    // Import Next.js cookies
+    const { cookies } = await import("next/headers");
+    const cookieStore = cookies();
+    const token = cookieStore.get("auth-token");
+    
+    if (!token?.value) {
+      return null;
+    }
+    
+    // Import and verify token
+    const { verifyToken } = await import("./auth");
+    const session = verifyToken(token.value);
+    
+    if (!session) {
+      return null;
+    }
+    
+    return {
+      user: {
+        id: session.userId,
+        email: session.email,
+        name: session.name
+      }
+    };
+  } catch (error) {
+    console.error("Session error:", error);
+    return null;
+  }
 }

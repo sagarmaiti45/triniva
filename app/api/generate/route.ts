@@ -29,7 +29,17 @@ const userRatelimit = new Ratelimit({
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    // Parse request body with error handling
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      return NextResponse.json(
+        { error: "Invalid request body", message: "Request must be valid JSON" },
+        { status: 400 }
+      );
+    }
+    
     const { guestId: clientGuestId, ...generationParams } = body;
     
     // Get user session
@@ -93,17 +103,26 @@ export async function POST(req: NextRequest) {
       negative_prompt,
       style_preset,
       model = "sd3.5-flash",
-      cfg_scale,
+      cfg_scale = 4,
       steps,
-      width,
-      height,
+      width = 1024,
+      height = 1024,
       preview = false,
     } = generationParams;
     
     // Validate required fields
-    if (!prompt) {
+    if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
       return NextResponse.json(
-        { error: "Prompt is required" },
+        { error: "Prompt is required", message: "Please provide a text description" },
+        { status: 400 }
+      );
+    }
+    
+    // Validate model
+    const validModels = ["sd3.5-flash", "sd3.5-medium", "sd3.5-large-turbo", "sd3.5-large", "stable-image-core", "stable-image-ultra"];
+    if (!validModels.includes(model)) {
+      return NextResponse.json(
+        { error: "Invalid model", message: `Model must be one of: ${validModels.join(", ")}` },
         { status: 400 }
       );
     }
@@ -122,10 +141,14 @@ export async function POST(req: NextRequest) {
     
     // Prepare request to Stability AI
     const apiKey = process.env.STABILITY_API_KEY;
-    if (!apiKey) {
-      console.error("STABILITY_API_KEY is not configured");
+    if (!apiKey || apiKey.trim() === '') {
+      console.error("STABILITY_API_KEY is not configured or empty");
       return NextResponse.json(
-        { error: "API key not configured" },
+        { 
+          error: "API configuration error", 
+          message: "Stability AI API key is not configured. Please contact support.",
+          details: process.env.NODE_ENV === "development" ? "Missing STABILITY_API_KEY environment variable" : undefined
+        },
         { status: 500 }
       );
     }
@@ -236,20 +259,46 @@ export async function POST(req: NextRequest) {
     // Handle the new API response format
     let images: string[] = [];
     
-    if (response.headers.get('content-type')?.includes('image')) {
-      // The new API returns the image directly
-      const blob = await response.blob();
-      const arrayBuffer = await blob.arrayBuffer();
-      const base64 = Buffer.from(arrayBuffer).toString('base64');
-      const dataUrl = `data:image/png;base64,${base64}`;
+    try {
+      const contentType = response.headers.get('content-type');
       
-      images = [dataUrl];
-    } else {
-      // Handle JSON response if API changes
-      const data = await response.json();
-      if (data.image) {
-        images = [`data:image/png;base64,${data.image}`];
+      if (contentType?.includes('image')) {
+        // The new API returns the image directly
+        const blob = await response.blob();
+        const arrayBuffer = await blob.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString('base64');
+        const mimeType = contentType.split(';')[0]; // Get mime type without charset
+        const dataUrl = `data:${mimeType};base64,${base64}`;
+        
+        images = [dataUrl];
+      } else if (contentType?.includes('application/json')) {
+        // Handle JSON response if API changes
+        const data = await response.json();
+        if (data.image) {
+          images = [`data:image/png;base64,${data.image}`];
+        } else if (data.artifacts && Array.isArray(data.artifacts)) {
+          // Handle array of images
+          images = data.artifacts.map((artifact: any) => 
+            `data:image/png;base64,${artifact.base64}`
+          );
+        }
+      } else {
+        throw new Error(`Unexpected response type: ${contentType}`);
       }
+      
+      if (images.length === 0) {
+        throw new Error("No images received from API");
+      }
+    } catch (error) {
+      console.error("Failed to process image response:", error);
+      return NextResponse.json(
+        { 
+          error: "Failed to process image", 
+          message: "Unable to process the generated image",
+          details: error instanceof Error ? error.message : "Unknown error"
+        },
+        { status: 500 }
+      );
     }
     
     // Cache the result for 15 minutes
@@ -287,10 +336,11 @@ export async function POST(req: NextRequest) {
     
     return NextResponse.json({
       images,
-      remaining,
-      limit,
-      reset: new Date(reset).toISOString(),
-      generationLimits: updatedLimits
+      remaining: remaining || 0,
+      limit: limit || 0,
+      reset: reset ? new Date(reset).toISOString() : new Date().toISOString(),
+      limits: updatedLimits,
+      cached: false
     });
     
   } catch (error) {
