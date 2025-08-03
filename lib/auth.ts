@@ -110,6 +110,11 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   const user = await redis.hgetall(`user:${normalizedEmail}`);
   if (!user || Object.keys(user).length === 0) return null;
   
+  // Debug logging
+  console.log('getUserByEmail - Raw verified value:', user.verified);
+  console.log('getUserByEmail - Type of verified:', typeof user.verified);
+  console.log('getUserByEmail - Comparison result:', user.verified === "true");
+  
   return {
     id: user.id as string,
     name: user.name as string,

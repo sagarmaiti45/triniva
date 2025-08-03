@@ -36,6 +36,10 @@ export async function POST(req: NextRequest) {
 
     // Get user
     const user = await getUserByEmail(normalizedEmail);
+    console.log('Login attempt for:', normalizedEmail);
+    console.log('User found:', !!user);
+    console.log('User verified status:', user?.verified);
+    
     if (!user) {
       return NextResponse.json(
         { error: "No account found with this email address" },
@@ -53,7 +57,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if email is verified
+    console.log('Checking verification - user.verified:', user.verified, 'type:', typeof user.verified);
     if (!user.verified) {
+      console.log('User not verified, sending verification error');
       return NextResponse.json(
         { 
           error: "Please verify your email first. Check your inbox for the verification code.",
