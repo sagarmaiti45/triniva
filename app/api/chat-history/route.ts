@@ -33,9 +33,10 @@ export async function GET(req: NextRequest) {
       // Try to get chat history and limits from Redis
       history = await GenerationService.getChatHistory(userId, guestId || undefined);
       limits = await GenerationService.checkGenerationLimit(userId, guestId || undefined);
+      console.log("Got history from Redis:", { count: history.length, limits });
     } catch (error) {
       // Fallback to in-memory tracking if Redis is not available
-      console.log("Using in-memory tracking for chat history (Redis not configured)");
+      console.log("Using in-memory tracking for chat history (Redis not configured):", error);
       limits = checkUsageLimits(identifier, !!userId);
       // History will remain empty in fallback mode
     }

@@ -20,9 +20,14 @@ interface GenerationLimitsContextType {
 const GenerationLimitsContext = createContext<GenerationLimitsContextType | undefined>(undefined);
 
 export function GenerationLimitsProvider({ children }: { children: React.ReactNode }) {
-  const [limits, setLimits] = useState<GenerationLimits | null>(null);
   const guestId = useGuestId();
   const { user } = useAuth();
+  const [limits, setLimits] = useState<GenerationLimits | null>({
+    used: 0,
+    limit: user ? 10 : 3,
+    remaining: user ? 10 : 3,
+    isGuest: !user
+  });
 
   const refreshLimits = useCallback(async () => {
     try {
@@ -35,7 +40,9 @@ export function GenerationLimitsProvider({ children }: { children: React.ReactNo
       if (response.ok) {
         const data = await response.json();
         console.log("Refreshed limits in context:", data.limits);
-        setLimits(data.limits);
+        if (data.limits) {
+          setLimits(data.limits);
+        }
       }
     } catch (error) {
       console.error('Failed to refresh limits:', error);

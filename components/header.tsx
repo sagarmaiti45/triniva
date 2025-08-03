@@ -112,7 +112,7 @@ export function Header() {
 
           <div className="flex items-center gap-2 md:gap-4">
             {/* Generation Limits Button */}
-            {generationLimits && (
+            {generationLimits ? (
               <Button
                 variant="ghost"
                 size="sm"
@@ -126,6 +126,16 @@ export function Header() {
                 <span className="md:hidden text-xs">
                   {generationLimits.remaining}
                 </span>
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-2"
+                disabled
+              >
+                <Zap className="h-4 w-4" />
+                <span className="text-xs">Loading...</span>
               </Button>
             )}
             
