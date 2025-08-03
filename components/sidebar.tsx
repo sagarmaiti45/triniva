@@ -10,6 +10,7 @@ import { useSidebar } from "@/contexts/sidebar-context";
 import Image from "next/image";
 import { useGuestId } from "@/hooks/use-guest-id";
 import { useAuth } from "@/contexts/simple-auth-context";
+import { useGenerationLimits } from "@/contexts/generation-limits-context";
 
 interface ChatHistory {
   id: string;
@@ -30,6 +31,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const guestId = useGuestId();
   const { user } = useAuth();
+  const { limits } = useGenerationLimits();
 
   const formatTime = (date: Date) => {
     const now = new Date();
@@ -45,6 +47,7 @@ export function Sidebar() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
+        console.log("Fetching history in sidebar:", { user: user?.email, guestId });
         const params = new URLSearchParams();
         if (guestId && !user) {
           params.append('guestId', guestId);
@@ -53,6 +56,7 @@ export function Sidebar() {
         const response = await fetch(`/api/chat-history?${params.toString()}`);
         if (response.ok) {
           const data = await response.json();
+          console.log("History response:", data);
           // Transform API data to sidebar format
           const transformed = data.history.map((item: any) => ({
             id: item.id,
@@ -73,7 +77,7 @@ export function Sidebar() {
     const interval = setInterval(fetchHistory, 5000); // Refresh every 5 seconds
     
     return () => clearInterval(interval);
-  }, [user, guestId]);
+  }, [user, guestId, limits]); // Refetch when limits change (after generation)
 
   // Handle swipe gestures
   const handleDragEnd = async (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {

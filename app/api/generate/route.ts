@@ -38,8 +38,10 @@ export async function POST(req: NextRequest) {
     
     if (!userId) {
       const { fingerprint, ipAddress: ip } = await generateGuestFingerprint(req);
+      // Always prefer client guest ID if provided
       guestId = clientGuestId || fingerprint;
       ipAddress = ip;
+      console.log("Guest tracking:", { clientGuestId, serverFingerprint: fingerprint, finalGuestId: guestId });
     }
     
     // Create identifier for tracking

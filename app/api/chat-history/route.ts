@@ -21,6 +21,8 @@ export async function GET(req: NextRequest) {
       guestId = fingerprint;
     }
     
+    console.log("Chat history fetch:", { userId, clientGuestId, guestId });
+    
     // Create identifier for tracking
     const identifier = userId || guestId || 'unknown';
     

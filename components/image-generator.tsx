@@ -149,6 +149,7 @@ export function ImageGenerator() {
     setLastGenerationTime(now);
     
     try {
+      console.log("Generating with guest ID:", guestId);
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
