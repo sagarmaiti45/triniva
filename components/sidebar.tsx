@@ -210,31 +210,48 @@ export function Sidebar() {
 
         {/* Footer */}
         <div className={`p-2 md:p-4 relative`}>
-          {isCollapsed ? (
+          {/* Mobile - always show full footer */}
+          <div className="md:hidden flex items-center justify-center gap-2">
             <Button
               variant="ghost"
               size="icon"
-              className="w-full h-8 md:h-9"
+              className="h-6 w-6"
               onClick={() => setShowInfoModal(true)}
             >
-              <Info className="h-4 w-4 text-muted-foreground" />
+              <Info className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
-          ) : (
-            <div className="flex items-center justify-center gap-2">
+            <p className="text-xs text-muted-foreground">
+              © 2025 Triniva.com
+            </p>
+          </div>
+          
+          {/* Desktop - respect collapsed state */}
+          <div className="hidden md:block">
+            {isCollapsed ? (
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6"
+                className="w-full h-8 md:h-9"
                 onClick={() => setShowInfoModal(true)}
               >
-                <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                <Info className="h-4 w-4 text-muted-foreground" />
               </Button>
-              <p className="text-xs text-muted-foreground">
-                © 2025 Triniva.com
-              </p>
-            </div>
-          )}
-          
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={() => setShowInfoModal(true)}
+                >
+                  <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  © 2025 Triniva.com
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </aside>
 
