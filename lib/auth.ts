@@ -252,11 +252,21 @@ export async function checkOTPAttempts(email: string): Promise<boolean> {
 
 // Mark user as verified
 export async function markUserAsVerified(email: string): Promise<void> {
-  const user = await getUserByEmail(email);
+  const normalizedEmail = email.toLowerCase().trim();
+  console.log('markUserAsVerified: Starting for email:', normalizedEmail);
+  
+  const user = await getUserByEmail(normalizedEmail);
   if (!user) throw new Error("User not found");
   
+  console.log('markUserAsVerified: User before update:', user);
   user.verified = true;
+  
   await storeUser(user);
+  console.log('markUserAsVerified: User stored with verified=true');
+  
+  // Verify the update
+  const updatedUser = await getUserByEmail(normalizedEmail);
+  console.log('markUserAsVerified: User after update:', updatedUser);
 }
 
 // Cleanup unverified users older than 24 hours
