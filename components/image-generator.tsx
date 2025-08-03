@@ -31,34 +31,41 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const aspectRatios = [
-  { label: "Square (1:1)", shortLabel: "1:1", width: 1024, height: 1024, ratio: "1:1" },
-  { label: "Landscape (16:9)", shortLabel: "16:9", width: 1344, height: 768, ratio: "16:9" },
-  { label: "Portrait (9:16)", shortLabel: "9:16", width: 768, height: 1344, ratio: "9:16" },
-  { label: "Photo (3:2)", shortLabel: "3:2", width: 1216, height: 832, ratio: "3:2" },
-  { label: "Portrait (2:3)", shortLabel: "2:3", width: 832, height: 1216, ratio: "2:3" },
+  { label: "Square (1:1)", shortLabel: "Square", width: 1024, height: 1024, ratio: "1:1" },
+  { label: "Landscape (16:9)", shortLabel: "Landscape", width: 1344, height: 768, ratio: "16:9" },
+  { label: "Portrait (9:16)", shortLabel: "Portrait", width: 768, height: 1344, ratio: "9:16" },
+  { label: "Photo (3:2)", shortLabel: "Photo", width: 1216, height: 832, ratio: "3:2" },
+  { label: "Tall (2:3)", shortLabel: "Tall", width: 832, height: 1216, ratio: "2:3" },
 ];
 
 const modelOptions = [
   { 
     value: "sd3.5-flash", 
-    label: "Fast (2.5 credits)", 
+    label: "SD 3.5 Flash", 
     credits: 2.5, 
     enabled: true,
-    description: "Best value - Fast generation"
+    description: "2.5 credits - Fast generation"
   },
   { 
     value: "sd3.5-medium", 
-    label: "Balanced (3.5 credits)", 
+    label: "SD 3.5 Medium", 
     credits: 3.5, 
     enabled: true,
-    description: "Good quality and speed"
+    description: "3.5 credits - Balanced quality"
   },
   { 
     value: "sd3.5-large-turbo", 
-    label: "High Quality (4 credits)", 
+    label: "SD 3.5 Large Turbo", 
     credits: 4, 
     enabled: true,
-    description: "Premium quality, fast"
+    description: "4 credits - High quality"
+  },
+  { 
+    value: "stable-image-ultra", 
+    label: "Stable Image Ultra", 
+    credits: 8, 
+    enabled: false,
+    description: "8 credits - Highest quality (Coming Soon)"
   },
 ];
 
@@ -305,8 +312,12 @@ export function ImageGenerator() {
                       onValueChange={(value) => setValue("style_preset", value)}
                     >
                       <SelectTrigger className="h-9 w-[140px] border-0 bg-gray-50 dark:bg-secondary/50">
-                        <Palette className="h-4 w-4 mr-2" />
-                        <SelectValue />
+                        <div className="flex items-center gap-2">
+                          <Palette className="h-4 w-4 flex-shrink-0" />
+                          <span className="truncate">
+                            {stylePresets.find(s => s.value === watch("style_preset"))?.label || "None"}
+                          </span>
+                        </div>
                       </SelectTrigger>
                       <SelectContent position="popper" sideOffset={5}>
                         {stylePresets.map((style) => (
@@ -491,8 +502,10 @@ export function ImageGenerator() {
                       >
                         <SelectTrigger className="h-9 border-0 bg-gray-50 dark:bg-secondary/50">
                           <div className="flex items-center gap-1.5">
-                            <Palette className="h-3.5 w-3.5" />
-                            <span className="text-sm">Style</span>
+                            <Palette className="h-3.5 w-3.5 flex-shrink-0" />
+                            <span className="truncate text-sm">
+                              {stylePresets.find(s => s.value === watch("style_preset"))?.label || "None"}
+                            </span>
                           </div>
                         </SelectTrigger>
                         <SelectContent>
