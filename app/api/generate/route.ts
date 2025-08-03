@@ -161,6 +161,21 @@ export async function POST(req: NextRequest) {
       formData.append('negative_prompt', negative_prompt);
     }
     
+    // Add style preset if provided and not "none"
+    if (style_preset && style_preset !== 'none') {
+      formData.append('style_preset', style_preset);
+    }
+    
+    // Add steps if provided (affects credit usage)
+    if (actualSteps) {
+      formData.append('steps', actualSteps.toString());
+    }
+    
+    // Add cfg_scale if provided
+    if (cfg_scale) {
+      formData.append('cfg_scale', cfg_scale.toString());
+    }
+    
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {

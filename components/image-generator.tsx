@@ -135,7 +135,7 @@ export function ImageGenerator() {
       style_preset: "none",
       model: "sd3.5-medium",
       cfg_scale: 7,
-      steps: 20,
+      steps: 12,
       width: selectedRatio.width,
       height: selectedRatio.height,
     },
