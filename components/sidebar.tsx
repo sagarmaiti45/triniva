@@ -240,7 +240,7 @@ export function Sidebar() {
               <Info className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
             <p className="text-xs text-muted-foreground">
-              © 2025 Triniva.com
+              Triniva AI - All Rights Reserved
             </p>
           </div>
           
@@ -266,7 +266,7 @@ export function Sidebar() {
                   <Info className="h-3.5 w-3.5 text-muted-foreground" />
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  © 2025 Triniva.com
+                  Triniva AI - All Rights Reserved
                 </p>
               </div>
             )}

@@ -223,7 +223,7 @@ export function ImageGenerator() {
   };
 
   return (
-    <section className="w-full pb-4 md:pb-0">
+    <section className="w-full pb-4 md:pb-8">
       <Tabs defaultValue="generate" className="w-full">
         <TabsList className="grid w-full max-w-[280px] md:max-w-sm mx-auto grid-cols-3 mb-4 md:mb-6">
           <TabsTrigger value="generate" className="gap-1.5 md:gap-2 text-xs md:text-sm">
@@ -360,7 +360,7 @@ export function ImageGenerator() {
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <div className="space-y-4 mt-4 pt-4 pb-2 md:pb-2 pb-4 border-t border-border/30">
+                        <div className="space-y-4 mt-4 pt-4 pb-4 md:pb-6 border-t border-border/30">
                           {/* Model and Negative Prompt Row */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
