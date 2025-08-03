@@ -175,7 +175,7 @@ export function ImageGenerator() {
     setLastGenerationTime(now);
     
     try {
-      const response = await fetch("/api/generate/simple", {
+      const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
