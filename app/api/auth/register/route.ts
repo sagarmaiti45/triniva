@@ -115,6 +115,29 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("Registration error:", error);
+    
+    // Provide more specific error messages
+    if (error instanceof Error) {
+      if (error.message.includes("Redis credentials not configured")) {
+        return NextResponse.json(
+          { error: "Database connection error. Please contact support." },
+          { status: 500 }
+        );
+      }
+      if (error.message.includes("Resend API key not configured")) {
+        return NextResponse.json(
+          { error: "Email service not configured. Please contact support." },
+          { status: 500 }
+        );
+      }
+      if (error.message.includes("resend")) {
+        return NextResponse.json(
+          { error: "Failed to send verification email. Please try again." },
+          { status: 500 }
+        );
+      }
+    }
+    
     return NextResponse.json(
       { error: "Registration failed. Please try again later." },
       { status: 500 }

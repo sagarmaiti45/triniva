@@ -175,8 +175,11 @@ export async function sendOTPEmail(email: string, name: string, otp: string): Pr
   try {
     console.log('Attempting to send email to:', email);
     
+    // Use environment variable for from email or default to resend domain
+    const fromEmail = process.env.RESEND_FROM_EMAIL || "Triniva AI <onboarding@resend.dev>";
+    
     const result = await resend.emails.send({
-      from: "Triniva AI <onboarding@resend.dev>",
+      from: fromEmail,
       to: [email],
       subject: "Verify your email - Triniva AI",
       html: `
