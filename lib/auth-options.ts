@@ -49,7 +49,7 @@ export async function getServerSession(options: any): Promise<any> {
     
     return {
       user: {
-        id: session.userId,
+        id: session.id,
         email: session.email,
         name: session.name
       }
