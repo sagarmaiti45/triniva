@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { LogIn, ChevronDown, Menu, User, LogOut, Zap, CreditCard } from "lucide-react";
+import { LogIn, ChevronDown, Menu, User, LogOut, Zap, CreditCard, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSidebar } from "@/contexts/sidebar-context";
 import { useAuth } from "@/contexts/simple-auth-context";
@@ -26,6 +26,7 @@ export function Header() {
   const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [usageLimitModalOpen, setUsageLimitModalOpen] = useState(false);
   const [generationLimits, setGenerationLimits] = useState<{
     used: number;
     limit: number;
@@ -135,121 +136,22 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
-            {/* Generation Limits Dropdown */}
+            {/* Generation Limits Button */}
             {generationLimits && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex items-center gap-2"
-                  >
-                    <Zap className="h-4 w-4" />
-                    <span className="hidden md:inline">
-                      {generationLimits.remaining}/{generationLimits.limit}
-                    </span>
-                    <span className="md:hidden text-xs">
-                      {generationLimits.remaining}
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80">
-                  <div className="p-4 space-y-4">
-                    {/* Header */}
-                    <div className="flex items-center gap-2">
-                      <Zap className="h-5 w-5" />
-                      <h3 className="font-semibold">Generation Limits</h3>
-                    </div>
-                    
-                    {/* Progress */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium">
-                          {generationLimits.isGuest ? "Guest Account" : "Free Plan"}
-                        </span>
-                        <span className="text-muted-foreground">
-                          {generationLimits.used} / {generationLimits.limit} used
-                        </span>
-                      </div>
-                      <Progress 
-                        value={(generationLimits.used / generationLimits.limit) * 100} 
-                        className="h-2"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        {generationLimits.remaining} generations remaining
-                      </p>
-                    </div>
-                    
-                    <DropdownMenuSeparator />
-                    
-                    {/* Content based on user type */}
-                    {generationLimits.isGuest ? (
-                      <>
-                        <div className="space-y-3">
-                          <div className="text-sm space-y-1">
-                            <p className="font-medium">Guest Limitations</p>
-                            <ul className="text-xs text-muted-foreground space-y-0.5">
-                              <li>• 3 free image generations</li>
-                              <li>• Images saved for 30 days</li>
-                              <li>• Limited to basic features</li>
-                            </ul>
-                          </div>
-                          
-                          <div className="text-sm space-y-1">
-                            <p className="font-medium flex items-center gap-1">
-                              <User className="h-3 w-3" />
-                              Sign In for More
-                            </p>
-                            <ul className="text-xs text-muted-foreground space-y-0.5">
-                              <li>• 10 free generations</li>
-                              <li>• Permanent image storage</li>
-                              <li>• Access to all features</li>
-                            </ul>
-                          </div>
-                        </div>
-                        
-                        <DropdownMenuSeparator />
-                        
-                        <Button 
-                          size="sm" 
-                          className="w-full text-white"
-                          onClick={() => setAuthModalOpen(true)}
-                        >
-                          Sign In Now
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <div className="space-y-3">
-                          <div className="text-sm space-y-1">
-                            <p className="font-medium">Free Plan Features</p>
-                            <ul className="text-xs text-muted-foreground space-y-0.5">
-                              <li>• 10 lifetime free generations</li>
-                              <li>• Permanent image storage</li>
-                              <li>• Access to all models</li>
-                            </ul>
-                          </div>
-                          
-                          {generationLimits.remaining === 0 && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <div className="text-sm space-y-1">
-                                <p className="font-medium flex items-center gap-1">
-                                  <CreditCard className="h-3 w-3" />
-                                  Need More?
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  Premium plans coming soon!
-                                </p>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-2"
+                onClick={() => setUsageLimitModalOpen(true)}
+              >
+                <Zap className="h-4 w-4" />
+                <span className="hidden md:inline">
+                  {generationLimits.remaining}/{generationLimits.limit}
+                </span>
+                <span className="md:hidden text-xs">
+                  {generationLimits.remaining}
+                </span>
+              </Button>
             )}
             
             {/* Animated theme toggle for desktop */}
@@ -337,6 +239,138 @@ export function Header() {
 
       </nav>
       <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+      
+      {/* Usage Limit Modal */}
+      <AnimatePresence>
+        {usageLimitModalOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setUsageLimitModalOpen(false)}
+              className="fixed inset-0 bg-black/50 z-[9999]"
+            />
+            
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-card rounded-lg shadow-xl border border-border z-[10000] p-6"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-5 w-5" />
+                  <h3 className="font-semibold text-lg">Generation Limits</h3>
+                </div>
+                <button
+                  onClick={() => setUsageLimitModalOpen(false)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              
+              {generationLimits && (
+                <div className="space-y-4">
+                  {/* Progress */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium">
+                        {generationLimits.isGuest ? "Guest Account" : "Free Plan"}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {generationLimits.used} / {generationLimits.limit} used
+                      </span>
+                    </div>
+                    <Progress 
+                      value={(generationLimits.used / generationLimits.limit) * 100} 
+                      className="h-2"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {generationLimits.remaining} generations remaining
+                    </p>
+                  </div>
+                  
+                  <div className="border-t border-border my-4" />
+                  
+                  {/* Content based on user type */}
+                  {generationLimits.isGuest ? (
+                    <>
+                      <div className="space-y-3">
+                        <div className="text-sm space-y-1">
+                          <p className="font-medium">Guest Limitations</p>
+                          <ul className="text-xs text-muted-foreground space-y-0.5">
+                            <li>• 3 free image generations</li>
+                            <li>• Images saved for 30 days</li>
+                            <li>• Limited to basic features</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="text-sm space-y-1">
+                          <p className="font-medium flex items-center gap-1">
+                            <User className="h-3 w-3" />
+                            Sign In for More
+                          </p>
+                          <ul className="text-xs text-muted-foreground space-y-0.5">
+                            <li>• 10 free generations</li>
+                            <li>• Permanent image storage</li>
+                            <li>• Access to all features</li>
+                          </ul>
+                        </div>
+                      </div>
+                      
+                      <div className="border-t border-border my-4" />
+                      
+                      <Button 
+                        size="sm" 
+                        className="w-full text-white"
+                        onClick={() => {
+                          setUsageLimitModalOpen(false);
+                          setAuthModalOpen(true);
+                        }}
+                      >
+                        Sign In Now
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <div className="space-y-3">
+                        <div className="text-sm space-y-1">
+                          <p className="font-medium">Free Plan Features</p>
+                          <ul className="text-xs text-muted-foreground space-y-0.5">
+                            <li>• 10 lifetime free generations</li>
+                            <li>• Permanent image storage</li>
+                            <li>• Access to all models</li>
+                          </ul>
+                        </div>
+                        
+                        {generationLimits.remaining === 0 && (
+                          <>
+                            <div className="border-t border-border my-4" />
+                            <div className="text-sm space-y-1">
+                              <p className="font-medium flex items-center gap-1">
+                                <CreditCard className="h-3 w-3" />
+                                Need More?
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Premium plans coming soon!
+                              </p>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
