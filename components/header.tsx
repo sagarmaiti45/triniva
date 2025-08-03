@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { LogIn, ChevronDown, PanelLeftOpen, User, LogOut, Zap, CreditCard } from "lucide-react";
+import { LogIn, ChevronDown, Menu, User, LogOut, Zap, CreditCard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSidebar } from "@/contexts/sidebar-context";
 import { useAuth } from "@/contexts/simple-auth-context";
@@ -88,7 +88,7 @@ export function Header() {
               className={`md:hidden p-1.5 transition-all duration-300 ${isMobileOpen ? 'opacity-0 scale-90' : 'opacity-100 scale-100'}`}
               style={{ pointerEvents: isMobileOpen ? 'none' : 'auto' }}
             >
-              <PanelLeftOpen className="h-4 w-4 text-muted-foreground" />
+              <Menu className="h-5 w-5 text-muted-foreground" />
               <span className="sr-only">Toggle sidebar</span>
             </button>
             
