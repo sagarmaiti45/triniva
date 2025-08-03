@@ -7,6 +7,9 @@ import { authOptions } from "@/lib/auth-options";
 // Simple in-memory rate limiting
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
+// Simple in-memory usage tracking (fallback when Redis is not available)
+const usageMap = new Map<string, { count: number; firstUsed: number }>();
+
 function checkRateLimit(identifier: string, isUser: boolean): { success: boolean; remaining: number } {
   const now = Date.now();
   const limit = isUser ? 100 : 10; // 100 per day for users, 10 per day for guests
@@ -25,6 +28,25 @@ function checkRateLimit(identifier: string, isUser: boolean): { success: boolean
   
   userLimit.count++;
   return { success: true, remaining: limit - userLimit.count };
+}
+
+// Fallback usage tracking when Redis is not available
+function checkUsageLimits(identifier: string, isUser: boolean): { used: number; limit: number; remaining: number; isGuest: boolean } {
+  const limit = isUser ? 10 : 3;
+  const usage = usageMap.get(identifier) || { count: 0, firstUsed: Date.now() };
+  
+  return {
+    used: usage.count,
+    limit,
+    remaining: Math.max(0, limit - usage.count),
+    isGuest: !isUser
+  };
+}
+
+function incrementUsage(identifier: string): void {
+  const usage = usageMap.get(identifier) || { count: 0, firstUsed: Date.now() };
+  usage.count++;
+  usageMap.set(identifier, usage);
 }
 
 export async function POST(req: NextRequest) {
@@ -64,8 +86,19 @@ export async function POST(req: NextRequest) {
       ipAddress = ip;
     }
     
+    // Create identifier for tracking
+    const identifier = userId || guestId || ipAddress;
+    
     // Check generation limits
-    const limits = await GenerationService.checkGenerationLimit(userId, guestId);
+    let limits;
+    try {
+      // Try to use Redis-based service if available
+      limits = await GenerationService.checkGenerationLimit(userId, guestId);
+    } catch (error) {
+      // Fallback to in-memory tracking if Redis is not available
+      console.log("Using in-memory usage tracking (Redis not configured)");
+      limits = checkUsageLimits(identifier, !!userId);
+    }
     
     if (limits.remaining === 0) {
       return NextResponse.json(
@@ -82,7 +115,6 @@ export async function POST(req: NextRequest) {
     }
     
     // Apply rate limiting
-    const identifier = userId || ipAddress;
     const { success: rateLimitSuccess, remaining: rateLimitRemaining } = checkRateLimit(identifier, !!userId);
     
     if (!rateLimitSuccess) {
@@ -184,7 +216,7 @@ export async function POST(req: NextRequest) {
     const base64 = Buffer.from(imageBuffer).toString('base64');
     const dataUrl = `data:image/png;base64,${base64}`;
 
-    // Save generation to database
+    // Save generation to database (with fallback)
     try {
       await GenerationService.saveGeneration({
         userId,
@@ -203,12 +235,19 @@ export async function POST(req: NextRequest) {
         }
       });
     } catch (error) {
-      console.error("Failed to save generation:", error);
-      // Don't fail the request if saving fails
+      console.log("Could not save to Redis (not configured), using in-memory tracking");
+      // Increment in-memory usage counter
+      incrementUsage(identifier);
     }
     
     // Get updated limits
-    const updatedLimits = await GenerationService.checkGenerationLimit(userId, guestId);
+    let updatedLimits;
+    try {
+      updatedLimits = await GenerationService.checkGenerationLimit(userId, guestId);
+    } catch (error) {
+      // Fallback to in-memory tracking
+      updatedLimits = checkUsageLimits(identifier, !!userId);
+    }
 
     return NextResponse.json({
       images: [dataUrl],
