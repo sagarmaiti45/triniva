@@ -96,10 +96,6 @@ export async function storeUser(user: User): Promise<void> {
   // Explicitly convert boolean to string for Redis storage
   const verifiedString = user.verified === true ? "true" : "false";
   
-  console.log('storeUser - Storing user:', normalizedEmail);
-  console.log('storeUser - Verified value:', user.verified);
-  console.log('storeUser - Verified string:', verifiedString);
-  
   await redis.hset(`user:${normalizedEmail}`, {
     id: user.id,
     name: user.name,
@@ -116,15 +112,6 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   const normalizedEmail = email.toLowerCase().trim();
   const user = await redis.hgetall(`user:${normalizedEmail}`);
   if (!user || Object.keys(user).length === 0) return null;
-  
-  // Debug logging
-  console.log('getUserByEmail - Raw verified value:', user.verified);
-  console.log('getUserByEmail - Type of verified:', typeof user.verified);
-  console.log('getUserByEmail - Verified as string:', String(user.verified));
-  console.log('getUserByEmail - Comparison results:');
-  console.log('  - user.verified === "true":', user.verified === "true");
-  console.log('  - user.verified === true:', user.verified === true);
-  console.log('  - String(user.verified) === "true":', String(user.verified) === "true");
   
   // Handle both boolean and string values from Redis
   const isVerified = user.verified === true || user.verified === "true" || String(user.verified).toLowerCase() === "true";
@@ -272,20 +259,11 @@ export async function checkOTPAttempts(email: string): Promise<boolean> {
 // Mark user as verified
 export async function markUserAsVerified(email: string): Promise<void> {
   const normalizedEmail = email.toLowerCase().trim();
-  console.log('markUserAsVerified: Starting for email:', normalizedEmail);
-  
   const user = await getUserByEmail(normalizedEmail);
   if (!user) throw new Error("User not found");
   
-  console.log('markUserAsVerified: User before update:', user);
   user.verified = true;
-  
   await storeUser(user);
-  console.log('markUserAsVerified: User stored with verified=true');
-  
-  // Verify the update
-  const updatedUser = await getUserByEmail(normalizedEmail);
-  console.log('markUserAsVerified: User after update:', updatedUser);
 }
 
 // Cleanup unverified users older than 24 hours
