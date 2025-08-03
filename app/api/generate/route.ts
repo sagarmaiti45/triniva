@@ -108,11 +108,9 @@ export async function POST(req: NextRequest) {
       );
     }
     
-    // Use fewer steps for preview mode to save credits
-    const actualSteps = preview ? 15 : steps;
     
     // Check cache for similar prompts
-    const cacheKey = `img:${prompt}:${width}x${height}:${style_preset}:${actualSteps}`;
+    const cacheKey = `img:${prompt}:${width}x${height}:${style_preset}:${model}`;
     const cached = await redis.get(cacheKey);
     
     if (cached && typeof cached === "string") {
@@ -134,18 +132,22 @@ export async function POST(req: NextRequest) {
     
     // Map model to correct API endpoint
     let apiUrl = "https://api.stability.ai/v2beta/stable-image/generate/sd3";
-    let apiModel = model;
     
     // Handle different model endpoints
     if (model === "stable-image-core") {
       apiUrl = "https://api.stability.ai/v2beta/stable-image/generate/core";
-      apiModel = "core";
+    } else if (model === "stable-image-ultra") {
+      apiUrl = "https://api.stability.ai/v2beta/stable-image/generate/ultra";
     }
     
     // Use FormData for the new API
     const formData = new FormData();
     formData.append('prompt', prompt);
-    formData.append('model', apiModel);
+    
+    // Only SD3 endpoint needs model parameter
+    if (apiUrl.includes('/sd3')) {
+      formData.append('model', model);
+    }
     
     // Map dimensions to exact aspect ratios supported by API
     let aspectRatio = "1:1";
@@ -248,7 +250,6 @@ export async function POST(req: NextRequest) {
             metadata: {
               width: width || 1024,
               height: height || 1024,
-              steps: actualSteps,
               cfgScale: cfg_scale
             }
           });
