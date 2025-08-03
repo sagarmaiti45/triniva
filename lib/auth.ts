@@ -77,8 +77,15 @@ export function createToken(session: Session): string {
 // Verify JWT token
 export function verifyToken(token: string): Session | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as Session;
-  } catch {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    // Extract only the session data, excluding JWT metadata
+    return {
+      id: decoded.id,
+      email: decoded.email,
+      name: decoded.name
+    };
+  } catch (error) {
+    console.error('Token verification error:', error);
     return null;
   }
 }

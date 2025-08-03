@@ -39,7 +39,10 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("Session error:", error);
     return NextResponse.json(
-      { error: "Failed to get session" },
+      { 
+        error: "Failed to get session",
+        details: error instanceof Error ? error.message : "Unknown error"
+      },
       { status: 500 }
     );
   }
