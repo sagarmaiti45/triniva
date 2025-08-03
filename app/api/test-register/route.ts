@@ -21,14 +21,40 @@ export async function POST(req: NextRequest) {
     
     // Test Resend
     let resendWorking = false;
+    let resendTestEmail = false;
     try {
       const { Resend } = await import("resend");
       const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.domains.list();
-      resendWorking = true;
-      console.log("Resend connection: OK");
+      
+      // Try to list domains first
+      try {
+        await resend.domains.list();
+        resendWorking = true;
+        console.log("Resend connection: OK");
+      } catch (e) {
+        console.error("Resend domains.list failed:", e);
+      }
+      
+      // Try to send a test email
+      try {
+        const { data, error } = await resend.emails.send({
+          from: "Triniva AI <otp@triniva.com>",
+          to: ["test@resend.dev"],
+          subject: "Test from Vercel",
+          html: "<p>Test email</p>"
+        });
+        
+        if (error) {
+          console.error("Resend send error:", error);
+        } else {
+          resendTestEmail = true;
+          console.log("Resend test email sent:", data);
+        }
+      } catch (e) {
+        console.error("Resend send failed:", e);
+      }
     } catch (error) {
-      console.error("Resend connection failed:", error);
+      console.error("Resend import/init failed:", error);
     }
     
     // Try to import auth functions
@@ -50,6 +76,7 @@ export async function POST(req: NextRequest) {
       services: {
         redis: redisWorking,
         resend: resendWorking,
+        resendTestEmail: resendTestEmail,
         authFunctions: authFunctionsWorking,
       },
       timestamp: new Date().toISOString(),
