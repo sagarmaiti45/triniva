@@ -120,14 +120,21 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   // Debug logging
   console.log('getUserByEmail - Raw verified value:', user.verified);
   console.log('getUserByEmail - Type of verified:', typeof user.verified);
-  console.log('getUserByEmail - Comparison result:', user.verified === "true");
+  console.log('getUserByEmail - Verified as string:', String(user.verified));
+  console.log('getUserByEmail - Comparison results:');
+  console.log('  - user.verified === "true":', user.verified === "true");
+  console.log('  - user.verified === true:', user.verified === true);
+  console.log('  - String(user.verified) === "true":', String(user.verified) === "true");
+  
+  // Handle both boolean and string values from Redis
+  const isVerified = user.verified === true || user.verified === "true" || String(user.verified).toLowerCase() === "true";
   
   return {
     id: user.id as string,
     name: user.name as string,
     email: user.email as string,
     password: user.password as string,
-    verified: user.verified === "true",
+    verified: isVerified,
     createdAt: new Date(user.createdAt as string),
   };
 }
