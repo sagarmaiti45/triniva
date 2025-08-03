@@ -23,15 +23,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await fetch('/api/auth/session');
+        console.log('Auth context: Checking session...');
+        const response = await fetch('/api/auth/session', {
+          credentials: 'include',
+        });
+        console.log('Auth context: Session response status:', response.status);
+        
         if (response.ok) {
           const data = await response.json();
+          console.log('Auth context: Session data:', data);
           if (data.user) {
+            console.log('Auth context: Setting user:', data.user);
             setUser(data.user);
           }
+        } else {
+          const error = await response.json();
+          console.log('Auth context: Session check failed:', error);
         }
       } catch (error) {
-        console.error('Failed to check session:', error);
+        console.error('Auth context: Failed to check session:', error);
       }
     };
     
