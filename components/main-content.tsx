@@ -22,7 +22,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
   return (
     <div 
       {...swipeHandlers}
-      className={`transition-all duration-300 min-h-screen flex flex-col ${
+      className={`transition-all duration-300 h-screen md:min-h-screen flex flex-col overflow-hidden md:overflow-visible ${
         isCollapsed ? 'md:ml-[60px]' : 'md:ml-[280px]'
       }`}
     >
