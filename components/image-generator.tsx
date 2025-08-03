@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Loader2, Download, Sparkles, Image as ImageIcon, Palette, Settings2, Wand2, Edit3, Cpu, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -388,18 +388,16 @@ export function ImageGenerator() {
                           <div className="space-y-2">
                             <div className="flex items-center gap-1.5">
                               <Label htmlFor="negative_prompt" className="text-sm">Negative Prompt</Label>
-                              <TooltipProvider delayDuration={0}>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <button type="button" className="inline-flex">
-                                      <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
-                                    </button>
-                                  </TooltipTrigger>
-                                  <TooltipContent side="top" className="max-w-xs">
-                                    <p className="text-sm">Describe what you want to avoid in the image. For example: "blurry, low quality, distorted"</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <button type="button" className="inline-flex focus:outline-none">
+                                    <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
+                                  </button>
+                                </PopoverTrigger>
+                                <PopoverContent side="top" className="w-64 p-3">
+                                  <p className="text-sm">Describe what you want to avoid in the image. For example: "blurry, low quality, distorted"</p>
+                                </PopoverContent>
+                              </Popover>
                             </div>
                             <input
                               id="negative_prompt"
@@ -416,18 +414,16 @@ export function ImageGenerator() {
                           <div className="flex justify-between mb-3">
                             <div className="flex items-center gap-1.5">
                               <Label className="text-sm">Guidance Scale</Label>
-                              <TooltipProvider delayDuration={0}>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <button type="button" className="inline-flex">
-                                      <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
-                                    </button>
-                                  </TooltipTrigger>
-                                  <TooltipContent side="top" className="max-w-xs">
-                                    <p className="text-sm">Controls how closely the AI follows your prompt. Higher values (7-10) create images closer to your description but may be less creative. Lower values (1-4) allow more artistic freedom.</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <button type="button" className="inline-flex focus:outline-none">
+                                    <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
+                                  </button>
+                                </PopoverTrigger>
+                                <PopoverContent side="top" className="w-80 p-3">
+                                  <p className="text-sm">Controls how closely the AI follows your prompt. Higher values (7-10) create images closer to your description but may be less creative. Lower values (1-4) allow more artistic freedom.</p>
+                                </PopoverContent>
+                              </Popover>
                             </div>
                             <span className="text-sm text-muted-foreground">{cfgScale}</span>
                           </div>
