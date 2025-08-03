@@ -1,24 +1,99 @@
 import { NextRequest, NextResponse } from "next/server";
+import { GenerationService } from "@/lib/db/generation-service";
+import { generateGuestFingerprint } from "@/lib/guest-identification";
+import { getServerSession } from "@/lib/auth-options";
+import { authOptions } from "@/lib/auth-options";
+
+// Simple in-memory rate limiting
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+function checkRateLimit(identifier: string, isUser: boolean): { success: boolean; remaining: number } {
+  const now = Date.now();
+  const limit = isUser ? 100 : 10; // 100 per day for users, 10 per day for guests
+  const window = 24 * 60 * 60 * 1000; // 24 hours
+  
+  const userLimit = rateLimitMap.get(identifier);
+  
+  if (!userLimit || now > userLimit.resetTime) {
+    rateLimitMap.set(identifier, { count: 1, resetTime: now + window });
+    return { success: true, remaining: limit - 1 };
+  }
+  
+  if (userLimit.count >= limit) {
+    return { success: false, remaining: 0 };
+  }
+  
+  userLimit.count++;
+  return { success: true, remaining: limit - userLimit.count };
+}
 
 export async function POST(req: NextRequest) {
   try {
-    // Get request body
+    // Parse request body
     const body = await req.json();
     const { 
-      prompt, 
+      prompt,
       model = "sd3.5-flash",
       width = 1024,
       height = 1024,
       style_preset,
       negative_prompt,
-      cfg_scale = 4
+      cfg_scale = 4,
+      guestId: clientGuestId
     } = body;
 
     // Validate prompt
-    if (!prompt) {
+    if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
       return NextResponse.json(
         { error: "Prompt is required" },
         { status: 400 }
+      );
+    }
+
+    // Get user session
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+    
+    // Generate guest fingerprint if not logged in
+    let guestId = clientGuestId;
+    let ipAddress = "unknown";
+    
+    if (!userId) {
+      const { fingerprint, ipAddress: ip } = await generateGuestFingerprint(req);
+      guestId = clientGuestId || fingerprint;
+      ipAddress = ip;
+    }
+    
+    // Check generation limits
+    const limits = await GenerationService.checkGenerationLimit(userId, guestId);
+    
+    if (limits.remaining === 0) {
+      return NextResponse.json(
+        {
+          error: "Generation limit reached",
+          message: limits.isGuest
+            ? "You've reached the free limit of 3 images. Please sign in to generate more."
+            : "You've used all 10 free images. Premium subscription coming soon!",
+          limits,
+          generationLimits: limits
+        },
+        { status: 429 }
+      );
+    }
+    
+    // Apply rate limiting
+    const identifier = userId || ipAddress;
+    const { success: rateLimitSuccess, remaining: rateLimitRemaining } = checkRateLimit(identifier, !!userId);
+    
+    if (!rateLimitSuccess) {
+      return NextResponse.json(
+        { 
+          error: "Rate limit exceeded", 
+          message: userId 
+            ? "You've reached your daily limit. Please try again tomorrow."
+            : "You've reached the anonymous limit. Please sign in to continue."
+        },
+        { status: 429 }
       );
     }
 
@@ -41,14 +116,14 @@ export async function POST(req: NextRequest) {
 
     // Create form data
     const formData = new FormData();
-    formData.append('prompt', prompt);
+    formData.append('prompt', prompt.trim());
     
     // Only add model for SD3 endpoints
     if (apiUrl.includes('/sd3')) {
       formData.append('model', model);
     }
     
-    // Add aspect ratio
+    // Map dimensions to aspect ratios
     let aspectRatio = "1:1";
     if (width === 1344 && height === 768) aspectRatio = "16:9";
     else if (width === 768 && height === 1344) aspectRatio = "9:16";
@@ -73,7 +148,12 @@ export async function POST(req: NextRequest) {
       formData.append('cfg_scale', cfg_scale.toString());
     }
 
-    console.log("Calling Stability AI:", apiUrl);
+    console.log("Calling Stability AI:", {
+      url: apiUrl,
+      model: model,
+      userId: userId || 'guest',
+      remaining: limits.remaining
+    });
 
     // Call Stability AI
     const response = await fetch(apiUrl, {
@@ -84,8 +164,6 @@ export async function POST(req: NextRequest) {
       },
       body: formData,
     });
-
-    console.log("Stability response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -106,9 +184,39 @@ export async function POST(req: NextRequest) {
     const base64 = Buffer.from(imageBuffer).toString('base64');
     const dataUrl = `data:image/png;base64,${base64}`;
 
+    // Save generation to database
+    try {
+      await GenerationService.saveGeneration({
+        userId,
+        guestId: userId ? undefined : guestId,
+        prompt: prompt.trim(),
+        negativePrompt: negative_prompt,
+        imageUrl: dataUrl,
+        imageData: dataUrl,
+        modelId: model,
+        aspectRatio,
+        outputFormat: 'png',
+        metadata: {
+          width: width || 1024,
+          height: height || 1024,
+          cfgScale: cfg_scale,
+          stylePreset: style_preset
+        }
+      });
+    } catch (error) {
+      console.error("Failed to save generation:", error);
+      // Don't fail the request if saving fails
+    }
+    
+    // Get updated limits
+    const updatedLimits = await GenerationService.checkGenerationLimit(userId, guestId);
+
     return NextResponse.json({
       images: [dataUrl],
-      success: true
+      success: true,
+      generationLimits: updatedLimits,
+      limits: updatedLimits,
+      remaining: rateLimitRemaining
     });
 
   } catch (error) {
