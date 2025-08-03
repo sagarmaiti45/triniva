@@ -255,10 +255,10 @@ export function Header() {
             
             {/* Modal Content */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-card rounded-lg shadow-xl border border-border z-[10000] p-6"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="fixed top-16 right-4 md:right-6 w-[90%] max-w-sm bg-card rounded-lg shadow-xl border border-border z-[10000] p-6"
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
