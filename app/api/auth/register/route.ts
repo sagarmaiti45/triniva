@@ -13,7 +13,9 @@ import { GenerationService } from "@/lib/db/generation-service";
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("Registration attempt started");
     const { name, email, password, recaptchaToken, guestId } = await req.json();
+    console.log("Registration data:", { name, email, hasPassword: !!password, hasRecaptcha: !!recaptchaToken, guestId });
 
     // Validate input
     if (!name || !email || !password) {
@@ -46,17 +48,23 @@ export async function POST(req: NextRequest) {
 
     // Verify reCAPTCHA
     if (recaptchaToken) {
+      console.log("Verifying reCAPTCHA");
       const isValidRecaptcha = await verifyRecaptcha(recaptchaToken, "register");
+      console.log("reCAPTCHA verification result:", isValidRecaptcha);
       if (!isValidRecaptcha) {
         return NextResponse.json(
           { error: "reCAPTCHA verification failed. Please try again." },
           { status: 400 }
         );
       }
+    } else {
+      console.log("No reCAPTCHA token provided, skipping verification");
     }
 
     // Check if user already exists
+    console.log("Checking for existing user:", normalizedEmail);
     const existingUser = await getUserByEmail(normalizedEmail);
+    console.log("Existing user check result:", !!existingUser);
     if (existingUser) {
       // If user exists but not verified, allow them to get a new OTP
       if (!existingUser.verified) {
@@ -94,11 +102,15 @@ export async function POST(req: NextRequest) {
     };
 
     // Store user in Redis
+    console.log("Storing user in Redis");
     await storeUser(user);
+    console.log("User stored successfully");
 
     // Generate and store OTP
     const otp = generateOTP();
+    console.log("Generated OTP:", otp);
     await storeOTP(normalizedEmail, otp);
+    console.log("OTP stored successfully");
     
     // Store guest ID temporarily if provided
     if (guestId) {
@@ -107,7 +119,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Send OTP email
+    console.log("Attempting to send OTP email");
     await sendOTPEmail(normalizedEmail, trimmedName, otp);
+    console.log("OTP email sent successfully");
 
     return NextResponse.json({
       message: "Registration successful. Please check your email for verification code.",
