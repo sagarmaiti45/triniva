@@ -180,6 +180,13 @@ export async function POST(req: NextRequest) {
       formData.append('cfg_scale', cfg_scale.toString());
     }
     
+    console.log("Calling Stability AI:", {
+      url: apiUrl,
+      model: model,
+      hasApiKey: !!apiKey,
+      prompt: prompt.substring(0, 50) + "..."
+    });
+    
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
@@ -190,23 +197,38 @@ export async function POST(req: NextRequest) {
     });
     
     if (!response.ok) {
-      const error = await response.json();
-      console.error("Stability AI API error:", error);
+      let errorData;
+      try {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          errorData = await response.json();
+        } else {
+          errorData = { message: await response.text() };
+        }
+      } catch (e) {
+        errorData = { message: `HTTP ${response.status}: ${response.statusText}` };
+      }
+      
+      console.error("Stability AI API error:", response.status, errorData);
       
       if (response.status === 401) {
         return NextResponse.json(
-          { error: "Invalid API key" },
+          { error: "Invalid API key", details: "Please check your Stability AI API key" },
           { status: 401 }
         );
       } else if (response.status === 403) {
         return NextResponse.json(
-          { error: "Insufficient credits" },
+          { error: "Insufficient credits", details: "Your Stability AI account has insufficient credits" },
           { status: 403 }
         );
       }
       
       return NextResponse.json(
-        { error: error.message || "Failed to generate image" },
+        { 
+          error: "Failed to generate image",
+          message: errorData.message || errorData.error || response.statusText,
+          status: response.status 
+        },
         { status: response.status }
       );
     }
