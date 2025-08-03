@@ -65,8 +65,8 @@ const modelOptions = [
     value: "sd3.5-large-turbo", 
     label: "SD 3.5 Large Turbo", 
     credits: 4, 
-    enabled: true,
-    description: "4 credits - High quality"
+    enabled: false,
+    description: "4 credits - High quality (Temporarily Unavailable)"
   },
   { 
     value: "stable-image-ultra", 
