@@ -115,7 +115,7 @@ export function ImageGenerator() {
       prompt: "",
       negative_prompt: "",
       style_preset: "none",
-      model: "sd3.5-flash",
+      model: "stable-image-core",
       cfg_scale: 4,
       width: selectedRatio.width,
       height: selectedRatio.height,
