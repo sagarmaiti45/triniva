@@ -11,22 +11,24 @@
   
   /* Fix mobile viewport height issue */
   .h-screen {
-    height: 100vh;
-    height: 100dvh; /* Dynamic viewport height for mobile browsers */
+    height: 100vh; /* Fallback */
+    height: 100dvh; /* Dynamic viewport height */
+    height: calc(var(--vh, 1vh) * 100); /* Custom property solution */
   }
   
   .min-h-screen {
-    min-height: 100vh;
-    min-height: 100dvh;
+    min-height: 100vh; /* Fallback */
+    min-height: 100dvh; /* Dynamic viewport height */
+    min-height: calc(var(--vh, 1vh) * 100); /* Custom property solution */
   }
   
-  /* Fallback for older browsers */
-  @supports not (height: 100dvh) {
+  /* Mobile-specific viewport fix */
+  @media (max-width: 768px) {
     .h-screen {
-      height: 100vh;
+      height: calc(var(--vh, 1vh) * 100);
     }
     .min-h-screen {
-      min-height: 100vh;
+      min-height: calc(var(--vh, 1vh) * 100);
     }
   }
   

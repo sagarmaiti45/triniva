@@ -13,6 +13,7 @@ import { MainContent } from "@/components/main-content";
 import { RecaptchaProvider } from "@/components/recaptcha-provider";
 import { GenerationLimitsProvider } from "@/contexts/generation-limits-context";
 import { CookieConsent } from "@/components/cookie-consent";
+import { MobileViewportFix } from "@/components/mobile-viewport-fix";
 
 // Modern, clean sans-serif for body text
 const plusJakarta = Plus_Jakarta_Sans({ 
@@ -94,6 +95,7 @@ export default function RootLayout({
                   />
                   <ChatSupport />
                   <CookieConsent />
+                  <MobileViewportFix />
                 </ClientOnlyWrapper>
                 </SidebarProvider>
               </GenerationLimitsProvider>

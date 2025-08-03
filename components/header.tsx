@@ -64,7 +64,7 @@ export function Header() {
               className={`md:hidden p-1.5 transition-all duration-300 ${isMobileOpen ? 'opacity-0 scale-90' : 'opacity-100 scale-100'}`}
               style={{ pointerEvents: isMobileOpen ? 'none' : 'auto' }}
             >
-              <Menu className="h-5 w-5 text-muted-foreground" />
+              <Menu className="h-5 w-5 text-foreground/70" />
               <span className="sr-only">Toggle sidebar</span>
             </button>
             
@@ -110,7 +110,7 @@ export function Header() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1 md:gap-4">
+          <div className="flex items-center gap-0.5 md:gap-2">
             {/* Generation Limits Button */}
             {generationLimits ? (
               <Button
