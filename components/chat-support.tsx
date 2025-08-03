@@ -38,12 +38,12 @@ export function ChatSupport() {
       >
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="h-12 w-12 md:h-14 md:w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 bg-gradient-to-br from-gradient-start to-gradient-end flex items-center justify-center hover:scale-105 group"
+          className="h-10 w-10 md:h-12 md:w-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 bg-gradient-to-br from-gradient-start to-gradient-end flex items-center justify-center hover:scale-105 group"
         >
           {isOpen ? (
-            <X className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            <X className="h-4 w-4 md:h-5 md:w-5 text-white" />
           ) : (
-            <MessageCircle className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            <MessageCircle className="h-4 w-4 md:h-5 md:w-5 text-white" />
           )}
         </button>
       </motion.div>

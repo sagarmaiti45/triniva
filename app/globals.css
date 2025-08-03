@@ -249,6 +249,18 @@
     background: linear-gradient(135deg, #ff3d7f 0%, #ff3d7f 40%, #3db8e6 100%);
     @apply bg-clip-text text-transparent;
   }
+
+  /* Reversed gradient text - blue to pink */
+  .gradient-text-reverse {
+    background: linear-gradient(135deg, #2690d4 0%, #2690d4 60%, #e6175f 100%);
+    @apply bg-clip-text text-transparent font-bold;
+  }
+  
+  /* Dark mode reversed gradient */
+  .dark .gradient-text-reverse {
+    background: linear-gradient(135deg, #3db8e6 0%, #3db8e6 60%, #ff3d7f 100%);
+    @apply bg-clip-text text-transparent font-bold;
+  }
   
   /* Gradient backgrounds with mode-specific colors */
   .bg-gradient-primary {

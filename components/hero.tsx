@@ -12,9 +12,9 @@ export function Hero() {
         transition={{ duration: 0.5 }}
         className="relative z-10 text-center max-w-3xl mx-auto"
       >
-        <h1 className="text-3xl md:text-6xl font-bold mb-4 md:mb-8 font-space-grotesk tracking-tight">
+        <h1 className="text-3xl md:text-6xl font-bold mb-4 md:mb-8 font-space-grotesk tracking-normal">
           Create Stunning AI Images{" "}
-          <span className="gradient-text">For Free</span>
+          <span className="gradient-text-reverse">For Free</span>
         </h1>
       </motion.div>
     </section>
