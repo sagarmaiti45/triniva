@@ -1,0 +1,313 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Prevent horizontal scroll on mobile */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* Grid pattern for auth modal */
+  .bg-grid-white\/10 {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgba(255,255,255,0.1)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
+  }
+  .bg-grid-black\/10 {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgba(0,0,0,0.1)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
+  }
+  .bg-grid-16 {
+    background-size: 16px 16px;
+  }
+  
+  /* Font definitions */
+  html {
+    font-family: var(--font-plus-jakarta), system-ui, sans-serif;
+  }
+  
+  /* Headings use Space Grotesk for modern geometric look */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-space-grotesk), system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  
+  /* UI elements use DM Sans */
+  button, .btn, input, select, textarea {
+    font-family: var(--font-dm-sans), system-ui, sans-serif;
+  }
+  
+  /* Make input text lighter weight */
+  input, textarea {
+    font-weight: 400;
+  }
+  
+  /* Fine-tune font weights */
+  body {
+    font-weight: 400;
+    line-height: 1.6;
+  }
+  
+  /* Gradient text gets bolder weight */
+  .gradient-text {
+    font-weight: 700;
+  }
+  
+  /* Text selection colors */
+  ::selection {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+  
+  ::-moz-selection {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+  
+  /* Dark mode selection colors */
+  .dark ::selection {
+    background-color: hsl(var(--primary) / 0.8);
+    color: white;
+  }
+  
+  .dark ::-moz-selection {
+    background-color: hsl(var(--primary) / 0.8);
+    color: white;
+  }
+  
+  /* Radial gradient for hero background */
+  .bg-radial-gradient {
+    background: radial-gradient(ellipse at center, var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to));
+  }
+  
+  /* Gradient radial for glow effects */
+  .bg-gradient-radial {
+    background: radial-gradient(circle at center, var(--tw-gradient-from), var(--tw-gradient-via) 40%, var(--tw-gradient-to) 70%);
+  }
+  
+  /* Hide reCAPTCHA badge on localhost and position it properly on production */
+  .grecaptcha-badge {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    transform: scale(0) !important;
+  }
+  
+  /* Show reCAPTCHA notice in auth forms instead */
+  @media (min-width: 768px) {
+    .grecaptcha-badge {
+      bottom: 80px !important; /* Above chat button */
+    }
+  }
+  :root {
+    --background: 220 20% 97%;
+    --background-rgb: 244, 245, 249;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 341 82% 55%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 220 14% 92%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 220 12% 94%;
+    --muted-foreground: 220 9% 40%;
+    --accent: 220 14% 92%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 12% 87%;
+    --input: 220 12% 87%;
+    --ring: 341 82% 55%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --background-rgb: 7, 8, 23;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 341 82% 55%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 341 82% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  /* Remove all focus outlines globally */
+  *:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
+  *:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Remove tap highlight on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Prevent any focus rings */
+  input:focus,
+  textarea:focus,
+  select:focus,
+  button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+  }
+  
+  /* Fix Select dropdown scroll behavior */
+  [data-radix-select-viewport] {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  
+  [data-radix-select-viewport]::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  [data-radix-select-viewport]::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  [data-radix-select-viewport]::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 4px;
+  }
+  
+  /* Disable auto-scroll on arrow hover */
+  [data-radix-select-content] [data-radix-select-viewport] {
+    scroll-behavior: auto !important;
+  }
+  
+  /* Hide Radix Select scroll buttons to prevent auto-scroll */
+  [data-radix-select-content] > [data-radix-select-scroll-up-button],
+  [data-radix-select-content] > [data-radix-select-scroll-down-button] {
+    display: none !important;
+  }
+  
+  /* Remove pointer events from scroll areas */
+  [data-radix-select-content]::before,
+  [data-radix-select-content]::after {
+    display: none !important;
+  }
+  
+  /* Hide Next.js dev indicator (only in development) */
+  #__next-build-indicator,
+  [data-nextjs-build-indicator],
+  nextjs-portal,
+  .nextjs-build-error-indicator,
+  .nextjs-toast,
+  [id^="__next-build-indicator"] {
+    display: none !important;
+  }
+  
+  /* Hide any Next.js portal elements */
+  body > nextjs-portal {
+    display: none !important;
+  }
+  
+  /* Hide development mode indicators with higher specificity */
+  body > div[style*="position: fixed"][style*="bottom: 1rem"][style*="left: 1rem"] {
+    display: none !important;
+  }
+}
+
+@layer utilities {
+  /* Light mode gradient - slightly darker */
+  .gradient-text {
+    background: linear-gradient(135deg, #e6175f 0%, #e6175f 40%, #2690d4 100%);
+    @apply bg-clip-text text-transparent;
+  }
+  
+  /* Dark mode gradient - current lighter version */
+  .dark .gradient-text {
+    background: linear-gradient(135deg, #ff3d7f 0%, #ff3d7f 40%, #3db8e6 100%);
+    @apply bg-clip-text text-transparent;
+  }
+  
+  /* Gradient backgrounds with mode-specific colors */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #e6175f 0%, #e6175f 40%, #2690d4 100%);
+  }
+  
+  .dark .bg-gradient-primary {
+    background: linear-gradient(135deg, #ff3d7f 0%, #ff3d7f 40%, #3db8e6 100%);
+  }
+  
+  .bg-gradient-primary-light {
+    background: linear-gradient(135deg, #e6175f20 0%, #e6175f20 40%, #2690d420 100%);
+  }
+  
+  .dark .bg-gradient-primary-light {
+    background: linear-gradient(135deg, #ff3d7f20 0%, #ff3d7f20 40%, #3db8e620 100%);
+  }
+  
+  .glass {
+    @apply backdrop-blur-sm bg-card/70 dark:bg-black/10;
+  }
+  
+  .glass-border {
+    @apply border border-border dark:border-white/10;
+  }
+  
+  .glass-card {
+    @apply bg-card dark:bg-black/20 shadow-sm dark:shadow-none;
+  }
+  
+  .glass-card-border {
+    @apply border border-border dark:border-white/10;
+  }
+  
+  .hero-fade {
+    mask-image: linear-gradient(to bottom, 
+      transparent 0%, 
+      black 5%, 
+      black 95%, 
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(to bottom, 
+      transparent 0%, 
+      black 5%, 
+      black 95%, 
+      transparent 100%
+    );
+  }
+  
+  @supports (mask-image: radial-gradient(ellipse at center, black, transparent)) {
+    .hero-fade {
+      mask-image: radial-gradient(ellipse 100% 100% at center, black 70%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 100% 100% at center, black 70%, transparent 100%);
+    }
+  }
+  
+}
+
+/* Hide reCAPTCHA v3 badge - it's okay to hide as per Google's guidelines when using v3 */
+.grecaptcha-badge {
+  visibility: hidden !important;
+}

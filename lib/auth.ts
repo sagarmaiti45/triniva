@@ -1,0 +1,215 @@
+import { Redis } from "@upstash/redis";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { Resend } from "resend";
+
+// Lazy initialization with caching
+let redisInstance: Redis | null = null;
+let resendInstance: Resend | null = null;
+
+const redis = new Proxy({} as Redis, {
+  get(target, prop, receiver) {
+    if (!redisInstance) {
+      if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+        throw new Error("Redis credentials not configured");
+      }
+      redisInstance = new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      });
+    }
+    return Reflect.get(redisInstance, prop, receiver);
+  }
+});
+
+const resend = new Proxy({} as Resend, {
+  get(target, prop, receiver) {
+    if (!resendInstance) {
+      if (!process.env.RESEND_API_KEY) {
+        throw new Error("Resend API key not configured");
+      }
+      resendInstance = new Resend(process.env.RESEND_API_KEY);
+    }
+    return Reflect.get(resendInstance, prop, receiver);
+  }
+});
+
+// JWT secret
+const JWT_SECRET = process.env.JWT_SECRET || "development-secret-change-in-production";
+
+// User interface
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  verified: boolean;
+  createdAt: Date;
+}
+
+// Session interface
+export interface Session {
+  userId: string;
+  email: string;
+  name: string;
+}
+
+// Generate OTP
+export function generateOTP(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Hash password
+export async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 12);
+}
+
+// Verify password
+export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  return bcrypt.compare(password, hashedPassword);
+}
+
+// Create JWT token
+export function createToken(session: Session): string {
+  return jwt.sign(session, JWT_SECRET, { expiresIn: "7d" });
+}
+
+// Verify JWT token
+export function verifyToken(token: string): Session | null {
+  try {
+    return jwt.verify(token, JWT_SECRET) as Session;
+  } catch {
+    return null;
+  }
+}
+
+// Store user in Redis
+export async function storeUser(user: User): Promise<void> {
+  await redis.hset(`user:${user.email}`, {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    password: user.password,
+    verified: user.verified,
+    createdAt: user.createdAt.toISOString()
+  });
+  await redis.hset(`user:id:${user.id}`, { email: user.email });
+}
+
+// Get user by email
+export async function getUserByEmail(email: string): Promise<User | null> {
+  const user = await redis.hgetall(`user:${email}`);
+  if (!user || Object.keys(user).length === 0) return null;
+  
+  return {
+    id: user.id as string,
+    name: user.name as string,
+    email: user.email as string,
+    password: user.password as string,
+    verified: user.verified === "true",
+    createdAt: new Date(user.createdAt as string),
+  };
+}
+
+// Store OTP in Redis with 10 minute expiry
+export async function storeOTP(email: string, otp: string): Promise<void> {
+  // Use pipeline for atomic operations
+  const pipeline = redis.pipeline();
+  pipeline.setex(`otp:${email}`, 600, otp); // 10 minutes
+  pipeline.incr(`otp:attempts:${email}`); // Track OTP generation attempts
+  pipeline.expire(`otp:attempts:${email}`, 3600); // Reset attempts after 1 hour
+  await pipeline.exec();
+}
+
+// Verify OTP
+export async function verifyOTP(email: string, otp: string): Promise<boolean> {
+  const storedOTP = await redis.get(`otp:${email}`);
+  if (!storedOTP || storedOTP !== otp) return false;
+  
+  // Use pipeline for atomic cleanup
+  const pipeline = redis.pipeline();
+  pipeline.del(`otp:${email}`);
+  pipeline.del(`otp:attempts:${email}`);
+  await pipeline.exec();
+  
+  return true;
+}
+
+// Send OTP email
+export async function sendOTPEmail(email: string, name: string, otp: string): Promise<void> {
+  await resend.emails.send({
+    from: "Triniva AI <noreply@trinivaai.app>",
+    to: email,
+    subject: "Verify your email - Triniva AI",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">Hello ${name},</h2>
+        <p>Thank you for signing up with Triniva AI!</p>
+        <p>Your verification code is:</p>
+        <div style="background-color: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0;">
+          <h1 style="color: #ff3d7f; font-size: 36px; letter-spacing: 5px; margin: 0;">${otp}</h1>
+        </div>
+        <p>This code will expire in 10 minutes.</p>
+        <p>If you didn't request this code, please ignore this email.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        <p style="color: #666; font-size: 12px;">
+          Triniva AI - AI-powered image generation<br>
+          from FreshyPortal.com
+        </p>
+      </div>
+    `,
+  });
+}
+
+// Store session in Redis
+export async function storeSession(token: string, session: Session): Promise<void> {
+  await redis.setex(`session:${token}`, 604800, JSON.stringify(session)); // 7 days
+}
+
+// Get session from Redis
+export async function getSession(token: string): Promise<Session | null> {
+  const sessionData = await redis.get(`session:${token}`);
+  if (!sessionData) return null;
+  
+  return JSON.parse(sessionData as string);
+}
+
+// Delete session
+export async function deleteSession(token: string): Promise<void> {
+  await redis.del(`session:${token}`);
+}
+
+// Check OTP attempts to prevent abuse
+export async function checkOTPAttempts(email: string): Promise<boolean> {
+  const attempts = await redis.get(`otp:attempts:${email}`);
+  return !attempts || parseInt(attempts as string) < 5; // Max 5 attempts per hour
+}
+
+// Mark user as verified
+export async function markUserAsVerified(email: string): Promise<void> {
+  const user = await getUserByEmail(email);
+  if (!user) throw new Error("User not found");
+  
+  user.verified = true;
+  await storeUser(user);
+}
+
+// Cleanup unverified users older than 24 hours
+export async function cleanupUnverifiedUsers(): Promise<void> {
+  // This would be called by a cron job in production
+  const keys = await redis.keys("user:*");
+  const now = Date.now();
+  
+  for (const key of keys) {
+    if (key.includes(":id:")) continue; // Skip ID mapping keys
+    
+    const user = await redis.hgetall(key);
+    if (user && !user.verified && user.createdAt) {
+      const createdAt = new Date(user.createdAt as string).getTime();
+      if (now - createdAt > 86400000) { // 24 hours
+        await redis.del(key);
+        await redis.del(`user:id:${user.id}`);
+      }
+    }
+  }
+}
