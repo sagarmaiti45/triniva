@@ -35,74 +35,39 @@ const aspectRatios = [
   { label: "Landscape (16:9)", shortLabel: "16:9", width: 1344, height: 768, ratio: "16:9" },
   { label: "Portrait (9:16)", shortLabel: "9:16", width: 768, height: 1344, ratio: "9:16" },
   { label: "Photo (3:2)", shortLabel: "3:2", width: 1216, height: 832, ratio: "3:2" },
-  { label: "Photo (2:3)", shortLabel: "2:3", width: 832, height: 1216, ratio: "2:3" },
-  { label: "Classic (4:5)", shortLabel: "4:5", width: 896, height: 1152, ratio: "4:5" },
-  { label: "Classic (5:4)", shortLabel: "5:4", width: 1152, height: 896, ratio: "5:4" },
-  { label: "Ultrawide (21:9)", shortLabel: "21:9", width: 1536, height: 640, ratio: "21:9" },
-  { label: "Tall (9:21)", shortLabel: "9:21", width: 640, height: 1536, ratio: "9:21" },
+  { label: "Portrait (2:3)", shortLabel: "2:3", width: 832, height: 1216, ratio: "2:3" },
 ];
 
 const modelOptions = [
   { 
+    value: "sd3.5-flash", 
+    label: "Fast (2.5 credits)", 
+    credits: 2.5, 
+    enabled: true,
+    description: "Best value - Fast generation"
+  },
+  { 
     value: "sd3.5-medium", 
-    label: "SD 3.5 Medium", 
+    label: "Balanced (3.5 credits)", 
     credits: 3.5, 
     enabled: true,
-    description: "Balanced quality and speed"
+    description: "Good quality and speed"
   },
   { 
     value: "sd3.5-large-turbo", 
-    label: "SD 3.5 Large Turbo", 
+    label: "High Quality (4 credits)", 
     credits: 4, 
     enabled: true,
-    description: "Fast high-quality images"
-  },
-  { 
-    value: "sd3.5-flash", 
-    label: "SD 3.5 Flash", 
-    credits: 2.5, 
-    enabled: true,
-    description: "Fastest & most affordable"
-  },
-  { 
-    value: "stable-image-core", 
-    label: "Stable Image Core", 
-    credits: 3, 
-    enabled: true,
-    description: "Optimized for cost-effectiveness"
-  },
-  { 
-    value: "sd3.5-large", 
-    label: "SD 3.5 Large", 
-    credits: 6.5, 
-    enabled: false,
-    description: "Highest quality (Coming Soon)"
-  },
-  { 
-    value: "stable-image-ultra", 
-    label: "Stable Image Ultra", 
-    credits: 8, 
-    enabled: false,
-    description: "Flagship quality (Coming Soon)"
+    description: "Premium quality, fast"
   },
 ];
 
 const stylePresets = [
   { value: "none", label: "None" },
-  { value: "enhance", label: "Enhance" },
-  { value: "anime", label: "Anime" },
   { value: "photographic", label: "Photographic" },
-  { value: "digital-art", label: "Digital Art" },
-  { value: "comic-book", label: "Comic Book" },
-  { value: "fantasy-art", label: "Fantasy Art" },
-  { value: "line-art", label: "Line Art" },
-  { value: "analog-film", label: "Analog Film" },
-  { value: "neon-punk", label: "Neon Punk" },
-  { value: "isometric", label: "Isometric" },
-  { value: "low-poly", label: "Low Poly" },
-  { value: "origami", label: "Origami" },
-  { value: "modeling-compound", label: "Clay" },
   { value: "cinematic", label: "Cinematic" },
+  { value: "anime", label: "Anime" },
+  { value: "digital-art", label: "Digital Art" },
   { value: "3d-model", label: "3D Model" },
 ];
 
