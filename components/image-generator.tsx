@@ -395,7 +395,7 @@ export function ImageGenerator() {
                     size="lg"
                     variant="default"
                     disabled={isGenerating || !watch("prompt")}
-                    className="px-6 bg-[#e6175f] hover:bg-[#d01052] dark:bg-[#ff3d7f] dark:hover:bg-[#ff2d70] text-white border-0"
+                    className="px-6 bg-[#e6175f] hover:bg-[#d01052] dark:bg-[#ff3d7f] dark:hover:bg-[#ff2d70] text-white border-0 disabled:opacity-100 disabled:bg-[#e6175f] dark:disabled:bg-[#ff3d7f] disabled:cursor-not-allowed"
                   >
                       {isGenerating ? (
                       <>
@@ -463,7 +463,7 @@ export function ImageGenerator() {
                   size="lg"
                   variant="default"
                   disabled={isGenerating || !watch("prompt")}
-                  className="w-[200px] bg-[#e6175f] hover:bg-[#d01052] dark:bg-[#ff3d7f] dark:hover:bg-[#ff2d70] text-white border-0"
+                  className="w-[200px] bg-[#e6175f] hover:bg-[#d01052] dark:bg-[#ff3d7f] dark:hover:bg-[#ff2d70] text-white border-0 disabled:opacity-100 disabled:bg-[#e6175f] dark:disabled:bg-[#ff3d7f] disabled:cursor-not-allowed"
                 >
                 {isGenerating ? (
                   <>
