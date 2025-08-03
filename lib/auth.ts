@@ -85,20 +85,22 @@ export function verifyToken(token: string): Session | null {
 
 // Store user in Redis
 export async function storeUser(user: User): Promise<void> {
-  await redis.hset(`user:${user.email}`, {
+  const normalizedEmail = user.email.toLowerCase().trim();
+  await redis.hset(`user:${normalizedEmail}`, {
     id: user.id,
     name: user.name,
-    email: user.email,
+    email: normalizedEmail,
     password: user.password,
     verified: user.verified,
     createdAt: user.createdAt.toISOString()
   });
-  await redis.hset(`user:id:${user.id}`, { email: user.email });
+  await redis.hset(`user:id:${user.id}`, { email: normalizedEmail });
 }
 
 // Get user by email
 export async function getUserByEmail(email: string): Promise<User | null> {
-  const user = await redis.hgetall(`user:${email}`);
+  const normalizedEmail = email.toLowerCase().trim();
+  const user = await redis.hgetall(`user:${normalizedEmail}`);
   if (!user || Object.keys(user).length === 0) return null;
   
   return {
@@ -113,26 +115,59 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 
 // Store OTP in Redis with 10 minute expiry
 export async function storeOTP(email: string, otp: string): Promise<void> {
-  // Use pipeline for atomic operations
-  const pipeline = redis.pipeline();
-  pipeline.setex(`otp:${email}`, 600, otp); // 10 minutes
-  pipeline.incr(`otp:attempts:${email}`); // Track OTP generation attempts
-  pipeline.expire(`otp:attempts:${email}`, 3600); // Reset attempts after 1 hour
-  await pipeline.exec();
+  try {
+    // Normalize email to lowercase
+    const normalizedEmail = email.toLowerCase().trim();
+    
+    console.log('Storing OTP:', { email: normalizedEmail, otp });
+    
+    // Use pipeline for atomic operations
+    const pipeline = redis.pipeline();
+    pipeline.setex(`otp:${normalizedEmail}`, 600, otp); // 10 minutes
+    pipeline.incr(`otp:attempts:${normalizedEmail}`); // Track OTP generation attempts
+    pipeline.expire(`otp:attempts:${normalizedEmail}`, 3600); // Reset attempts after 1 hour
+    await pipeline.exec();
+  } catch (error) {
+    console.error('Failed to store OTP:', error);
+    throw new Error('Failed to store verification code');
+  }
 }
 
 // Verify OTP
 export async function verifyOTP(email: string, otp: string): Promise<boolean> {
-  const storedOTP = await redis.get(`otp:${email}`);
-  if (!storedOTP || storedOTP !== otp) return false;
-  
-  // Use pipeline for atomic cleanup
-  const pipeline = redis.pipeline();
-  pipeline.del(`otp:${email}`);
-  pipeline.del(`otp:attempts:${email}`);
-  await pipeline.exec();
-  
-  return true;
+  try {
+    // Normalize email to lowercase
+    const normalizedEmail = email.toLowerCase().trim();
+    const storedOTP = await redis.get(`otp:${normalizedEmail}`);
+    
+    // Debug logging
+    console.log('Verifying OTP:', { email: normalizedEmail, provided: otp, stored: storedOTP });
+    
+    if (!storedOTP) {
+      console.log('No OTP found for email:', normalizedEmail);
+      return false;
+    }
+    
+    // Convert both to strings and trim whitespace
+    const normalizedStored = String(storedOTP).trim();
+    const normalizedProvided = String(otp).trim();
+    
+    if (normalizedStored !== normalizedProvided) {
+      console.log('OTP mismatch:', { stored: normalizedStored, provided: normalizedProvided });
+      return false;
+    }
+    
+    // Use pipeline for atomic cleanup
+    const pipeline = redis.pipeline();
+    pipeline.del(`otp:${normalizedEmail}`);
+    pipeline.del(`otp:attempts:${normalizedEmail}`);
+    await pipeline.exec();
+    
+    return true;
+  } catch (error) {
+    console.error('OTP verification error:', error);
+    return false;
+  }
 }
 
 // Send OTP email
@@ -194,8 +229,11 @@ export async function deleteSession(token: string): Promise<void> {
 
 // Check OTP attempts to prevent abuse
 export async function checkOTPAttempts(email: string): Promise<boolean> {
-  const attempts = await redis.get(`otp:attempts:${email}`);
-  return !attempts || parseInt(attempts as string) < 5; // Max 5 attempts per hour
+  const normalizedEmail = email.toLowerCase().trim();
+  const attempts = await redis.get(`otp:attempts:${normalizedEmail}`);
+  const attemptCount = attempts ? parseInt(String(attempts)) : 0;
+  console.log(`OTP attempts for ${normalizedEmail}: ${attemptCount}`);
+  return attemptCount < 5; // Max 5 attempts per hour
 }
 
 // Mark user as verified

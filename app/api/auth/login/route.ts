@@ -15,10 +15,13 @@ export async function POST(req: NextRequest) {
     // Validate input
     if (!email || !password) {
       return NextResponse.json(
-        { error: "Missing email or password" },
+        { error: "Please enter both email and password" },
         { status: 400 }
       );
     }
+
+    // Normalize email
+    const normalizedEmail = email.toLowerCase().trim();
 
     // Verify reCAPTCHA
     if (recaptchaToken) {
@@ -32,10 +35,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user
-    const user = await getUserByEmail(email);
+    const user = await getUserByEmail(normalizedEmail);
     if (!user) {
       return NextResponse.json(
-        { error: "Invalid credentials" },
+        { error: "No account found with this email address" },
         { status: 401 }
       );
     }
@@ -44,7 +47,7 @@ export async function POST(req: NextRequest) {
     const isValid = await verifyPassword(password, user.password);
     if (!isValid) {
       return NextResponse.json(
-        { error: "Invalid credentials" },
+        { error: "Incorrect password. Please try again." },
         { status: 401 }
       );
     }
@@ -53,7 +56,7 @@ export async function POST(req: NextRequest) {
     if (!user.verified) {
       return NextResponse.json(
         { 
-          error: "Please verify your email first",
+          error: "Please verify your email first. Check your inbox for the verification code.",
           requiresVerification: true,
           email: user.email
         },
@@ -107,7 +110,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(
-      { error: "Login failed" },
+      { error: "Login failed. Please try again later." },
       { status: 500 }
     );
   }

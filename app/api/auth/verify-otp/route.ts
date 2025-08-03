@@ -21,33 +21,47 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Normalize email
+    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedOTP = otp.trim();
+
+    console.log('Verify OTP request:', { email: normalizedEmail, otp: normalizedOTP });
+
     // Get user
-    const user = await getUserByEmail(email);
+    const user = await getUserByEmail(normalizedEmail);
     if (!user) {
       return NextResponse.json(
-        { error: "User not found" },
+        { error: "User not found. Please register first." },
         { status: 404 }
       );
     }
 
+    // Check if already verified
+    if (user.verified) {
+      return NextResponse.json(
+        { error: "Email already verified. Please sign in." },
+        { status: 400 }
+      );
+    }
+
     // Verify OTP
-    const isValidOTP = await verifyOTP(email, otp);
+    const isValidOTP = await verifyOTP(normalizedEmail, normalizedOTP);
     if (!isValidOTP) {
       return NextResponse.json(
-        { error: "Invalid or expired OTP" },
+        { error: "Invalid or expired verification code. Please request a new one." },
         { status: 400 }
       );
     }
 
     // Update user verified status using optimized function
-    await markUserAsVerified(email);
+    await markUserAsVerified(normalizedEmail);
     
     // Check for pending guest merge
-    const pendingGuestId = await redis.get(`pending_merge:${email}`);
+    const pendingGuestId = await redis.get(`pending_merge:${normalizedEmail}`);
     if (pendingGuestId && typeof pendingGuestId === 'string') {
       try {
         await GenerationService.mergeGuestToUser(user.id, pendingGuestId);
-        await redis.del(`pending_merge:${email}`); // Clean up
+        await redis.del(`pending_merge:${normalizedEmail}`); // Clean up
       } catch (error) {
         console.error("Failed to merge guest data:", error);
         // Don't fail verification if merge fails

@@ -14,16 +14,19 @@ export async function POST(req: NextRequest) {
     // Validate input
     if (!email) {
       return NextResponse.json(
-        { error: "Missing email" },
+        { error: "Please provide an email address" },
         { status: 400 }
       );
     }
+    
+    // Normalize email
+    const normalizedEmail = email.toLowerCase().trim();
 
     // Get user
-    const user = await getUserByEmail(email);
+    const user = await getUserByEmail(normalizedEmail);
     if (!user) {
       return NextResponse.json(
-        { error: "User not found" },
+        { error: "No account found with this email address. Please register first." },
         { status: 404 }
       );
     }
@@ -31,13 +34,13 @@ export async function POST(req: NextRequest) {
     // Check if already verified
     if (user.verified) {
       return NextResponse.json(
-        { error: "Email already verified" },
+        { error: "Email already verified. Please sign in." },
         { status: 400 }
       );
     }
 
     // Check rate limiting
-    const canSendOTP = await checkOTPAttempts(email);
+    const canSendOTP = await checkOTPAttempts(normalizedEmail);
     if (!canSendOTP) {
       return NextResponse.json(
         { error: "Too many OTP requests. Please try again in an hour." },
@@ -47,18 +50,19 @@ export async function POST(req: NextRequest) {
 
     // Generate and store new OTP
     const otp = generateOTP();
-    await storeOTP(email, otp);
+    await storeOTP(normalizedEmail, otp);
 
     // Send OTP email
-    await sendOTPEmail(email, user.name, otp);
+    await sendOTPEmail(normalizedEmail, user.name, otp);
 
     return NextResponse.json({
-      message: "OTP sent successfully",
+      message: "Verification code sent successfully. Please check your email.",
+      email: normalizedEmail
     });
   } catch (error) {
     console.error("Resend OTP error:", error);
     return NextResponse.json(
-      { error: "Failed to resend OTP" },
+      { error: "Failed to send verification code. Please try again later." },
       { status: 500 }
     );
   }
