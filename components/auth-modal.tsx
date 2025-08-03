@@ -183,6 +183,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       });
 
       const result = await response.json();
+      console.log("Registration response:", { ok: response.ok, status: response.status, result });
 
       if (!response.ok && !result.requiresVerification) {
         throw new Error(result.error || "Registration failed");
