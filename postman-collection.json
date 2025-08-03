@@ -1,0 +1,224 @@
+{
+  "info": {
+    "name": "Triniva AI API",
+    "description": "API collection for testing Triniva AI image generation endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "verify-otp"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Image Generation",
+      "item": [
+        {
+          "name": "Generate Image - SD3.5 Flash",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "auth-token={{authToken}}",
+                "description": "Optional - for authenticated users"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"A beautiful sunset over mountains\",\n  \"model\": \"sd3.5-flash\",\n  \"width\": 1024,\n  \"height\": 1024,\n  \"style_preset\": \"photographic\",\n  \"cfg_scale\": 4,\n  \"negative_prompt\": \"blurry, low quality\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            }
+          }
+        },
+        {
+          "name": "Generate Image - Core",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"A futuristic city at night\",\n  \"model\": \"stable-image-core\",\n  \"width\": 1344,\n  \"height\": 768,\n  \"style_preset\": \"cinematic\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            }
+          }
+        },
+        {
+          "name": "Generate Image - Guest with ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"A magical forest with glowing trees\",\n  \"model\": \"sd3.5-flash\",\n  \"width\": 768,\n  \"height\": 1344,\n  \"guestId\": \"guest-123-456-789\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            }
+          }
+        },
+        {
+          "name": "Test Missing Prompt Error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"sd3.5-flash\",\n  \"width\": 1024,\n  \"height\": 1024\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "generate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat History",
+      "item": [
+        {
+          "name": "Get Chat History - Authenticated",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "auth-token={{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat-history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat-history"]
+            }
+          }
+        },
+        {
+          "name": "Get Chat History - Guest",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat-history?guestId=guest-123-456-789",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat-history"],
+              "query": [
+                {
+                  "key": "guestId",
+                  "value": "guest-123-456-789"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string",
+      "description": "Set this after login"
+    }
+  ]
+}

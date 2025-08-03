@@ -273,9 +273,19 @@ export async function POST(req: NextRequest) {
     
   } catch (error) {
     console.error("Image generation error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    
+    // More detailed error response for debugging
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorDetails = {
+      error: "Internal server error",
+      message: errorMessage,
+      // Include more details in development
+      ...(process.env.NODE_ENV === "development" && {
+        stack: error instanceof Error ? error.stack : undefined,
+        details: error
+      })
+    };
+    
+    return NextResponse.json(errorDetails, { status: 500 });
   }
 }
