@@ -17,6 +17,7 @@ import Image from "next/image";
 import { useGuestId } from "@/hooks/use-guest-id";
 import { useAuth } from "@/contexts/simple-auth-context";
 import { AuthModal } from "@/components/auth-modal";
+import { useGenerationLimits } from "@/contexts/generation-limits-context";
 
 const formSchema = z.object({
   prompt: z.string().min(1, "Please enter a prompt"),
@@ -93,15 +94,10 @@ export function ImageGenerator() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [lastGenerationTime, setLastGenerationTime] = useState(0);
-  const [generationLimits, setGenerationLimits] = useState<{
-    used: number;
-    limit: number;
-    remaining: number;
-    isGuest: boolean;
-  } | null>(null);
   
   const guestId = useGuestId();
   const { user } = useAuth();
+  const { limits: generationLimits, updateLimits, refreshLimits } = useGenerationLimits();
 
   const {
     register,
@@ -129,30 +125,6 @@ export function ImageGenerator() {
     setValue("width", selectedRatio.width);
     setValue("height", selectedRatio.height);
   };
-  
-  // Fetch generation limits on mount and when user changes
-  useEffect(() => {
-    const fetchLimits = async () => {
-      try {
-        console.log("Fetching limits for:", { user: user?.email, guestId });
-        const params = new URLSearchParams();
-        if (guestId && !user) {
-          params.append('guestId', guestId);
-        }
-        
-        const response = await fetch(`/api/chat-history?${params.toString()}`);
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Initial limits from chat-history:", data.limits);
-          setGenerationLimits(data.limits);
-        }
-      } catch (error) {
-        console.error('Failed to fetch limits:', error);
-      }
-    };
-    
-    fetchLimits();
-  }, [user, guestId]);
 
   const onSubmit = async (data: FormData) => {
     // Prevent rapid-fire submissions
@@ -195,7 +167,7 @@ export function ImageGenerator() {
 
       if (!response.ok) {
         if (response.status === 429 && result.limits) {
-          setGenerationLimits(result.limits);
+          updateLimits(result.limits);
           if (result.limits.isGuest) {
             setShowAuthModal(true);
           }
@@ -210,28 +182,15 @@ export function ImageGenerator() {
         // Update limits from response
         if (result.generationLimits) {
           console.log("Updating generation limits:", result.generationLimits);
-          setGenerationLimits(result.generationLimits);
+          updateLimits(result.generationLimits);
         } else if (result.limits) {
           console.log("Updating limits:", result.limits);
-          setGenerationLimits(result.limits);
+          updateLimits(result.limits);
         }
         
-        // Also fetch fresh limits from the server to ensure they're up to date
-        setTimeout(async () => {
-          try {
-            const params = new URLSearchParams();
-            if (guestId && !user) {
-              params.append('guestId', guestId);
-            }
-            const limitResponse = await fetch(`/api/chat-history?${params.toString()}`);
-            if (limitResponse.ok) {
-              const limitData = await limitResponse.json();
-              console.log("Refreshed limits after generation:", limitData.limits);
-              setGenerationLimits(limitData.limits);
-            }
-          } catch (error) {
-            console.error('Failed to refresh limits:', error);
-          }
+        // Also refresh limits from server to ensure sync
+        setTimeout(() => {
+          refreshLimits();
         }, 500);
       }
     } catch (error) {

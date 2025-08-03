@@ -11,6 +11,7 @@ import { SidebarProvider } from "@/contexts/sidebar-context";
 import { AuthProvider } from "@/contexts/simple-auth-context";
 import { MainContent } from "@/components/main-content";
 import { RecaptchaProvider } from "@/components/recaptcha-provider";
+import { GenerationLimitsProvider } from "@/contexts/generation-limits-context";
 
 // Modern, clean sans-serif for body text
 const plusJakarta = Plus_Jakarta_Sans({ 
@@ -68,30 +69,32 @@ export default function RootLayout({
         >
           <RecaptchaProvider>
             <AuthProvider>
-              <SidebarProvider>
-              <div className="min-h-screen overflow-x-hidden">
+              <GenerationLimitsProvider>
+                <SidebarProvider>
+                <div className="min-h-screen overflow-x-hidden">
+                  <ClientOnlyWrapper>
+                    <Sidebar />
+                  </ClientOnlyWrapper>
+                  <ClientOnlyWrapper>
+                    <MainContent>{children}</MainContent>
+                  </ClientOnlyWrapper>
+                </div>
                 <ClientOnlyWrapper>
-                  <Sidebar />
+                  <Toaster
+                    position="bottom-right"
+                    toastOptions={{
+                      className: "!bg-card !text-card-foreground !border !border-border pointer-events-none select-none",
+                      duration: 4000,
+                      style: {
+                        pointerEvents: 'none',
+                        userSelect: 'none',
+                      },
+                    }}
+                  />
+                  <ChatSupport />
                 </ClientOnlyWrapper>
-                <ClientOnlyWrapper>
-                  <MainContent>{children}</MainContent>
-                </ClientOnlyWrapper>
-              </div>
-              <ClientOnlyWrapper>
-                <Toaster
-                  position="bottom-right"
-                  toastOptions={{
-                    className: "!bg-card !text-card-foreground !border !border-border pointer-events-none select-none",
-                    duration: 4000,
-                    style: {
-                      pointerEvents: 'none',
-                      userSelect: 'none',
-                    },
-                  }}
-                />
-                <ChatSupport />
-              </ClientOnlyWrapper>
-              </SidebarProvider>
+                </SidebarProvider>
+              </GenerationLimitsProvider>
             </AuthProvider>
           </RecaptchaProvider>
         </ThemeProvider>

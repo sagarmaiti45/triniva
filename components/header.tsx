@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/simple-auth-context";
 import { AuthModal } from "@/components/auth-modal";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useGuestId } from "@/hooks/use-guest-id";
+import { useGenerationLimits } from "@/contexts/generation-limits-context";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,12 +28,7 @@ export function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [usageLimitModalOpen, setUsageLimitModalOpen] = useState(false);
-  const [generationLimits, setGenerationLimits] = useState<{
-    used: number;
-    limit: number;
-    remaining: number;
-    isGuest: boolean;
-  } | null>(null);
+  const { limits: generationLimits } = useGenerationLimits();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const guestId = useGuestId();
 
@@ -56,27 +52,6 @@ export function Header() {
     };
   }, []);
 
-  // Fetch generation limits
-  useEffect(() => {
-    const fetchLimits = async () => {
-      try {
-        const params = new URLSearchParams();
-        if (guestId && !user) {
-          params.append('guestId', guestId);
-        }
-        
-        const response = await fetch(`/api/chat-history?${params.toString()}`);
-        if (response.ok) {
-          const data = await response.json();
-          setGenerationLimits(data.limits);
-        }
-      } catch (error) {
-        console.error('Failed to fetch limits:', error);
-      }
-    };
-    
-    fetchLimits();
-  }, [user, guestId]);
 
   return (
     <header className="sticky top-0 z-30 w-full">
