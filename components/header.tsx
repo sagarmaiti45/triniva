@@ -142,10 +142,11 @@ export function Header() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      size="icon"
-                      className="hidden md:inline-flex"
+                      size="sm"
+                      className="hidden md:inline-flex items-center gap-2 px-3"
                     >
-                      <User className="h-5 w-5" />
+                      <span className="text-sm font-medium">Hello, {user.name.split(' ')[0]}</span>
+                      <ChevronDown className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
