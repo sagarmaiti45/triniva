@@ -32,7 +32,7 @@ export async function getServerSession(options: any): Promise<any> {
   try {
     // Import Next.js cookies
     const { cookies } = await import("next/headers");
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("auth-token");
     
     if (!token?.value) {
