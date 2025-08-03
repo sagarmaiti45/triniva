@@ -180,7 +180,7 @@ export async function sendOTPEmail(email: string, name: string, otp: string): Pr
     
     console.log('Using from email:', fromEmail);
     
-    const result = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: fromEmail,
       to: [email],
       subject: "Verify your email - Triniva AI",
@@ -203,10 +203,10 @@ export async function sendOTPEmail(email: string, name: string, otp: string): Pr
       `,
     });
     
-    console.log('Email sent successfully:', result);
+    console.log('Email response:', { data, error });
     
-    if (result.error) {
-      throw new Error(`Resend error: ${result.error.message}`);
+    if (error) {
+      throw new Error(`Resend error: ${error.message}`);
     }
   } catch (error) {
     console.error('Failed to send email:', error);
