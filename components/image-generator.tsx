@@ -271,48 +271,6 @@ export function ImageGenerator() {
                 {/* Bottom Controls - Desktop only */}
                 <div className="hidden md:flex mt-4 flex-row items-center justify-between gap-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    {/* Model Selector */}
-                    <Select
-                      value={watch("model")}
-                      onValueChange={(value) => setValue("model", value)}
-                    >
-                      <SelectTrigger className="h-9 w-[180px] border-0 bg-gray-50 dark:bg-secondary/50">
-                        <div className="flex items-center gap-2 truncate">
-                          <Cpu className="h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">
-                            {modelOptions.find(m => m.value === watch("model"))?.label || "Select Model"}
-                          </span>
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent 
-                        className="w-[320px] p-1 max-h-[300px] overflow-y-auto"
-                        position="popper"
-                        sideOffset={5}
-                        align="start"
-                      >
-                        {modelOptions.map((model) => (
-                          <SelectItem 
-                            key={model.value} 
-                            value={model.value}
-                            disabled={!model.enabled}
-                            className="relative py-3 pr-20"
-                          >
-                            <div className="flex flex-col gap-1">
-                              <span className={`font-medium ${!model.enabled ? "opacity-50" : ""}`}>
-                                {model.label}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {model.description}
-                              </span>
-                            </div>
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gradient-start whitespace-nowrap">
-                              {model.credits} credits
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
                     {/* Style Preset Dropdown */}
                     <Select
                       value={watch("style_preset")}
@@ -365,10 +323,10 @@ export function ImageGenerator() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-9 bg-gray-50 dark:bg-transparent"
+                      className={`h-9 bg-gray-50 dark:bg-transparent transition-all duration-200 ${showAdvanced ? 'bg-gray-100 dark:bg-secondary' : ''}`}
                       onClick={() => setShowAdvanced(!showAdvanced)}
                     >
-                      <Settings2 className="h-4 w-4 mr-2" />
+                      <Settings2 className={`h-4 w-4 mr-2 transition-transform duration-200 ${showAdvanced ? 'rotate-90' : ''}`} />
                       Advanced
                     </Button>
                   </div>
@@ -397,6 +355,28 @@ export function ImageGenerator() {
                 
                 {/* Mobile Controls - Below textarea */}
                 <div className="flex md:hidden mt-3 items-center justify-center gap-2">
+                  {/* Style Preset Dropdown */}
+                  <Select
+                    value={watch("style_preset")}
+                    onValueChange={(value) => setValue("style_preset", value)}
+                  >
+                    <SelectTrigger className="h-8 w-[100px] border-0 bg-gray-50 dark:bg-secondary/50 text-sm">
+                      <div className="flex items-center gap-1.5">
+                        <Palette className="h-3.5 w-3.5 flex-shrink-0" />
+                        <span className="truncate text-xs">
+                          {stylePresets.find(s => s.value === watch("style_preset"))?.label || "None"}
+                        </span>
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent position="popper" sideOffset={5}>
+                      {stylePresets.map((style) => (
+                        <SelectItem key={style.value} value={style.value}>
+                          {style.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
                   {/* Aspect Ratio Dropdown */}
                   <Select
                     value={`${selectedRatio.width}x${selectedRatio.height}`}
@@ -405,10 +385,10 @@ export function ImageGenerator() {
                       if (ratio) setSelectedRatio(ratio);
                     }}
                   >
-                    <SelectTrigger className="h-8 w-[140px] border-0 bg-gray-50 dark:bg-secondary/50 text-sm">
+                    <SelectTrigger className="h-8 w-[120px] border-0 bg-gray-50 dark:bg-secondary/50 text-sm">
                       <div className="flex items-center gap-2 truncate pr-2">
                         <ImageIcon className="h-4 w-4 flex-shrink-0" />
-                        <span className="truncate">
+                        <span className="truncate text-xs">
                           {selectedRatio.shortLabel || selectedRatio.label?.split(' ')[0] || 'Square'}
                         </span>
                       </div>
@@ -427,10 +407,10 @@ export function ImageGenerator() {
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="h-8 bg-gray-50 dark:bg-transparent text-sm"
+                    className={`h-8 bg-gray-50 dark:bg-transparent text-sm transition-all duration-200 ${showAdvanced ? 'bg-gray-100 dark:bg-secondary' : ''}`}
                     onClick={() => setShowAdvanced(!showAdvanced)}
                   >
-                    <Settings2 className="h-4 w-4 mr-2" />
+                    <Settings2 className={`h-4 w-4 mr-2 transition-transform duration-200 ${showAdvanced ? 'rotate-90' : ''}`} />
                     Advanced
                   </Button>
                 </div>
@@ -474,35 +454,53 @@ export function ImageGenerator() {
                   className="max-w-4xl mx-auto"
                 >
                   <div className="rounded-xl bg-card border border-border p-4 md:p-6 space-y-4 md:space-y-6">
-                    {/* Mobile: Model and Style selectors */}
-                    <div className="grid grid-cols-2 gap-3 md:hidden">
+                    {/* Model selector - now for all screen sizes */}
+                    <div className="space-y-2">
+                      <Label htmlFor="model">Model</Label>
                       <Select
                         value={watch("model")}
                         onValueChange={(value) => setValue("model", value)}
                       >
-                        <SelectTrigger className="h-9 border-0 bg-gray-50 dark:bg-secondary/50">
-                          <div className="flex items-center gap-1.5">
-                            <Cpu className="h-3.5 w-3.5 flex-shrink-0" />
-                            <span className="truncate text-sm">
-                              {modelOptions.find(m => m.value === watch("model"))?.label.replace("SD 3.5 ", "").replace("Stable Image ", "")||"Model"}
+                        <SelectTrigger id="model" className="w-full border-0 bg-gray-50 dark:bg-secondary/50">
+                          <div className="flex items-center gap-2 truncate">
+                            <Cpu className="h-4 w-4 flex-shrink-0" />
+                            <span className="truncate">
+                              {modelOptions.find(m => m.value === watch("model"))?.label || "Select Model"}
                             </span>
                           </div>
                         </SelectTrigger>
-                        <SelectContent className="w-[280px]">
+                        <SelectContent 
+                          className="w-[320px] p-1 max-h-[300px] overflow-y-auto"
+                          position="popper"
+                          sideOffset={5}
+                          align="start"
+                        >
                           {modelOptions.map((model) => (
                             <SelectItem 
                               key={model.value} 
                               value={model.value}
                               disabled={!model.enabled}
+                              className="relative py-3 pr-20"
                             >
-                              <span className={`text-sm ${!model.enabled ? "opacity-50" : ""}`}>
-                                {model.label}
+                              <div className="flex flex-col gap-1">
+                                <span className={`font-medium ${!model.enabled ? "opacity-50" : ""}`}>
+                                  {model.label}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {model.description}
+                                </span>
+                              </div>
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gradient-start whitespace-nowrap">
+                                {model.credits} credits
                               </span>
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-
+                    </div>
+                    
+                    {/* Mobile: Style selector */}
+                    <div className="grid grid-cols-2 gap-3 md:hidden">
                       <Select
                         value={watch("style_preset")}
                         onValueChange={(value) => setValue("style_preset", value)}
@@ -527,10 +525,9 @@ export function ImageGenerator() {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="negative_prompt">Negative Prompt</Label>
                         <Textarea
                           id="negative_prompt"
-                          placeholder="Things to avoid: blurry, bad quality, distorted..."
+                          placeholder="Negative prompt (things to avoid: blurry, bad quality, distorted...)"
                           className="min-h-[80px] resize-none font-dm-sans font-normal"
                           {...register("negative_prompt")}
                         />
