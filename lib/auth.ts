@@ -137,28 +137,41 @@ export async function verifyOTP(email: string, otp: string): Promise<boolean> {
 
 // Send OTP email
 export async function sendOTPEmail(email: string, name: string, otp: string): Promise<void> {
-  await resend.emails.send({
-    from: "Triniva AI <noreply@trinivaai.app>",
-    to: email,
-    subject: "Verify your email - Triniva AI",
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333;">Hello ${name},</h2>
-        <p>Thank you for signing up with Triniva AI!</p>
-        <p>Your verification code is:</p>
-        <div style="background-color: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0;">
-          <h1 style="color: #ff3d7f; font-size: 36px; letter-spacing: 5px; margin: 0;">${otp}</h1>
+  try {
+    console.log('Attempting to send email to:', email);
+    
+    const result = await resend.emails.send({
+      from: "Triniva AI <onboarding@resend.dev>",
+      to: [email],
+      subject: "Verify your email - Triniva AI",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">Hello ${name},</h2>
+          <p>Thank you for signing up with Triniva AI!</p>
+          <p>Your verification code is:</p>
+          <div style="background-color: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0;">
+            <h1 style="color: #ff3d7f; font-size: 36px; letter-spacing: 5px; margin: 0;">${otp}</h1>
+          </div>
+          <p>This code will expire in 10 minutes.</p>
+          <p>If you didn't request this code, please ignore this email.</p>
+          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+          <p style="color: #666; font-size: 12px;">
+            Triniva AI - AI-powered image generation<br>
+            Visit us at Triniva.com
+          </p>
         </div>
-        <p>This code will expire in 10 minutes.</p>
-        <p>If you didn't request this code, please ignore this email.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-        <p style="color: #666; font-size: 12px;">
-          Triniva AI - AI-powered image generation<br>
-          from FreshyPortal.com
-        </p>
-      </div>
-    `,
-  });
+      `,
+    });
+    
+    console.log('Email sent successfully:', result);
+    
+    if (result.error) {
+      throw new Error(`Resend error: ${result.error.message}`);
+    }
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    throw new Error(`Failed to send verification email: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 // Store session in Redis
