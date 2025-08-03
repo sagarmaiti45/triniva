@@ -98,7 +98,7 @@ export async function storeUser(user: User): Promise<void> {
     name: user.name,
     email: normalizedEmail,
     password: user.password,
-    verified: user.verified,
+    verified: user.verified ? "true" : "false",
     createdAt: user.createdAt.toISOString()
   });
   await redis.hset(`user:id:${user.id}`, { email: normalizedEmail });
@@ -223,15 +223,17 @@ export async function sendOTPEmail(email: string, name: string, otp: string): Pr
 
 // Store session in Redis
 export async function storeSession(token: string, session: Session): Promise<void> {
-  await redis.setex(`session:${token}`, 604800, JSON.stringify(session)); // 7 days
+  // Upstash Redis automatically handles JSON serialization
+  await redis.setex(`session:${token}`, 604800, session); // 7 days
 }
 
 // Get session from Redis
 export async function getSession(token: string): Promise<Session | null> {
+  // Upstash Redis automatically handles JSON deserialization
   const sessionData = await redis.get(`session:${token}`);
   if (!sessionData) return null;
   
-  return JSON.parse(sessionData as string);
+  return sessionData as Session;
 }
 
 // Delete session
