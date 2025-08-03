@@ -5,7 +5,7 @@ import { resolve } from "path";
 // Load environment variables
 dotenv.config({ path: resolve(process.cwd(), ".env.local") });
 
-async function deleteAllUsers() {
+async function deleteAllKeys() {
   try {
     // Initialize Redis
     const redis = new Redis({
@@ -13,30 +13,44 @@ async function deleteAllUsers() {
       token: process.env.UPSTASH_REDIS_REST_TOKEN!,
     });
 
-    console.log("🔍 Finding all user keys...");
+    console.log("🔍 Finding all keys in database...");
     
-    // Find all user-related keys
-    const userKeys = await redis.keys("user:*");
-    const otpKeys = await redis.keys("otp:*");
-    const sessionKeys = await redis.keys("session:*");
+    // Find ALL keys in the database
+    const allKeys = await redis.keys("*");
     
-    console.log(`Found ${userKeys.length} user keys`);
-    console.log(`Found ${otpKeys.length} OTP keys`);
-    console.log(`Found ${sessionKeys.length} session keys`);
+    console.log(`\n📊 Found ${allKeys.length} total keys in database`);
     
-    if (userKeys.length === 0 && otpKeys.length === 0 && sessionKeys.length === 0) {
-      console.log("✅ No user data found to delete");
+    if (allKeys.length === 0) {
+      console.log("✅ Database is already empty");
       return;
     }
     
-    // Delete all keys
-    const allKeys = [...userKeys, ...otpKeys, ...sessionKeys];
+    // Group keys by type for better visibility
+    const keyGroups: Record<string, string[]> = {};
+    allKeys.forEach(key => {
+      const prefix = key.split(':')[0];
+      if (!keyGroups[prefix]) {
+        keyGroups[prefix] = [];
+      }
+      keyGroups[prefix].push(key);
+    });
     
-    console.log(`\n⚠️  WARNING: This will delete ${allKeys.length} keys from Redis!`);
-    console.log("Keys to be deleted:");
-    allKeys.forEach(key => console.log(`  - ${key}`));
+    console.log("\n📋 Keys grouped by type:");
+    Object.entries(keyGroups).forEach(([prefix, keys]) => {
+      console.log(`  - ${prefix}: ${keys.length} keys`);
+    });
     
-    console.log("\n🗑️  Deleting all user data...");
+    console.log(`\n⚠️  WARNING: This will delete ALL ${allKeys.length} keys from Redis!`);
+    console.log("This includes:");
+    Object.keys(keyGroups).forEach(prefix => {
+      console.log(`  - All ${prefix} data`);
+    });
+    
+    // Add confirmation prompt
+    console.log("\n⏳ Starting deletion in 5 seconds... Press Ctrl+C to cancel");
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    
+    console.log("\n🗑️  Deleting all keys...");
     
     // Delete in batches to avoid potential issues with large datasets
     const batchSize = 100;
@@ -46,27 +60,31 @@ async function deleteAllUsers() {
       console.log(`Deleted ${Math.min(i + batchSize, allKeys.length)} / ${allKeys.length} keys`);
     }
     
-    console.log("\n✅ Successfully deleted all user data!");
+    console.log("\n✅ Successfully deleted all data from Redis!");
     
     // Verify deletion
-    const remainingUserKeys = await redis.keys("user:*");
-    const remainingOtpKeys = await redis.keys("otp:*");
-    const remainingSessionKeys = await redis.keys("session:*");
+    const remainingKeys = await redis.keys("*");
     
     console.log("\n📊 Verification:");
-    console.log(`Remaining user keys: ${remainingUserKeys.length}`);
-    console.log(`Remaining OTP keys: ${remainingOtpKeys.length}`);
-    console.log(`Remaining session keys: ${remainingSessionKeys.length}`);
+    console.log(`Remaining keys in database: ${remainingKeys.length}`);
+    
+    if (remainingKeys.length > 0) {
+      console.log("⚠️  Some keys were not deleted:");
+      remainingKeys.forEach(key => console.log(`  - ${key}`));
+    }
     
   } catch (error) {
-    console.error("❌ Error deleting users:", error);
+    console.error("❌ Error deleting keys:", error);
     process.exit(1);
   }
 }
 
 // Run the script
-console.log("🚀 Starting user deletion script...\n");
-deleteAllUsers()
+console.log("🚀 Starting database cleanup script...\n");
+console.log("⚠️  This will delete ALL data from your Redis database!");
+console.log("Press Ctrl+C now if you want to cancel.\n");
+
+deleteAllKeys()
   .then(() => {
     console.log("\n✨ Script completed successfully!");
     process.exit(0);
