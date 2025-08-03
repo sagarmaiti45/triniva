@@ -3,51 +3,7 @@ import { GenerationService } from "@/lib/db/generation-service";
 import { generateGuestFingerprint } from "@/lib/guest-identification";
 import { getServerSession } from "@/lib/auth-options";
 import { authOptions } from "@/lib/auth-options";
-
-// Simple in-memory rate limiting
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-
-// Simple in-memory usage tracking (fallback when Redis is not available)
-const usageMap = new Map<string, { count: number; firstUsed: number }>();
-
-function checkRateLimit(identifier: string, isUser: boolean): { success: boolean; remaining: number } {
-  const now = Date.now();
-  const limit = isUser ? 100 : 10; // 100 per day for users, 10 per day for guests
-  const window = 24 * 60 * 60 * 1000; // 24 hours
-  
-  const userLimit = rateLimitMap.get(identifier);
-  
-  if (!userLimit || now > userLimit.resetTime) {
-    rateLimitMap.set(identifier, { count: 1, resetTime: now + window });
-    return { success: true, remaining: limit - 1 };
-  }
-  
-  if (userLimit.count >= limit) {
-    return { success: false, remaining: 0 };
-  }
-  
-  userLimit.count++;
-  return { success: true, remaining: limit - userLimit.count };
-}
-
-// Fallback usage tracking when Redis is not available
-function checkUsageLimits(identifier: string, isUser: boolean): { used: number; limit: number; remaining: number; isGuest: boolean } {
-  const limit = isUser ? 10 : 3;
-  const usage = usageMap.get(identifier) || { count: 0, firstUsed: Date.now() };
-  
-  return {
-    used: usage.count,
-    limit,
-    remaining: Math.max(0, limit - usage.count),
-    isGuest: !isUser
-  };
-}
-
-function incrementUsage(identifier: string): void {
-  const usage = usageMap.get(identifier) || { count: 0, firstUsed: Date.now() };
-  usage.count++;
-  usageMap.set(identifier, usage);
-}
+import { checkRateLimit, checkUsageLimits, incrementUsage } from "@/lib/in-memory-tracking";
 
 export async function POST(req: NextRequest) {
   try {
@@ -94,6 +50,7 @@ export async function POST(req: NextRequest) {
     try {
       // Try to use Redis-based service if available
       limits = await GenerationService.checkGenerationLimit(userId, guestId);
+      console.log("Initial limits check:", { userId, guestId, limits });
     } catch (error) {
       // Fallback to in-memory tracking if Redis is not available
       console.log("Using in-memory usage tracking (Redis not configured)");
@@ -244,9 +201,11 @@ export async function POST(req: NextRequest) {
     let updatedLimits;
     try {
       updatedLimits = await GenerationService.checkGenerationLimit(userId, guestId);
+      console.log("Updated limits after generation:", { userId, guestId, updatedLimits });
     } catch (error) {
       // Fallback to in-memory tracking
       updatedLimits = checkUsageLimits(identifier, !!userId);
+      console.log("Updated limits (in-memory):", { identifier, updatedLimits });
     }
 
     return NextResponse.json({

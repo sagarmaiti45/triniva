@@ -134,6 +134,7 @@ export function ImageGenerator() {
   useEffect(() => {
     const fetchLimits = async () => {
       try {
+        console.log("Fetching limits for:", { user: user?.email, guestId });
         const params = new URLSearchParams();
         if (guestId && !user) {
           params.append('guestId', guestId);
@@ -142,6 +143,7 @@ export function ImageGenerator() {
         const response = await fetch(`/api/chat-history?${params.toString()}`);
         if (response.ok) {
           const data = await response.json();
+          console.log("Initial limits from chat-history:", data.limits);
           setGenerationLimits(data.limits);
         }
       } catch (error) {
@@ -207,8 +209,30 @@ export function ImageGenerator() {
         
         // Update limits from response
         if (result.generationLimits) {
+          console.log("Updating generation limits:", result.generationLimits);
           setGenerationLimits(result.generationLimits);
+        } else if (result.limits) {
+          console.log("Updating limits:", result.limits);
+          setGenerationLimits(result.limits);
         }
+        
+        // Also fetch fresh limits from the server to ensure they're up to date
+        setTimeout(async () => {
+          try {
+            const params = new URLSearchParams();
+            if (guestId && !user) {
+              params.append('guestId', guestId);
+            }
+            const limitResponse = await fetch(`/api/chat-history?${params.toString()}`);
+            if (limitResponse.ok) {
+              const limitData = await limitResponse.json();
+              console.log("Refreshed limits after generation:", limitData.limits);
+              setGenerationLimits(limitData.limits);
+            }
+          } catch (error) {
+            console.error('Failed to refresh limits:', error);
+          }
+        }, 500);
       }
     } catch (error) {
       console.error("Error generating image:", error);
@@ -257,6 +281,17 @@ export function ImageGenerator() {
 
         <TabsContent value="generate" className="space-y-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Generation Limits Display */}
+            {generationLimits && (
+              <div className="max-w-4xl mx-auto mb-4">
+                <div className="text-center text-sm text-muted-foreground">
+                  {generationLimits.isGuest ? "Guest: " : "User: "}
+                  {generationLimits.used} / {generationLimits.limit} generations used
+                  ({generationLimits.remaining} remaining)
+                </div>
+              </div>
+            )}
+            
             {/* Modern Prompt Input Section */}
             <div className="relative w-full max-w-4xl mx-auto space-y-3">
               <div className="relative rounded-xl p-4 md:p-6 transition-all duration-200 bg-card border border-border">

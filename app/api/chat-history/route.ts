@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession, authOptions } from "@/lib/auth-options";
 import { GenerationService } from "@/lib/db/generation-service";
 import { generateGuestFingerprint } from "@/lib/guest-identification";
+import { checkUsageLimits } from "@/lib/in-memory-tracking";
+import type { ChatHistoryItem } from "@/lib/db/schema";
 
 export async function GET(req: NextRequest) {
   try {
@@ -19,11 +21,22 @@ export async function GET(req: NextRequest) {
       guestId = fingerprint;
     }
     
-    // Get chat history
-    const history = await GenerationService.getChatHistory(userId, guestId || undefined);
+    // Create identifier for tracking
+    const identifier = userId || guestId || 'unknown';
     
-    // Get current limits
-    const limits = await GenerationService.checkGenerationLimit(userId, guestId || undefined);
+    let history: ChatHistoryItem[] = [];
+    let limits;
+    
+    try {
+      // Try to get chat history and limits from Redis
+      history = await GenerationService.getChatHistory(userId, guestId || undefined);
+      limits = await GenerationService.checkGenerationLimit(userId, guestId || undefined);
+    } catch (error) {
+      // Fallback to in-memory tracking if Redis is not available
+      console.log("Using in-memory tracking for chat history (Redis not configured)");
+      limits = checkUsageLimits(identifier, !!userId);
+      // History will remain empty in fallback mode
+    }
     
     return NextResponse.json({
       history,
