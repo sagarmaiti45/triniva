@@ -178,6 +178,8 @@ export async function sendOTPEmail(email: string, name: string, otp: string): Pr
     // Use environment variable for from email or default to resend domain
     const fromEmail = process.env.RESEND_FROM_EMAIL || "Triniva AI <onboarding@resend.dev>";
     
+    console.log('Using from email:', fromEmail);
+    
     const result = await resend.emails.send({
       from: fromEmail,
       to: [email],
