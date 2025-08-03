@@ -281,17 +281,6 @@ export function ImageGenerator() {
 
         <TabsContent value="generate" className="space-y-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Generation Limits Display */}
-            {generationLimits && (
-              <div className="max-w-4xl mx-auto mb-4">
-                <div className="text-center text-sm text-muted-foreground">
-                  {generationLimits.isGuest ? "Guest: " : "User: "}
-                  {generationLimits.used} / {generationLimits.limit} generations used
-                  ({generationLimits.remaining} remaining)
-                </div>
-              </div>
-            )}
-            
             {/* Modern Prompt Input Section */}
             <div className="relative w-full max-w-4xl mx-auto space-y-3">
               <div className="relative rounded-xl p-4 md:p-6 transition-all duration-200 bg-card border border-border">
