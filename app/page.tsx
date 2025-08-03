@@ -36,9 +36,12 @@ export default function Home() {
       </div>
       
       {/* Content */}
-      <div className="relative z-0 space-y-8">
+      <div className="relative z-0 flex flex-col md:block md:space-y-8 min-h-full">
         <Hero />
-        <ImageGenerator />
+        <div className="flex-1 md:hidden" />
+        <div className="mt-auto md:mt-0">
+          <ImageGenerator />
+        </div>
       </div>
     </div>
   );

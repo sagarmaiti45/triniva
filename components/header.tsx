@@ -200,11 +200,12 @@ export function Header() {
               <>
                 {/* Sign in button for desktop */}
                 <Button 
-                  variant="default" 
+                  variant="ghost" 
                   size="sm" 
-                  className="hidden md:inline-flex bg-foreground text-background hover:bg-foreground/90"
+                  className="hidden md:inline-flex"
                   onClick={() => setAuthModalOpen(true)}
                 >
+                  <LogIn className="mr-2 h-4 w-4" />
                   Sign In
                 </Button>
                 

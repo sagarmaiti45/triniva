@@ -12,6 +12,7 @@ import { AuthProvider } from "@/contexts/simple-auth-context";
 import { MainContent } from "@/components/main-content";
 import { RecaptchaProvider } from "@/components/recaptcha-provider";
 import { GenerationLimitsProvider } from "@/contexts/generation-limits-context";
+import { CookieConsent } from "@/components/cookie-consent";
 
 // Modern, clean sans-serif for body text
 const plusJakarta = Plus_Jakarta_Sans({ 
@@ -71,7 +72,7 @@ export default function RootLayout({
             <AuthProvider>
               <GenerationLimitsProvider>
                 <SidebarProvider>
-                <div className="min-h-screen overflow-x-hidden">
+                <div className="h-screen md:min-h-screen overflow-hidden md:overflow-visible">
                   <ClientOnlyWrapper>
                     <Sidebar />
                   </ClientOnlyWrapper>
@@ -92,6 +93,7 @@ export default function RootLayout({
                     }}
                   />
                   <ChatSupport />
+                  <CookieConsent />
                 </ClientOnlyWrapper>
                 </SidebarProvider>
               </GenerationLimitsProvider>

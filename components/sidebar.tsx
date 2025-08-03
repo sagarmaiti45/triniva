@@ -11,6 +11,7 @@ import Image from "next/image";
 import { useGuestId } from "@/hooks/use-guest-id";
 import { useAuth } from "@/contexts/simple-auth-context";
 import { useGenerationLimits } from "@/contexts/generation-limits-context";
+import { useSwipeable } from "react-swipeable";
 
 interface ChatHistory {
   id: string;
@@ -31,6 +32,19 @@ export function Sidebar() {
   const pathname = usePathname();
   const guestId = useGuestId();
   const { user } = useAuth();
+
+  // Swipe handlers for mobile
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (isMobileOpen) {
+        setIsMobileOpen(false);
+      }
+    },
+    trackMouse: false,
+    trackTouch: true,
+    delta: 50,
+    preventScrollOnSwipe: true,
+  });
   const { limits } = useGenerationLimits();
 
   const formatTime = (date: Date) => {
@@ -122,6 +136,7 @@ export function Sidebar() {
 
       {/* Sidebar */}
       <aside
+        {...swipeHandlers}
         className={`fixed left-0 top-0 h-full bg-card z-40 flex flex-col transition-all duration-300 border-r border-border/30 w-[280px] ${
           isCollapsed ? 'md:w-[60px]' : 'md:w-[280px]'
         } ${
@@ -129,7 +144,7 @@ export function Sidebar() {
         } md:translate-x-0`}
       >
         {/* Header - matches navbar height */}
-        <div className="h-[72px] px-4 flex items-center">
+        <div className="h-[72px] px-4 flex items-center border-b border-border/30 md:border-0">
           <div className="flex items-center justify-between w-full">
             <h2 className={`text-lg font-semibold ${isCollapsed ? 'md:hidden' : ''}`}>
               Chat History
@@ -150,17 +165,17 @@ export function Sidebar() {
         </div>
 
         {/* New Chat Button */}
-        <div className="p-2 md:p-3">
+        <div className="p-2 md:p-3 flex justify-center md:block">
           <Button
             variant="ghost"
-            className={`w-full h-8 md:h-10 text-xs md:text-base px-3 md:px-4 bg-gray-100/50 dark:bg-gray-800/50 hover:bg-gray-200/70 dark:hover:bg-gray-700/70 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 ${isCollapsed ? 'md:h-9 md:w-9 md:p-0 md:mx-auto' : ''}`}
+            className={`w-auto md:w-full h-8 md:h-10 text-xs md:text-base px-2 md:px-4 bg-gray-100/50 dark:bg-gray-800/50 hover:bg-gray-200/70 dark:hover:bg-gray-700/70 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 ${isCollapsed ? 'md:h-9 md:w-9 md:p-0 md:mx-auto' : ''}`}
             onClick={() => {
               // Handle new chat
               setIsMobileOpen(false);
             }}
           >
             <Plus className={`h-3 w-3 md:h-4 md:w-4 ${isCollapsed ? 'md:h-5 md:w-5' : ''}`} />
-            <span className={`ml-1.5 md:ml-2 ${isCollapsed ? 'md:sr-only' : ''}`}>New Chat</span>
+            <span className={`ml-1 md:ml-2 ${isCollapsed ? 'md:sr-only' : ''}`}>New Chat</span>
           </Button>
         </div>
 
