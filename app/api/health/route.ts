@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const checks = {
+  const checks: any = {
     basic: true,
     env: {
       hasRedisUrl: !!process.env.UPSTASH_REDIS_REST_URL,
