@@ -14,11 +14,7 @@ export function MobileViewportFix() {
       // Also set on body for better compatibility
       document.body.style.setProperty('--vh', `${vh}px`);
       
-      // Force mobile viewport height on root elements
-      if (window.innerWidth <= 768) {
-        document.documentElement.style.height = `${window.innerHeight}px`;
-        document.body.style.height = `${window.innerHeight}px`;
-      }
+      // Don't force height, just set the CSS variable
     };
 
     // Set the initial value

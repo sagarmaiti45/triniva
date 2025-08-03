@@ -11,13 +11,8 @@
   
   /* Mobile viewport fix for root elements */
   @media (max-width: 768px) {
-    html, body {
+    html {
       height: 100%;
-      overflow: hidden;
-    }
-    body {
-      position: fixed;
-      width: 100%;
     }
   }
   

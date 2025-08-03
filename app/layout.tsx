@@ -73,7 +73,7 @@ export default function RootLayout({
             <AuthProvider>
               <GenerationLimitsProvider>
                 <SidebarProvider>
-                <div className="h-screen md:min-h-screen overflow-hidden md:overflow-visible">
+                <div className="min-h-screen">
                   <ClientOnlyWrapper>
                     <Sidebar />
                   </ClientOnlyWrapper>
