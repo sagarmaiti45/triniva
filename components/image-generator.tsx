@@ -47,6 +47,13 @@ const modelOptions = [
     description: "2.5 credits - Fast generation"
   },
   { 
+    value: "stable-image-core", 
+    label: "Stable Image Core", 
+    credits: 3, 
+    enabled: true,
+    description: "3 credits - Cost-effective"
+  },
+  { 
     value: "sd3.5-medium", 
     label: "SD 3.5 Medium", 
     credits: 3.5, 
