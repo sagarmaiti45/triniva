@@ -49,7 +49,7 @@ export interface User {
 
 // Session interface
 export interface Session {
-  userId: string;
+  id: string;
   email: string;
   name: string;
 }

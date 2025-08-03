@@ -4,6 +4,7 @@ import { getSession, verifyToken } from "@/lib/auth";
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get("auth-token")?.value;
+    console.log("Session check - token exists:", !!token);
 
     if (!token) {
       return NextResponse.json(
@@ -23,6 +24,8 @@ export async function GET(req: NextRequest) {
 
     // Get session from Redis
     const session = await getSession(token);
+    console.log("Session data:", session);
+    
     if (!session) {
       return NextResponse.json(
         { error: "Session expired" },

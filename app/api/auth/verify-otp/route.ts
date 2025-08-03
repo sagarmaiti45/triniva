@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     // Create session
     const session = {
-      userId: user.id,
+      id: user.id,
       email: user.email,
       name: user.name,
     };
