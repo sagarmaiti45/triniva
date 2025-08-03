@@ -199,8 +199,7 @@ export async function POST(req: NextRequest) {
         metadata: {
           width: width || 1024,
           height: height || 1024,
-          cfgScale: cfg_scale,
-          stylePreset: style_preset
+          cfgScale: cfg_scale
         }
       });
     } catch (error) {
