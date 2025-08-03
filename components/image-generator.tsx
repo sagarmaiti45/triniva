@@ -225,7 +225,7 @@ export function ImageGenerator() {
   return (
     <section className="w-full pb-4 md:pb-0">
       <Tabs defaultValue="generate" className="w-full">
-        <TabsList className="grid w-full max-w-sm md:max-w-lg mx-auto grid-cols-3 mb-4 md:mb-6">
+        <TabsList className="grid w-full max-w-[280px] md:max-w-sm mx-auto grid-cols-3 mb-4 md:mb-6">
           <TabsTrigger value="generate" className="gap-1.5 md:gap-2 text-xs md:text-sm">
             <Sparkles className="h-3.5 w-3.5 md:h-4 md:w-4" />
             Generate
@@ -255,8 +255,13 @@ export function ImageGenerator() {
                   <Textarea
                     id="prompt"
                     placeholder="Describe the image you want to create..."
-                    className="min-h-[100px] md:min-h-[120px] w-full resize-none border-0 bg-transparent text-base md:text-lg placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus:border-transparent font-dm-sans font-normal"
-                    style={{ outline: 'none', boxShadow: 'none' }}
+                    className="min-h-[100px] md:min-h-[120px] w-full resize-none border-0 bg-transparent text-base md:text-lg placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus:border-transparent"
+                    style={{ 
+                      outline: 'none', 
+                      boxShadow: 'none',
+                      fontFamily: 'var(--font-space-grotesk), system-ui, sans-serif',
+                      letterSpacing: '0.025em'
+                    }}
                     {...register("prompt")}
                   />
                   
