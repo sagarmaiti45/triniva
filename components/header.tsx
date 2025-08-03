@@ -110,16 +110,16 @@ export function Header() {
             </div>
           </div>
 
-          <div className="flex items-center gap-0.5 md:gap-2">
+          <div className="flex items-center gap-0 md:gap-2">
             {/* Generation Limits Button */}
             {generationLimits ? (
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 md:gap-2 px-1.5 md:px-2"
                 onClick={() => setUsageLimitModalOpen(true)}
               >
-                <Zap className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                <Zap className="h-3 w-3 md:h-4 md:w-4 text-foreground/80" />
                 <span className="hidden md:inline">
                   {generationLimits.remaining}/{generationLimits.limit}
                 </span>
@@ -131,10 +131,10 @@ export function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 md:gap-2 px-1.5 md:px-2"
                 disabled
               >
-                <Zap className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                <Zap className="h-3 w-3 md:h-4 md:w-4 text-foreground/80" />
                 <span className="text-xs">Loading...</span>
               </Button>
             )}
@@ -180,7 +180,7 @@ export function Header() {
                       size="icon"
                       className="md:hidden"
                     >
-                      <User className="h-4 w-4" />
+                      <User className="h-3.5 w-3.5 text-foreground/80" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
@@ -216,7 +216,7 @@ export function Header() {
                   className="md:hidden"
                   onClick={() => setAuthModalOpen(true)}
                 >
-                  <LogIn className="h-4 w-4" />
+                  <LogIn className="h-3.5 w-3.5 text-foreground/80" />
                   <span className="sr-only">Sign In</span>
                 </Button>
               </>

@@ -39,7 +39,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
               ease: "easeInOut",
             }}
           >
-            <Moon className="h-5 w-5 text-blue-500" />
+            <Moon className="h-4 w-4 md:h-5 md:w-5 text-blue-500/80" />
           </motion.div>
         ) : (
           <motion.div
@@ -52,7 +52,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
               ease: "easeInOut",
             }}
           >
-            <Sun className="h-5 w-5 text-amber-500" />
+            <Sun className="h-4 w-4 md:h-5 md:w-5 text-amber-500/80" />
           </motion.div>
         )}
       </AnimatePresence>
