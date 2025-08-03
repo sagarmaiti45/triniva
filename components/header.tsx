@@ -119,7 +119,7 @@ export function Header() {
                 className="flex items-center gap-2"
                 onClick={() => setUsageLimitModalOpen(true)}
               >
-                <Zap className="h-4 w-4" />
+                <Zap className="h-3.5 w-3.5 md:h-4 md:w-4" />
                 <span className="hidden md:inline">
                   {generationLimits.remaining}/{generationLimits.limit}
                 </span>
@@ -134,7 +134,7 @@ export function Header() {
                 className="flex items-center gap-2"
                 disabled
               >
-                <Zap className="h-4 w-4" />
+                <Zap className="h-3.5 w-3.5 md:h-4 md:w-4" />
                 <span className="text-xs">Loading...</span>
               </Button>
             )}
@@ -180,7 +180,7 @@ export function Header() {
                       size="icon"
                       className="md:hidden"
                     >
-                      <User className="h-5 w-5" />
+                      <User className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
@@ -216,7 +216,7 @@ export function Header() {
                   className="md:hidden"
                   onClick={() => setAuthModalOpen(true)}
                 >
-                  <LogIn className="h-5 w-5" />
+                  <LogIn className="h-4 w-4" />
                   <span className="sr-only">Sign In</span>
                 </Button>
               </>
