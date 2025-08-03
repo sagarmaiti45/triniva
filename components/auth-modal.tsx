@@ -330,11 +330,6 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             
             <div className="w-full max-w-md">{/* Header for mobile */}
               <div className="lg:hidden text-center mb-8">
-                <div className="mb-4 flex justify-center">
-                  <div className="h-16 w-16 rounded-full bg-gradient-to-br from-gradient-start to-gradient-end flex items-center justify-center p-2">
-                    <img src="/images/triniva.svg" alt="Triniva AI Logo" className="h-10 w-10" />
-                  </div>
-                </div>
                 <h1 className="text-3xl font-bold gradient-text mb-2">Triniva AI</h1>
               </div>
 
