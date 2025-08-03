@@ -364,12 +364,14 @@ export function ImageGenerator() {
                           {/* Model and Negative Prompt Row */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label htmlFor="model" className="text-sm">Model</Label>
+                            <div className="flex items-center gap-1.5">
+                              <Label htmlFor="model" className="text-sm">Model</Label>
+                            </div>
                             <Select
                               value={watch("model")}
                               onValueChange={(value) => setValue("model", value)}
                             >
-                              <SelectTrigger id="model" className="w-full border-0 bg-gray-200 dark:bg-secondary/50">
+                              <SelectTrigger id="model" className="w-full h-9 border-0 bg-gray-100 dark:bg-secondary/50">
                                 <div className="flex items-center gap-2 truncate">
                                   <Cpu className="h-4 w-4 flex-shrink-0" />
                                   <span className="truncate">
@@ -377,13 +379,11 @@ export function ImageGenerator() {
                                   </span>
                                 </div>
                               </SelectTrigger>
-                              <SelectContent className="w-[280px] p-1">
+                              <SelectContent>
                                 {modelOptions.filter(model => model.enabled).map((model) => (
-                                  <SelectItem key={model.value} value={model.value} className="py-2">
-                                    <div className="flex justify-between items-center gap-2 w-full">
-                                      <span className="font-medium text-sm">{model.label}</span>
-                                      <span className="text-xs text-muted-foreground">{model.credits} credits</span>
-                                    </div>
+                                  <SelectItem key={model.value} value={model.value}>
+                                    <span className="flex-1">{model.label}</span>
+                                    <span className="text-xs text-muted-foreground ml-2">{model.credits} credits</span>
                                   </SelectItem>
                                 ))}
                               </SelectContent>
