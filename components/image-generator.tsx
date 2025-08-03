@@ -89,7 +89,7 @@ export function ImageGenerator() {
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedRatio, setSelectedRatio] = useState(aspectRatios[0]);
-  const [previewMode, setPreviewMode] = useState(true);
+  const [previewMode, setPreviewMode] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [lastGenerationTime, setLastGenerationTime] = useState(0);
@@ -618,18 +618,6 @@ export function ImageGenerator() {
                     </AnimatePresence>
                   </div>
                   
-                  {generatedImages.length > 0 && previewMode && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-4 p-4 rounded-lg bg-gradient-primary-light border border-gradient-start/20"
-                    >
-                      <p className="text-sm font-medium mb-2">Preview Mode Active</p>
-                      <p className="text-xs text-muted-foreground">
-                        This is a low-quality preview. Click "Generate Full Quality" for the final image.
-                      </p>
-                    </motion.div>
-                  )}
                 </motion.div>
               )}
             </AnimatePresence>
