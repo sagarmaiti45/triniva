@@ -93,12 +93,19 @@ export function verifyToken(token: string): Session | null {
 // Store user in Redis
 export async function storeUser(user: User): Promise<void> {
   const normalizedEmail = user.email.toLowerCase().trim();
+  // Explicitly convert boolean to string for Redis storage
+  const verifiedString = user.verified === true ? "true" : "false";
+  
+  console.log('storeUser - Storing user:', normalizedEmail);
+  console.log('storeUser - Verified value:', user.verified);
+  console.log('storeUser - Verified string:', verifiedString);
+  
   await redis.hset(`user:${normalizedEmail}`, {
     id: user.id,
     name: user.name,
     email: normalizedEmail,
     password: user.password,
-    verified: user.verified ? "true" : "false",
+    verified: verifiedString,
     createdAt: user.createdAt.toISOString()
   });
   await redis.hset(`user:id:${user.id}`, { email: normalizedEmail });
