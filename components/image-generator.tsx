@@ -23,8 +23,7 @@ const formSchema = z.object({
   negative_prompt: z.string().optional(),
   style_preset: z.string().optional(),
   model: z.string().optional(),
-  cfg_scale: z.number().min(0).max(35),
-  steps: z.number().min(10).max(50),
+  cfg_scale: z.number().min(1).max(10),
   width: z.number(),
   height: z.number(),
 });
@@ -32,11 +31,15 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const aspectRatios = [
-  { label: "Square (1:1)", shortLabel: "Square", width: 1024, height: 1024 },
-  { label: "Portrait (2:3)", shortLabel: "Portrait", width: 832, height: 1216 },
-  { label: "Landscape (3:2)", shortLabel: "Landscape", width: 1216, height: 832 },
-  { label: "Wide (16:9)", shortLabel: "Wide", width: 1344, height: 768 },
-  { label: "Ultra Wide (21:9)", shortLabel: "Ultra Wide", width: 1536, height: 640 },
+  { label: "Square (1:1)", shortLabel: "1:1", width: 1024, height: 1024, ratio: "1:1" },
+  { label: "Landscape (16:9)", shortLabel: "16:9", width: 1344, height: 768, ratio: "16:9" },
+  { label: "Portrait (9:16)", shortLabel: "9:16", width: 768, height: 1344, ratio: "9:16" },
+  { label: "Photo (3:2)", shortLabel: "3:2", width: 1216, height: 832, ratio: "3:2" },
+  { label: "Photo (2:3)", shortLabel: "2:3", width: 832, height: 1216, ratio: "2:3" },
+  { label: "Classic (4:5)", shortLabel: "4:5", width: 896, height: 1152, ratio: "4:5" },
+  { label: "Classic (5:4)", shortLabel: "5:4", width: 1152, height: 896, ratio: "5:4" },
+  { label: "Ultrawide (21:9)", shortLabel: "21:9", width: 1536, height: 640, ratio: "21:9" },
+  { label: "Tall (9:21)", shortLabel: "9:21", width: 640, height: 1536, ratio: "9:21" },
 ];
 
 const modelOptions = [
@@ -133,16 +136,14 @@ export function ImageGenerator() {
       prompt: "",
       negative_prompt: "",
       style_preset: "none",
-      model: "sd3.5-medium",
-      cfg_scale: 7,
-      steps: 12,
+      model: "sd3.5-flash",
+      cfg_scale: 4,
       width: selectedRatio.width,
       height: selectedRatio.height,
     },
   });
 
   const cfgScale = watch("cfg_scale");
-  const steps = watch("steps");
 
   // Update dimensions when ratio changes
   const updateDimensions = () => {
@@ -557,27 +558,14 @@ export function ImageGenerator() {
                             <span className="text-sm text-muted-foreground">{cfgScale}</span>
                           </div>
                           <Slider
-                            min={0}
-                            max={35}
+                            min={1}
+                            max={10}
                             step={0.5}
                             value={[cfgScale]}
                             onValueChange={(value) => setValue("cfg_scale", value[0])}
                           />
                         </div>
 
-                        <div className="space-y-2">
-                          <div className="flex justify-between">
-                            <Label>Steps</Label>
-                            <span className="text-sm text-muted-foreground">{steps}</span>
-                          </div>
-                          <Slider
-                            min={10}
-                            max={50}
-                            step={1}
-                            value={[steps]}
-                            onValueChange={(value) => setValue("steps", value[0])}
-                          />
-                        </div>
                       </div>
                     </div>
                   </div>

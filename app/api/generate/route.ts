@@ -147,12 +147,16 @@ export async function POST(req: NextRequest) {
     formData.append('prompt', prompt);
     formData.append('model', apiModel);
     
-    // Use aspect ratio instead of width/height for new API
+    // Map dimensions to exact aspect ratios supported by API
     let aspectRatio = "1:1";
-    if (width === 1216 && height === 832) aspectRatio = "16:9";
-    else if (width === 832 && height === 1216) aspectRatio = "9:16";
-    else if (width === 1344 && height === 768) aspectRatio = "16:9";
+    if (width === 1344 && height === 768) aspectRatio = "16:9";
+    else if (width === 768 && height === 1344) aspectRatio = "9:16";
+    else if (width === 1216 && height === 832) aspectRatio = "3:2";
+    else if (width === 832 && height === 1216) aspectRatio = "2:3";
+    else if (width === 896 && height === 1152) aspectRatio = "4:5";
+    else if (width === 1152 && height === 896) aspectRatio = "5:4";
     else if (width === 1536 && height === 640) aspectRatio = "21:9";
+    else if (width === 640 && height === 1536) aspectRatio = "9:21";
     
     formData.append('aspect_ratio', aspectRatio);
     formData.append('output_format', 'png');
@@ -166,10 +170,8 @@ export async function POST(req: NextRequest) {
       formData.append('style_preset', style_preset);
     }
     
-    // Add steps if provided (affects credit usage)
-    if (actualSteps) {
-      formData.append('steps', actualSteps.toString());
-    }
+    // Note: SD3.5 models don't use steps parameter
+    // Steps are only used for SD3 Legacy models
     
     // Add cfg_scale if provided
     if (cfg_scale) {
