@@ -36,10 +36,10 @@ export default function Home() {
       </div>
       
       {/* Content */}
-      <div className="relative z-0 flex flex-col md:block md:space-y-8 min-h-full">
+      <div className="relative z-0 flex flex-col md:block md:space-y-8 h-full">
         <Hero />
         <div className="flex-1 md:hidden" />
-        <div className="mt-auto md:mt-0">
+        <div className="mt-auto md:mt-0 pb-safe">
           <ImageGenerator />
         </div>
       </div>

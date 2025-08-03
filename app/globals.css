@@ -9,6 +9,18 @@
     max-width: 100vw;
   }
   
+  /* Mobile viewport fix for root elements */
+  @media (max-width: 768px) {
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+    body {
+      position: fixed;
+      width: 100%;
+    }
+  }
+  
   /* Fix mobile viewport height issue */
   .h-screen {
     height: 100vh; /* Fallback */
@@ -261,6 +273,11 @@
 }
 
 @layer utilities {
+  /* Safe area padding for mobile devices */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
   /* Light mode gradient - slightly darker */
   .gradient-text {
     background: linear-gradient(135deg, #e6175f 0%, #e6175f 40%, #2690d4 100%);

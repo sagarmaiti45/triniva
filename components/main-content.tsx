@@ -27,7 +27,7 @@ export function MainContent({ children }: { children: React.ReactNode }) {
       }`}
     >
       <Header />
-      <main className="w-full px-4 py-2 md:py-8 flex-1 overflow-y-auto md:overflow-visible">
+      <main className="w-full px-4 py-2 md:py-8 flex-1 overflow-y-auto">
         <div className="max-w-7xl mx-auto w-full h-full">
           {children}
         </div>
