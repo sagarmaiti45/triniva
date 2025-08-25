@@ -17,31 +17,31 @@
     },
     {
       "src": "/plans",
-      "dest": "/server.js"
+      "dest": "/public/plans.html"
     },
     {
       "src": "/privacy-policy",
-      "dest": "/server.js"
+      "dest": "/public/privacy-policy.html"
     },
     {
       "src": "/terms-conditions",
-      "dest": "/server.js"
+      "dest": "/public/terms-conditions.html"
     },
     {
       "src": "/refund-policy",
-      "dest": "/server.js"
+      "dest": "/public/refund-policy.html"
     },
     {
       "src": "/about-us",
-      "dest": "/server.js"
+      "dest": "/public/about-us.html"
     },
     {
       "src": "/contact-us",
-      "dest": "/server.js"
+      "dest": "/public/contact-us.html"
     },
     {
       "src": "/important-info",
-      "dest": "/server.js"
+      "dest": "/public/important-info.html"
     },
     {
       "src": "/css/(.*)",
