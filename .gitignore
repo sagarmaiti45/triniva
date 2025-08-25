@@ -1,0 +1,78 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+.env*.local
+
+# Production build
+dist/
+build/
+.next/
+out/
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.bak
+
+# Testing
+coverage/
+.nyc_output
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Logs
+logs/
+*.log
+
+# Supabase
+.supabase/
+
+# Vercel
+.vercel
+
+# Private keys and certificates
+*.pem
+*.key
+*.cert
+*.crt
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Uploaded files (if stored locally)
+uploads/
+public/uploads/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# IMPORTANT: Never commit these files
+/public/js/config.js  # Contains API keys - use env vars instead
+*.env*               # All environment files
+!.env.example        # Except the example file

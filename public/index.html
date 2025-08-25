@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triniva AI</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" title="New chat">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span class="btn-text">New chat</span>
+                </button>
+                <button class="sidebar-collapse-btn desktop-only" id="sidebarToggle" title="Toggle sidebar">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <button class="sidebar-close-btn mobile-only" id="sidebarCloseMobile" title="Close sidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="conversations-list">
+                <div class="conversation-item active" title="Demo Conversation 1">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span class="conv-text">Demo Conversation 1</span>
+                </div>
+                <div class="conversation-item" title="Demo Conversation 2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span class="conv-text">Demo Conversation 2</span>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <a href="/demo.html" style="text-decoration: none; margin-bottom: 8px; display: block;">
+                    <button class="user-account-btn" title="Demo Mode" style="margin-bottom: 8px;">
+                        <i class="fas fa-flask"></i>
+                        <span class="btn-text">Demo Mode</span>
+                    </button>
+                </a>
+                <button class="user-account-btn" title="My Account">
+                    <i class="fas fa-user-circle"></i>
+                    <span class="btn-text">My Account</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="main-content">
+            <!-- Main Header Bar -->
+            <div class="main-header">
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+                <div class="logo-container">
+                    <img src="/images/logo.png" alt="Triniva AI" class="header-logo">
+                    <h1 class="logo-text">Triniva AI</h1>
+                </div>
+                <!-- Auth buttons for non-logged in users -->
+                <div class="auth-buttons-container" id="authButtons" style="display: none;">
+                    <a href="/auth/login.html" class="header-auth-btn login-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </a>
+                    <a href="/auth/signup.html" class="header-auth-btn signup-btn">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Sign Up</span>
+                    </a>
+                </div>
+                <!-- Greeting for logged in users -->
+                <div class="greeting-container" id="greetingContainer" style="display: none;">
+                    <span id="greeting" class="greeting-text"></span>
+                    <span class="user-name">User</span>
+                    <button class="user-menu-btn" id="userMenuBtn">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="/dashboard" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="/dashboard/billing.html" class="dropdown-item">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Billing</span>
+                        </a>
+                        <a href="/dashboard/profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item logout-item" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Menu button positioned absolutely -->
+            <button class="main-menu-button" id="mainMenuButton">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+            
+            <!-- 3-dot menu dropdown -->
+            <div class="main-menu-dropdown" id="mainMenuDropdown">
+                <div class="menu-item" id="shareMenuItem" style="display: none;">
+                    <i class="fas fa-share"></i>
+                    <span>Share</span>
+                </div>
+                <div class="menu-item" id="signupMenuItem" style="display: none;">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Sign Up</span>
+                </div>
+                <div class="menu-divider"></div>
+                <a href="/plans" class="menu-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>Pricing Plans</span>
+                </a>
+                <a href="/about-us" class="menu-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About Us</span>
+                </a>
+                <a href="/contact-us" class="menu-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>Contact Us</span>
+                </a>
+            </div>
+            
+            <div class="chat-area">
+                <!-- Welcome/Hero View -->
+                <div id="welcomeView" class="welcome-view">
+                    <div class="welcome-content">
+                        <p class="welcome-subtitle" id="dynamicText">What's on your mind today?</p>
+                        
+                        <div class="hero-input-container">
+                            <div class="attach-wrapper">
+                                <button class="attach-button" id="heroAttachButton">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <div class="attach-menu" id="heroAttachMenu">
+                                    <div class="attach-menu-item" data-action="image">
+                                        <i class="fas fa-image"></i>
+                                        <span>Upload Image</span>
+                                    </div>
+                                    <div class="attach-menu-item disabled" data-action="generate-image">
+                                        <i class="fas fa-palette"></i>
+                                        <span>Generate Image</span>
+                                    </div>
+                                    <div class="attach-menu-item disabled" data-action="generate-video">
+                                        <i class="fas fa-video"></i>
+                                        <span>Generate Video</span>
+                                    </div>
+                                </div>
+                                <input type="file" id="heroImageInput" accept="image/*" style="display: none;" multiple>
+                            </div>
+                            <textarea 
+                                id="heroMessageInput" 
+                                class="hero-message-input" 
+                                placeholder="Ask anything..."
+                                rows="1"
+                            ></textarea>
+                            <button class="model-button-mobile" id="mobileModelButton" title="Select model">
+                                <img src="/images/models/openai.png" alt="Model" class="mobile-model-logo">
+                            </button>
+                            <!-- Custom Model Dropdown -->
+                            <div class="custom-model-dropdown" id="customModelDropdown">
+                                <div class="custom-model-dropdown-trigger" id="modelDropdownTrigger">
+                                    <img src="/images/models/openai.png" alt="Model" class="model-logo">
+                                    <span class="model-name">GPT OSS 20B (Free)</span>
+                                </div>
+                                <div class="custom-model-dropdown-menu" id="modelDropdownMenu">
+                                    <!-- Menu items will be generated by JavaScript -->
+                                </div>
+                            </div>
+                            <!-- Keep original select hidden for form submission -->
+                            <select id="modelSelect" class="model-selector-inline">
+                                <option value="openai/gpt-oss-20b:free">GPT OSS 20B (Free)</option>
+                                <option value="mistralai/mistral-medium">Mistral Medium</option>
+                                <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                                <option value="qwen/qwen3-coder">Qwen3 Coder</option>
+                                <option value="moonshotai/kimi-k2:free">Kimi K2 (Free)</option>
+                                <option value="anthropic/claude-sonnet-4">Claude Sonnet 4</option>
+                                <option value="openai/gpt-5-mini">GPT-5 Mini</option>
+                                <option value="openai/gpt-5">GPT-5</option>
+                                <option value="anthropic/claude-3.5-haiku">Claude 3.5 Haiku</option>
+                                <option value="google/gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                <option value="x-ai/grok-4">Grok 4</option>
+                                <option value="x-ai/grok-3-mini">Grok 3 Mini</option>
+                                <option value="meta-llama/llama-4-maverick">Llama 4 Maverick</option>
+                                <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B Instruct</option>
+                                <option value="z-ai/glm-4.5">GLM 4.5</option>
+                                <option value="deepseek/deepseek-r1-0528:free">DeepSeek R1 (Free)</option>
+                                <option value="deepseek/deepseek-chat-v3-0324">DeepSeek Chat V3</option>
+                            </select>
+                            <button class="mic-button" title="Voice input">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button id="heroSendButton" class="hero-send-button" disabled>
+                                <i class="fas fa-arrow-up"></i>
+                            </button>
+                        </div>
+                        <div class="image-preview-container" id="heroImagePreview"></div>
+                    </div>
+                    <p class="footer-hint">
+                        <span class="footer-text-desktop">Triniva AI can make mistakes. Consider checking <a href="/important-info" class="important-info-link">important information</a>.</span>
+                        <span class="footer-text-mobile">AI can make mistakes. Check <a href="/important-info" class="important-info-link">important info</a>.</span>
+                    </p>
+                </div>
+
+                <!-- Chat Header (Outside container for proper fixed positioning) -->
+                <div class="chat-header" id="chatHeader" style="display: none;">
+                    <button class="share-button">
+                        <i class="fas fa-share"></i>
+                        <span>Share</span>
+                    </button>
+                </div>
+                
+                <!-- Chat View -->
+                <div id="chatView" class="chat-view" style="display: none;">
+                    <div id="messagesContainer" class="messages-container"></div>
+                    
+                    <div class="input-area">
+                        <div class="input-container">
+                            <div class="attach-wrapper">
+                                <button class="attach-button" id="chatAttachButton">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <div class="attach-menu" id="chatAttachMenu">
+                                    <div class="attach-menu-item" data-action="image">
+                                        <i class="fas fa-image"></i>
+                                        <span>Upload Image</span>
+                                    </div>
+                                    <div class="attach-menu-item disabled" data-action="generate-image">
+                                        <i class="fas fa-palette"></i>
+                                        <span>Generate Image</span>
+                                    </div>
+                                    <div class="attach-menu-item disabled" data-action="generate-video">
+                                        <i class="fas fa-video"></i>
+                                        <span>Generate Video</span>
+                                    </div>
+                                </div>
+                                <input type="file" id="chatImageInput" accept="image/*" style="display: none;" multiple>
+                            </div>
+                            <textarea 
+                                id="messageInput" 
+                                class="message-input" 
+                                placeholder="Ask anything..."
+                                rows="1"
+                            ></textarea>
+                            <button class="mic-button" title="Voice input">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button id="sendButton" class="send-button" disabled>
+                                <i class="fas fa-arrow-up"></i>
+                            </button>
+                        </div>
+                        <div class="image-preview-container" id="chatImagePreview"></div>
+                        <p class="input-hint">
+                            <span class="footer-text-desktop">Triniva AI can make mistakes. Consider checking <a href="/important-info" class="important-info-link">important information</a>.</span>
+                            <span class="footer-text-mobile">AI can make mistakes. Check <a href="/important-info" class="important-info-link">important info</a>.</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+    <script src="/js/chat.js"></script>
+</body>
+</html>

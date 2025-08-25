@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authenticating - Triniva AI</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/auth.css">
+    <style>
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .loading-spinner {
+            font-size: 48px;
+            color: var(--accent-color);
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            margin-top: 20px;
+            font-size: 18px;
+            color: var(--text-primary);
+        }
+        .error-container {
+            display: none;
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .error-container h2 {
+            color: var(--error-color);
+            margin-bottom: 16px;
+        }
+        .error-container p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        .error-container a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container" id="loadingContainer">
+        <i class="fas fa-spinner loading-spinner"></i>
+        <p class="loading-text">Completing authentication...</p>
+    </div>
+    
+    <div class="error-container" id="errorContainer">
+        <h2>Authentication Failed</h2>
+        <p id="errorMessage">An error occurred during authentication.</p>
+        <a href="/auth/login.html">Return to Login</a>
+    </div>
+
+    <!-- Load Supabase configuration -->
+    <script src="/js/config.js"></script>
+    
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        // Get Supabase configuration
+        const supabaseUrl = localStorage.getItem('SUPABASE_URL');
+        const supabaseAnonKey = localStorage.getItem('SUPABASE_ANON_KEY');
+        
+        // Check if configuration is set
+        if (!supabaseUrl || supabaseUrl === 'https://your-project.supabase.co') {
+            document.getElementById('loadingContainer').style.display = 'none';
+            document.getElementById('errorContainer').style.display = 'block';
+            document.getElementById('errorMessage').innerHTML = `
+                <strong>Configuration Required</strong><br>
+                Please update /js/config.js with your Supabase credentials.
+            `;
+        }
+        
+        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+        async function handleAuthCallback() {
+            try {
+                // Supabase will handle the OAuth callback automatically
+                // We just need to check if there's a session
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.error('Session error:', error);
+                    throw error;
+                }
+                
+                if (!session) {
+                    // If no session, check if we need to exchange code for session
+                    // This happens automatically with Supabase client
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Try again
+                    const { data: { session: retrySession }, error: retryError } = await supabase.auth.getSession();
+                    
+                    if (retryError || !retrySession) {
+                        throw new Error('No authentication session found. Please try logging in again.');
+                    }
+                    
+                    // Use the retry session
+                    handleSession(retrySession);
+                } else {
+                    handleSession(session);
+                }
+                
+            } catch (error) {
+                console.error('Auth callback error:', error);
+                document.getElementById('loadingContainer').style.display = 'none';
+                document.getElementById('errorContainer').style.display = 'block';
+                document.getElementById('errorMessage').textContent = error.message || 'Authentication failed. Please try again.';
+            }
+        }
+        
+        function handleSession(session) {
+            // Store auth data
+            localStorage.setItem('authToken', session.access_token);
+            localStorage.setItem('userId', session.user.id);
+            localStorage.setItem('userEmail', session.user.email || '');
+            localStorage.setItem('userName', session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User');
+            
+            // Update loading text
+            document.querySelector('.loading-text').textContent = 'Authentication successful! Redirecting...';
+            
+            // Redirect to main app
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
+        }
+
+        // Listen for auth state changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('Auth event:', event, session);
+            
+            if (event === 'SIGNED_IN' && session) {
+                handleSession(session);
+            } else if (event === 'USER_UPDATED' && session) {
+                handleSession(session);
+            }
+        });
+        
+        // Handle the callback
+        handleAuthCallback();
+    </script>
+</body>
+</html>

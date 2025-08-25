@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Supabase Connection</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #10a37f;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #10a37f;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #10a37f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0e9571;
+        }
+        .config-input {
+            margin: 10px 0;
+        }
+        .config-input label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .config-input input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔧 Supabase Connection Test</h1>
+        
+        <div class="test-section">
+            <h3>1. Configure Supabase</h3>
+            <div class="config-input">
+                <label for="supabaseUrl">Supabase URL:</label>
+                <input type="text" id="supabaseUrl" placeholder="https://your-project.supabase.co">
+            </div>
+            <div class="config-input">
+                <label for="supabaseKey">Supabase Anon Key:</label>
+                <input type="text" id="supabaseKey" placeholder="your-anon-key">
+            </div>
+            <button onclick="saveConfig()">Save Configuration</button>
+            <button onclick="loadConfig()">Load Saved Config</button>
+            <div id="configStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Test Connection</h3>
+            <button onclick="testConnection()">Test Supabase Connection</button>
+            <div id="connectionStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Test Google OAuth</h3>
+            <button onclick="testGoogleOAuth()">Test Google OAuth Login</button>
+            <div id="oauthStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Current Session</h3>
+            <button onclick="checkSession()">Check Current Session</button>
+            <button onclick="signOut()">Sign Out</button>
+            <div id="sessionStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>5. Debug Information</h3>
+            <div id="debugInfo"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        
+        let supabase = null;
+        
+        window.saveConfig = function() {
+            const url = document.getElementById('supabaseUrl').value;
+            const key = document.getElementById('supabaseKey').value;
+            
+            if (!url || !key) {
+                document.getElementById('configStatus').innerHTML = '<div class="status error">Please enter both URL and Key</div>';
+                return;
+            }
+            
+            localStorage.setItem('SUPABASE_URL', url);
+            localStorage.setItem('SUPABASE_ANON_KEY', key);
+            
+            // Initialize Supabase client
+            try {
+                supabase = createClient(url, key);
+                document.getElementById('configStatus').innerHTML = '<div class="status success">Configuration saved successfully!</div>';
+                
+                // Update debug info
+                updateDebugInfo();
+            } catch (error) {
+                document.getElementById('configStatus').innerHTML = `<div class="status error">Error: ${error.message}</div>`;
+            }
+        };
+        
+        window.loadConfig = function() {
+            const url = localStorage.getItem('SUPABASE_URL');
+            const key = localStorage.getItem('SUPABASE_ANON_KEY');
+            
+            if (url && key) {
+                document.getElementById('supabaseUrl').value = url;
+                document.getElementById('supabaseKey').value = key;
+                
+                try {
+                    supabase = createClient(url, key);
+                    document.getElementById('configStatus').innerHTML = '<div class="status success">Configuration loaded from localStorage</div>';
+                    updateDebugInfo();
+                } catch (error) {
+                    document.getElementById('configStatus').innerHTML = `<div class="status error">Error loading config: ${error.message}</div>`;
+                }
+            } else {
+                document.getElementById('configStatus').innerHTML = '<div class="status info">No saved configuration found</div>';
+            }
+        };
+        
+        window.testConnection = async function() {
+            if (!supabase) {
+                document.getElementById('connectionStatus').innerHTML = '<div class="status error">Please configure Supabase first</div>';
+                return;
+            }
+            
+            try {
+                // Try to get the current session
+                const { data, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    throw error;
+                }
+                
+                document.getElementById('connectionStatus').innerHTML = '<div class="status success">✅ Supabase connection successful!</div>';
+                
+                // Also test if we can reach the auth endpoint
+                const healthCheck = await fetch(`${document.getElementById('supabaseUrl').value}/auth/v1/health`);
+                if (healthCheck.ok) {
+                    document.getElementById('connectionStatus').innerHTML += '<div class="status success">✅ Auth endpoint is reachable</div>';
+                }
+                
+            } catch (error) {
+                document.getElementById('connectionStatus').innerHTML = `<div class="status error">❌ Connection failed: ${error.message}</div>`;
+            }
+        };
+        
+        window.testGoogleOAuth = async function() {
+            if (!supabase) {
+                document.getElementById('oauthStatus').innerHTML = '<div class="status error">Please configure Supabase first</div>';
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: `${window.location.origin}/auth/callback.html`
+                    }
+                });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                document.getElementById('oauthStatus').innerHTML = '<div class="status info">Redirecting to Google...</div>';
+                
+            } catch (error) {
+                document.getElementById('oauthStatus').innerHTML = `<div class="status error">❌ OAuth Error: ${error.message}</div>`;
+                console.error('OAuth error details:', error);
+            }
+        };
+        
+        window.checkSession = async function() {
+            if (!supabase) {
+                document.getElementById('sessionStatus').innerHTML = '<div class="status error">Please configure Supabase first</div>';
+                return;
+            }
+            
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    throw error;
+                }
+                
+                if (session) {
+                    document.getElementById('sessionStatus').innerHTML = `
+                        <div class="status success">
+                            <strong>Session found!</strong><br>
+                            User ID: ${session.user.id}<br>
+                            Email: ${session.user.email}<br>
+                            Provider: ${session.user.app_metadata?.provider || 'email'}<br>
+                            Expires: ${new Date(session.expires_at * 1000).toLocaleString()}
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('sessionStatus').innerHTML = '<div class="status info">No active session</div>';
+                }
+                
+            } catch (error) {
+                document.getElementById('sessionStatus').innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+            }
+        };
+        
+        window.signOut = async function() {
+            if (!supabase) {
+                document.getElementById('sessionStatus').innerHTML = '<div class="status error">Please configure Supabase first</div>';
+                return;
+            }
+            
+            try {
+                const { error } = await supabase.auth.signOut();
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // Clear localStorage
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userId');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+                
+                document.getElementById('sessionStatus').innerHTML = '<div class="status success">Signed out successfully</div>';
+                
+            } catch (error) {
+                document.getElementById('sessionStatus').innerHTML = `<div class="status error">❌ Sign out error: ${error.message}</div>`;
+            }
+        };
+        
+        function updateDebugInfo() {
+            const url = localStorage.getItem('SUPABASE_URL');
+            const key = localStorage.getItem('SUPABASE_ANON_KEY');
+            const authToken = localStorage.getItem('authToken');
+            
+            document.getElementById('debugInfo').innerHTML = `
+                <pre>
+localStorage contents:
+- SUPABASE_URL: ${url ? url : 'Not set'}
+- SUPABASE_ANON_KEY: ${key ? key.substring(0, 20) + '...' : 'Not set'}
+- authToken: ${authToken ? 'Present' : 'Not set'}
+
+Window location:
+- Origin: ${window.location.origin}
+- OAuth Callback URL: ${window.location.origin}/auth/callback.html
+
+Required Supabase Settings:
+1. Site URL: ${window.location.origin}
+2. Redirect URLs: 
+   - ${window.location.origin}/auth/callback.html
+   - ${window.location.origin}
+                </pre>
+            `;
+        }
+        
+        // Listen for auth state changes
+        window.addEventListener('load', () => {
+            loadConfig();
+            
+            if (supabase) {
+                supabase.auth.onAuthStateChange((event, session) => {
+                    console.log('Auth state changed:', event, session);
+                    if (event === 'SIGNED_IN') {
+                        checkSession();
+                    }
+                });
+            }
+        });
+        
+        // Update debug info on load
+        updateDebugInfo();
+    </script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Triniva AI</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <img src="/images/logo.png" alt="Triniva AI" class="auth-logo">
+                <h1>Welcome Back</h1>
+                <p>Sign in to continue to Triniva AI</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <!-- Email Input Step -->
+                <div id="emailStep">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required placeholder="Enter your email">
+                        <small class="form-hint">We'll send you a 6-digit code to sign in</small>
+                    </div>
+
+                    <button type="button" class="auth-button" id="sendOtpButton">
+                        <span class="button-text">Send OTP Code</span>
+                        <div class="button-loader" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- OTP Verification Step -->
+                <div id="otpStep" style="display: none;">
+                    <div class="form-group">
+                        <label for="otp">Verification Code</label>
+                        <input type="text" id="otp" name="otp" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}">
+                        <small class="form-hint">Enter the 6-digit code from your email</small>
+                    </div>
+
+                    <button type="submit" class="auth-button" id="verifyButton">
+                        <span class="button-text">Verify & Sign In</span>
+                        <div class="button-loader" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
+
+                    <div style="margin-top: 15px; text-align: center;">
+                        <a href="#" id="resendLink" style="color: var(--accent-color); text-decoration: none; font-size: 14px;">Resend code</a>
+                        <span style="margin: 0 10px; color: var(--text-tertiary);">|</span>
+                        <a href="#" id="changeEmailLink" style="color: var(--accent-color); text-decoration: none; font-size: 14px;">Change email</a>
+                    </div>
+                </div>
+
+                <div class="error-message" id="errorMessage" style="display: none;"></div>
+                <div class="success-message" id="successMessage" style="display: none;"></div>
+            </form>
+
+            <div class="auth-divider">
+                <span>or sign in with</span>
+            </div>
+
+            <div class="social-auth">
+                <button type="button" class="social-button google" id="googleAuth" style="width: 100%;">
+                    <i class="fab fa-google" style="color: #9ca3af;"></i>
+                    <span>Continue with Google</span>
+                </button>
+            </div>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="/auth/signup.html">Sign up</a></p>
+                <p class="guest-option">Or <a href="/" id="continueAsGuest">continue as guest</a> with limited features</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Supabase configuration -->
+    <script src="/js/config.js"></script>
+    
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        // Get Supabase configuration from config.js
+        const supabaseUrl = localStorage.getItem('SUPABASE_URL');
+        const supabaseAnonKey = localStorage.getItem('SUPABASE_ANON_KEY');
+        
+        // Check if configuration is set
+        if (!supabaseUrl || supabaseUrl === 'https://your-project.supabase.co') {
+            document.getElementById('errorMessage').innerHTML = `
+                <strong>⚠️ Configuration Required</strong><br>
+                Please update /js/config.js with your Supabase credentials.<br>
+                <small>Get them from your Supabase project dashboard → Settings → API</small>
+            `;
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+        
+        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+        let userEmail = '';
+        
+        // Handle Send OTP
+        document.getElementById('sendOtpButton').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const sendButton = document.getElementById('sendOtpButton');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            if (!email) {
+                errorMessage.textContent = 'Please enter your email';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            userEmail = email;
+            
+            // Show loading state
+            sendButton.disabled = true;
+            sendButton.querySelector('.button-text').style.display = 'none';
+            sendButton.querySelector('.button-loader').style.display = 'block';
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithOtp({
+                    email: email,
+                    options: {
+                        shouldCreateUser: false,  // Don't create user on login
+                        emailRedirectTo: `${window.location.origin}/auth/callback.html`
+                    }
+                });
+                
+                if (error) throw error;
+                
+                // Show OTP verification step
+                document.getElementById('emailStep').style.display = 'none';
+                document.getElementById('otpStep').style.display = 'block';
+                
+                successMessage.innerHTML = `
+                    <i class="fas fa-check-circle"></i> OTP code sent!<br>
+                    <small>Check your email for the 6-digit verification code or click the sign-in link.</small>
+                `;
+                successMessage.style.display = 'block';
+                
+                // Focus on OTP input
+                document.getElementById('otp').focus();
+                
+            } catch (error) {
+                errorMessage.textContent = error.message || 'Failed to send OTP code. Please try again.';
+                errorMessage.style.display = 'block';
+            } finally {
+                sendButton.disabled = false;
+                sendButton.querySelector('.button-text').style.display = 'inline';
+                sendButton.querySelector('.button-loader').style.display = 'none';
+            }
+        });
+        
+        // Handle OTP Verification
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const otp = document.getElementById('otp').value;
+            const verifyButton = document.getElementById('verifyButton');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            if (!otp) {
+                errorMessage.textContent = 'Please enter the verification code';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            // Show loading state
+            verifyButton.disabled = true;
+            verifyButton.querySelector('.button-text').style.display = 'none';
+            verifyButton.querySelector('.button-loader').style.display = 'block';
+            errorMessage.style.display = 'none';
+            
+            try {
+                const { data, error } = await supabase.auth.verifyOtp({
+                    email: userEmail,
+                    token: otp,
+                    type: 'email'
+                });
+                
+                if (error) throw error;
+                
+                // Store auth token and user info
+                if (data.session) {
+                    localStorage.setItem('authToken', data.session.access_token);
+                    localStorage.setItem('userId', data.user.id);
+                    localStorage.setItem('userEmail', data.user.email || '');
+                    localStorage.setItem('userName', data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User');
+                    
+                    // Show success message
+                    successMessage.textContent = 'Verification successful! Redirecting...';
+                    successMessage.style.display = 'block';
+                    
+                    // Redirect to main app
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1000);
+                }
+                
+            } catch (error) {
+                errorMessage.textContent = error.message || 'Invalid verification code. Please try again.';
+                errorMessage.style.display = 'block';
+            } finally {
+                verifyButton.disabled = false;
+                verifyButton.querySelector('.button-text').style.display = 'inline';
+                verifyButton.querySelector('.button-loader').style.display = 'none';
+            }
+        });
+        
+        // Handle Resend Code
+        document.getElementById('resendLink').addEventListener('click', async (e) => {
+            e.preventDefault();
+            document.getElementById('sendOtpButton').click();
+        });
+        
+        // Handle Change Email
+        document.getElementById('changeEmailLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('emailStep').style.display = 'block';
+            document.getElementById('otpStep').style.display = 'none';
+            document.getElementById('email').focus();
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        });
+        
+        // Handle Google OAuth
+        document.getElementById('googleAuth').addEventListener('click', async () => {
+            try {
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: `${window.location.origin}/auth/callback.html`
+                    }
+                });
+                
+                if (error) {
+                    console.error('OAuth error:', error);
+                    throw error;
+                }
+                
+                // User will be redirected to Google
+                
+            } catch (error) {
+                console.error('OAuth error:', error);
+                document.getElementById('errorMessage').textContent = error.message || 'Google login failed. Please try again.';
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+        
+        // GitHub OAuth removed - not configured yet
+    </script>
+</body>
+</html>
