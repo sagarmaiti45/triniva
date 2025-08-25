@@ -23,10 +23,5 @@
   "env": {
     "NODE_ENV": "production"
   },
-  "regions": ["bom1"],
-  "functions": {
-    "server.js": {
-      "maxDuration": 30
-    }
-  }
+  "regions": ["bom1"]
 }
