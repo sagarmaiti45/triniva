@@ -1822,24 +1822,31 @@ h3.ai-heading {
 }
 
 /* Tablet Landscape - Reduce dropdown height to prevent footer overlap */
-@media (max-width: 1024px) and (orientation: landscape) and (max-height: 700px) {
+@media (max-width: 1024px) and (orientation: landscape) {
     .custom-model-dropdown.open .custom-model-dropdown-menu {
-        max-height: 200px !important; /* Reduced from 320px */
+        max-height: 160px !important; /* Much reduced for all landscape tablets */
         bottom: auto;
         top: 40px;
+        overflow-y: auto;
     }
     
     /* If in welcome view, position it to avoid footer */
     .welcome-view .custom-model-dropdown.open .custom-model-dropdown-menu {
-        max-height: calc(100vh - 200px) !important; /* Dynamic based on viewport */
-        max-height: min(200px, calc(100vh - 200px)) !important; /* Use smaller value */
+        max-height: 140px !important; /* Even smaller in welcome view */
+    }
+}
+
+/* Tablet Landscape with limited height */
+@media (max-width: 1024px) and (orientation: landscape) and (max-height: 600px) {
+    .custom-model-dropdown.open .custom-model-dropdown-menu {
+        max-height: 120px !important; /* Very reduced */
     }
 }
 
 /* Tablet Landscape with very limited height */
 @media (max-width: 1024px) and (orientation: landscape) and (max-height: 500px) {
     .custom-model-dropdown.open .custom-model-dropdown-menu {
-        max-height: 150px !important; /* Even more reduced */
+        max-height: 100px !important; /* Minimal height */
     }
 }
 
