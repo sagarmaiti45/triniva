@@ -89,8 +89,40 @@
 
         async function handleAuthCallback() {
             try {
-                // Supabase will handle the OAuth callback automatically
-                // We just need to check if there's a session
+                // First, check if we have tokens in the URL hash
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const accessToken = hashParams.get('access_token');
+                
+                if (accessToken) {
+                    // We have tokens in the URL, set the session from URL
+                    console.log('Found access token in URL, setting session...');
+                    
+                    // Let Supabase handle the tokens from the URL
+                    const { data, error } = await supabase.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: hashParams.get('refresh_token')
+                    });
+                    
+                    if (error) {
+                        console.error('Error setting session from URL:', error);
+                        // Try to get session normally
+                        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                        if (!sessionError && session) {
+                            handleSession(session);
+                            return;
+                        }
+                        throw error;
+                    }
+                    
+                    // Get the session after setting it
+                    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                    if (session) {
+                        handleSession(session);
+                        return;
+                    }
+                }
+                
+                // If no tokens in URL, try to get existing session
                 const { data: { session }, error } = await supabase.auth.getSession();
                 
                 if (error) {
@@ -99,9 +131,8 @@
                 }
                 
                 if (!session) {
-                    // If no session, check if we need to exchange code for session
-                    // This happens automatically with Supabase client
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    // Wait a bit for Supabase to process the callback
+                    await new Promise(resolve => setTimeout(resolve, 2000));
                     
                     // Try again
                     const { data: { session: retrySession }, error: retryError } = await supabase.auth.getSession();
@@ -140,19 +171,26 @@
             }, 1000);
         }
 
-        // Listen for auth state changes
+        // Listen for auth state changes first
         supabase.auth.onAuthStateChange((event, session) => {
             console.log('Auth event:', event, session);
             
-            if (event === 'SIGNED_IN' && session) {
+            if ((event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') && session) {
                 handleSession(session);
-            } else if (event === 'USER_UPDATED' && session) {
+            } else if (event === 'INITIAL_SESSION' && session) {
                 handleSession(session);
             }
         });
         
-        // Handle the callback
-        handleAuthCallback();
+        // Wait for DOM to be ready and Supabase to initialize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(handleAuthCallback, 100);
+            });
+        } else {
+            // DOM is already ready
+            setTimeout(handleAuthCallback, 100);
+        }
     </script>
 </body>
 </html>
