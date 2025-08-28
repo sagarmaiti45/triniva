@@ -1,5 +1,13 @@
 /* Billing Page Styles */
 
+:root {
+    --gradient-start: var(--accent-color);
+    --gradient-end: #0d8968;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+}
+
 .current-plan-section {
     margin-bottom: 40px;
 }
@@ -84,6 +92,7 @@
     padding: 30px;
     position: relative;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: visible;
 }
 
 .plan-card:hover {
@@ -94,19 +103,24 @@
 .plan-card.featured {
     border-color: var(--accent-color);
     box-shadow: 0 0 30px rgba(80, 199, 199, 0.2);
+    margin-top: 14px;
 }
 
 .plan-badge {
     position: absolute;
-    top: -12px;
+    top: -14px;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-    color: var(--bg-primary);
-    padding: 5px 20px;
+    background: var(--accent-color);
+    color: white;
+    padding: 6px 24px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    z-index: 1;
 }
 
 .plan-header {
