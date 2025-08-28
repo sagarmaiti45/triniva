@@ -1786,6 +1786,63 @@ h3.ai-heading {
     display: inline;
 }
 
+/* Tablet Responsive */
+@media (max-width: 1024px) and (min-width: 769px) {
+    /* Show icon button for model selector on tablets */
+    .model-button-mobile {
+        display: flex !important;
+        width: 36px;
+        height: 36px;
+    }
+    
+    /* Hide the dropdown trigger text on tablets */
+    .custom-model-dropdown .custom-model-dropdown-trigger {
+        display: none !important;
+    }
+    
+    /* Adjust dropdown position for tablets */
+    .custom-model-dropdown {
+        position: absolute;
+        right: 85px; /* Positioned next to mic button */
+        top: 0;
+        min-width: 200px;
+    }
+    
+    /* Keep dropdown menu functional */
+    .custom-model-dropdown-menu {
+        right: 0;
+        left: auto;
+        top: 40px;
+    }
+    
+    /* Adjust hero input container for tablets */
+    .hero-input-container {
+        gap: 8px;
+    }
+}
+
+/* Tablet Landscape - Reduce dropdown height to prevent footer overlap */
+@media (max-width: 1024px) and (orientation: landscape) and (max-height: 700px) {
+    .custom-model-dropdown.open .custom-model-dropdown-menu {
+        max-height: 200px !important; /* Reduced from 320px */
+        bottom: auto;
+        top: 40px;
+    }
+    
+    /* If in welcome view, position it to avoid footer */
+    .welcome-view .custom-model-dropdown.open .custom-model-dropdown-menu {
+        max-height: calc(100vh - 200px) !important; /* Dynamic based on viewport */
+        max-height: min(200px, calc(100vh - 200px)) !important; /* Use smaller value */
+    }
+}
+
+/* Tablet Landscape with very limited height */
+@media (max-width: 1024px) and (orientation: landscape) and (max-height: 500px) {
+    .custom-model-dropdown.open .custom-model-dropdown-menu {
+        max-height: 150px !important; /* Even more reduced */
+    }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .sidebar {
