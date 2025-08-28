@@ -1,192 +1,221 @@
-# Triniva AI - Setup Instructions
+# Triniva AI Platform - Database Setup Instructions
 
-## 🚀 Quick Setup Guide
+## 🚀 Step 1: Run Database Schema in Supabase
 
-### 1. Install Dependencies
-```bash
-npm install
+### Prerequisites
+- Active Supabase project
+- Access to Supabase dashboard
+
+### Instructions:
+
+1. **Open Supabase SQL Editor:**
+   - Go to your [Supabase Dashboard](https://app.supabase.com)
+   - Select your project (oofecaxnadoyqwxmyqtq)
+   - Navigate to **SQL Editor** in the left sidebar
+
+2. **Run the Schema:**
+   - Copy ALL content from `database/schema.sql`
+   - Paste into the SQL Editor
+   - Click **Run** button
+   - You should see: "Database schema created successfully!"
+
+3. **Verify Tables Created:**
+   Go to **Table Editor** and confirm these tables exist:
+   - ✅ `users` - Stores user profiles and credits
+   - ✅ `orders` - Razorpay payment orders
+   - ✅ `subscriptions` - Subscription history
+   - ✅ `usage_logs` - Credit usage tracking
+   - ✅ `chat_history` - Saved conversations
+
+4. **Verify RLS is Enabled:**
+   - Click each table
+   - Go to **RLS** tab
+   - Ensure "RLS enabled" toggle is ON
+   - Policies should be listed
+
+## 📊 Step 2: Understanding the Credit System
+
+### How Credits Work:
+
+| Plan | Monthly Credits | Price | Model Access |
+|------|----------------|-------|--------------|
+| **Free** | 5,000 | Free | 12 models (no premium) |
+| **Starter** | 15,000 | ₹297 | 12 models (no premium) |
+| **Pro** | 50,000 | ₹697 | All 16 models |
+| **Business** | 150,000 | ₹1,497 | All 16 models |
+
+### Credit Consumption by Model Type:
+
+| Model Category | Multiplier | Example Models | 1000 tokens cost |
+|----------------|------------|----------------|------------------|
+| **Free** | 1x | Gemini Flash, Llama 3.1 | 1 credit |
+| **Budget** | 2-4x | GPT-4o mini, Claude Haiku | 2-4 credits |
+| **Mid-tier** | 8x | GPT-4o, Gemini Pro | 8 credits |
+| **Premium** | 20x | Claude Sonnet, GPT-5 | 20 credits |
+
+## 🔧 Step 3: Test the System
+
+### A. Test New User Creation:
+1. Sign up at `/auth/signup.html`
+2. Check in Supabase:
+```sql
+SELECT * FROM users ORDER BY created_at DESC LIMIT 1;
+```
+3. New user should have:
+   - plan: 'free'
+   - credits: 5000
+
+### B. Test Credit Deduction (Manual):
+```sql
+-- Test deducting 100 credits from a user
+SELECT deduct_credits('USER_ID_HERE', 100);
 ```
 
-### 2. Environment Variables Setup
-Create a `.env` file in the root directory and add:
-
-```env
-# OpenRouter API
-OPENROUTER_API_KEY=your_openrouter_api_key_here
-
-# Supabase Configuration
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_PUBLISHABLE_KEY=sb_publishable_Q_Vnzoqn8VJgoJJzZUfvAQ_agrXyRKk
-SUPABASE_SECRET_KEY=sb_secret_uqlJCGLeVzmZSedKXNSCeA_krk8HKmh
-DATABASE_URL=your_postgresql_connection_string
-
-# Server Configuration
-PORT=3000
-NODE_ENV=development
-
-# JWT Secret (generate a random string)
-JWT_SECRET=your_random_jwt_secret_here
-
-# PayU Configuration (for payments - add later)
-PAYU_MERCHANT_KEY=your_payu_merchant_key
-PAYU_MERCHANT_SALT=your_payu_salt
-PAYU_BASE_URL=https://sandboxsecure.payu.in
+### C. Test Adding Credits (Manual):
+```sql
+-- Test adding 1000 credits to a user
+SELECT add_credits('USER_ID_HERE', 1000, 'pro');
 ```
 
-### 3. Supabase Setup
+## 💳 Step 4: Payment Flow
 
-#### A. Get Your Supabase Project URL
-1. Go to your Supabase project dashboard
-2. Navigate to Settings > API
-3. Copy the "Project URL" (looks like: https://xxxxx.supabase.co)
-4. Copy the "Database URL" from Settings > Database
+### When User Purchases a Plan:
 
-#### B. Enable Authentication Providers
-1. Go to Authentication > Providers
-2. Enable Email provider with email verification
-3. Enable Google OAuth:
-   - Add your Google OAuth credentials
-   - Set redirect URL: `http://localhost:3000/auth/callback`
-4. Enable GitHub OAuth:
-   - Add your GitHub OAuth credentials
-   - Set redirect URL: `http://localhost:3000/auth/callback`
+1. **Order Creation:**
+   - User selects plan
+   - System creates order in `orders` table
+   - Razorpay checkout opens
 
-#### C. Configure Email Templates
-1. Go to Authentication > Email Templates
-2. Customize the verification email template
-3. Customize the password reset template
+2. **Payment Verification:**
+   - Razorpay sends payment confirmation
+   - System verifies signature
+   - Updates order status to 'completed'
 
-#### D. Run Database Schema
-1. Go to SQL Editor in Supabase
-2. Copy the contents of `/database/schema.sql`
-3. Run the SQL to create all tables and policies
+3. **Credit Addition:**
+   - Credits added to user account
+   - Plan updated
+   - Subscription record created
 
-### 4. Frontend Configuration
-Add Supabase configuration to your frontend:
+## 🔍 Step 5: Monitoring Queries
 
-```javascript
-// In your main chat.js or a separate config file
-const SUPABASE_CONFIG = {
-    url: 'your_supabase_project_url',
-    anonKey: 'your_publishable_key'
-};
-
-// Store in localStorage for auth pages
-localStorage.setItem('SUPABASE_URL', SUPABASE_CONFIG.url);
-localStorage.setItem('SUPABASE_ANON_KEY', SUPABASE_CONFIG.anonKey);
+### Check User Stats:
+```sql
+-- View user statistics
+SELECT * FROM user_stats;
 ```
 
-### 5. Update Server Code
-The server needs to be updated to use ES6 modules. Update `package.json`:
-
-```json
-{
-  "type": "module",
-  ...
-}
+### Check Recent Usage:
+```sql
+-- Last 10 credit usages
+SELECT 
+    u.email,
+    ul.model_id,
+    ul.credits_used,
+    ul.created_at
+FROM usage_logs ul
+JOIN users u ON u.id = ul.user_id
+ORDER BY ul.created_at DESC
+LIMIT 10;
 ```
 
-Or rename files to `.mjs` extension if you prefer CommonJS for the main server.
-
-### 6. Test the Setup
-
-#### A. Test Database Connection
-```bash
-node -e "
-const postgres = require('postgres');
-const sql = postgres(process.env.DATABASE_URL);
-sql\`SELECT NOW()\`.then(console.log).catch(console.error);
-"
+### Check Active Subscriptions:
+```sql
+-- Active subscriptions
+SELECT 
+    u.email,
+    s.plan_id,
+    s.credits_granted,
+    s.expires_at
+FROM subscriptions s
+JOIN users u ON u.id = s.user_id
+WHERE s.status = 'active'
+ORDER BY s.created_at DESC;
 ```
 
-#### B. Start the Server
-```bash
-npm run dev
+### Daily Credit Usage:
+```sql
+-- Credits used today
+SELECT 
+    SUM(credits_used) as total_credits_today,
+    COUNT(*) as total_requests
+FROM usage_logs
+WHERE created_at >= CURRENT_DATE;
 ```
 
-#### C. Test Authentication
-1. Navigate to `http://localhost:3000/auth/signup.html`
-2. Create a new account
-3. Check email for verification
-4. Login at `http://localhost:3000/auth/login.html`
+## ⚠️ Important Notes
 
-### 7. Important URLs
+1. **Automatic User Creation:**
+   - New signups automatically get user record via trigger
+   - 5000 free credits granted on signup
 
-- **Main App**: http://localhost:3000
-- **Login**: http://localhost:3000/auth/login.html
-- **Signup**: http://localhost:3000/auth/signup.html
-- **Dashboard**: http://localhost:3000/dashboard (to be created)
-- **Billing**: http://localhost:3000/dashboard/billing.html (to be created)
+2. **Credit Safety:**
+   - Credits cannot go negative
+   - Deduction fails if insufficient credits
+   - User sees error message
 
-## 📝 Next Steps
-
-1. **Complete Server Integration**:
-   - Update main server.js to handle authenticated requests
-   - Add token counting middleware
-   - Implement conversation persistence
-
-2. **Create Dashboard Pages**:
-   - User profile page
-   - Usage statistics
-   - Billing management
-
-3. **Payment Integration**:
-   - Set up PayU account
-   - Add payment webhook endpoints
-   - Create subscription management
-
-4. **Create Additional Legal Pages**:
-   - Refund Policy
-   - About Us
-   - Contact Us
-
-## 🔒 Security Checklist
-
-- [ ] Enable Row Level Security (RLS) on all tables
-- [ ] Set up proper CORS configuration
-- [ ] Use HTTPS in production
-- [ ] Implement rate limiting
-- [ ] Add input validation
-- [ ] Set up proper error logging
-- [ ] Configure backup strategy
+3. **Plan Expiration:**
+   - Plans last 30 days from purchase
+   - After expiry, user reverts to free plan
+   - Credits remain but no new monthly credits
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+### Issue: User not created on signup
+```sql
+-- Check if trigger exists
+SELECT * FROM pg_trigger WHERE tgname = 'on_auth_user_created';
 
-1. **"Missing Supabase environment variables"**
-   - Ensure all Supabase keys are in .env file
-   - Check that .env is loaded properly
+-- Manually create user if needed
+INSERT INTO users (id, email, full_name, credits, plan)
+SELECT id, email, raw_user_meta_data->>'full_name', 5000, 'free'
+FROM auth.users
+WHERE id NOT IN (SELECT id FROM users);
+```
 
-2. **"Database connection failed"**
-   - Verify DATABASE_URL is correct
-   - Check if Supabase project is active
-   - Ensure IP is whitelisted (if applicable)
+### Issue: Credits not deducting
+```sql
+-- Check user credits
+SELECT id, email, credits, plan FROM users WHERE email = 'user@example.com';
 
-3. **"Authentication not working"**
-   - Verify Supabase Auth providers are enabled
-   - Check redirect URLs match your domain
-   - Ensure email templates are configured
+-- Check if RLS is blocking
+SET ROLE postgres;  -- Use superuser role
+SELECT * FROM users;  -- Should see all users
+SET ROLE anon;  -- Switch back
+```
 
-4. **"Tokens not deducting"**
-   - Check if user profile exists in database
-   - Verify token calculation logic
-   - Check model pricing configuration
+### Issue: Statistics not showing
+```sql
+-- Recreate the view
+DROP VIEW IF EXISTS user_stats;
+-- Then run the CREATE VIEW statement from schema.sql
+```
 
-## 📚 Documentation Links
+## ✅ Next Steps
 
-- [Supabase Docs](https://supabase.com/docs)
-- [OpenRouter API](https://openrouter.ai/docs)
-- [PayU Integration](https://developer.payu.in/docs)
+After database setup:
 
-## 🤝 Support
+1. **Configure Backend:**
+   - Set up Node.js server endpoints
+   - Connect to Supabase from backend
+   - Implement credit deduction on API calls
 
-For issues or questions:
-1. Check the troubleshooting section
-2. Review error logs in browser console
-3. Check server logs
-4. Contact support through the platform
+2. **Update Frontend:**
+   - Show real credit balance in dashboard
+   - Display usage statistics
+   - Enable payment flow
+
+3. **Testing:**
+   - Test complete signup → chat → payment flow
+   - Monitor credit deductions
+   - Verify plan restrictions
+
+## 📞 Support
+
+Check these locations for errors:
+1. Browser Console (F12 → Console)
+2. Supabase Dashboard → Logs → Database
+3. Network tab for API errors
 
 ---
 
-**Note**: Remember to keep your API keys and secrets secure. Never commit them to version control.
+**Remember:** This schema includes automatic triggers and functions. Most operations happen automatically!
