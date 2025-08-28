@@ -1,0 +1,276 @@
+/* Billing Page Styles */
+
+.current-plan-section {
+    margin-bottom: 40px;
+}
+
+.current-plan-section h2 {
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.current-plan-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.plan-info h3 {
+    font-size: 24px;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+}
+
+.plan-credits {
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.plan-expires {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.plan-usage {
+    flex: 0 0 300px;
+}
+
+.usage-bar {
+    width: 100%;
+    height: 10px;
+    background: var(--bg-tertiary);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.usage-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+    transition: width 0.5s ease;
+}
+
+.usage-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* Plans Section */
+.plans-section {
+    margin-bottom: 40px;
+}
+
+.plans-section h2 {
+    margin-bottom: 30px;
+    color: var(--text-primary);
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.plan-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 30px;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.plan-card.featured {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 30px rgba(80, 199, 199, 0.2);
+}
+
+.plan-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    color: var(--bg-primary);
+    padding: 5px 20px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.plan-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.plan-header h3 {
+    font-size: 24px;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+}
+
+.plan-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 5px;
+}
+
+.plan-price .currency {
+    font-size: 20px;
+    color: var(--text-secondary);
+}
+
+.plan-price .amount {
+    font-size: 42px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.plan-price .period {
+    font-size: 16px;
+    color: var(--text-secondary);
+}
+
+.plan-features {
+    margin-bottom: 30px;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    color: var(--text-secondary);
+}
+
+.feature i {
+    color: var(--success-color);
+    font-size: 14px;
+}
+
+.subscribe-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.subscribe-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-color);
+}
+
+.subscribe-btn.primary {
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    border: none;
+    color: var(--bg-primary);
+}
+
+.subscribe-btn.primary:hover {
+    background: linear-gradient(135deg, var(--accent-hover), var(--gradient-end));
+}
+
+/* Payment History */
+.history-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 30px;
+}
+
+.history-section h2 {
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.history-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table th {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 12px;
+    text-align: left;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-table td {
+    padding: 12px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-table tr:hover {
+    background: var(--bg-hover);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success-color);
+}
+
+.status-badge.expired {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--error-color);
+}
+
+.status-badge.pending {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--warning-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .current-plan-card {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .plan-usage {
+        flex: 1;
+        width: 100%;
+    }
+    
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .history-table {
+        overflow-x: auto;
+    }
+    
+    .history-table table {
+        min-width: 600px;
+    }
+}

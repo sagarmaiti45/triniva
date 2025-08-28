@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Triniva AI</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="/images/logo.png" alt="Triniva AI" class="sidebar-logo">
+                <h2>Triniva AI</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-item active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="/dashboard/billing.html" class="nav-item">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Billing</span>
+                </a>
+                <a href="/dashboard/usage.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Usage</span>
+                </a>
+                <a href="/dashboard/profile.html" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="/" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>Back to Chat</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-header">
+                <h1>Dashboard</h1>
+                <div class="user-info">
+                    <span id="userName">User</span>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-content">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="creditsBalance">0</h3>
+                            <p>Credits Available</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="currentPlan">Free</h3>
+                            <p>Current Plan</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalChats">0</h3>
+                            <p>Total Chats</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="daysRemaining">-</h3>
+                            <p>Days Remaining</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h2>Quick Actions</h2>
+                    <div class="action-buttons">
+                        <button class="action-btn primary" id="upgradeBtn">
+                            <i class="fas fa-rocket"></i>
+                            <span>Upgrade Plan</span>
+                        </button>
+                        <button class="action-btn" id="buyCreditsBtn">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Buy Credits</span>
+                        </button>
+                        <a href="/" class="action-btn">
+                            <i class="fas fa-comments"></i>
+                            <span>Start Chatting</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="recent-activity">
+                    <h2>Recent Usage</h2>
+                    <div class="activity-list" id="recentActivity">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading activity...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load configuration -->
+    <script src="/js/env-config.js"></script>
+    <script src="/js/config.js"></script>
+    
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        
+        const supabaseUrl = localStorage.getItem('SUPABASE_URL');
+        const supabaseAnonKey = localStorage.getItem('SUPABASE_ANON_KEY');
+        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+        
+        // Check authentication
+        async function checkAuth() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (!session) {
+                window.location.href = '/auth/login.html';
+                return null;
+            }
+            
+            return session;
+        }
+        
+        // Load user data
+        async function loadDashboard() {
+            const session = await checkAuth();
+            if (!session) return;
+            
+            // Update user name
+            document.getElementById('userName').textContent = 
+                session.user.user_metadata?.full_name || 
+                session.user.email?.split('@')[0] || 
+                'User';
+            
+            // Get user subscription status from backend
+            try {
+                const response = await fetch('/api/subscription/status', {
+                    headers: {
+                        'Authorization': `Bearer ${session.access_token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Update stats
+                    document.getElementById('creditsBalance').textContent = data.credits.toLocaleString();
+                    document.getElementById('currentPlan').textContent = 
+                        data.plan.charAt(0).toUpperCase() + data.plan.slice(1);
+                    
+                    // Calculate days remaining
+                    if (data.planExpiresAt) {
+                        const expires = new Date(data.planExpiresAt);
+                        const now = new Date();
+                        const days = Math.ceil((expires - now) / (1000 * 60 * 60 * 24));
+                        document.getElementById('daysRemaining').textContent = days > 0 ? days : 'Expired';
+                    } else {
+                        document.getElementById('daysRemaining').textContent = '-';
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load subscription status:', error);
+                // Show default values for now
+                document.getElementById('creditsBalance').textContent = '5,000';
+                document.getElementById('currentPlan').textContent = 'Free';
+            }
+            
+            // Load recent activity
+            loadRecentActivity(session);
+            
+            // Load chat count
+            loadChatCount(session);
+        }
+        
+        // Load recent activity
+        async function loadRecentActivity(session) {
+            const activityContainer = document.getElementById('recentActivity');
+            
+            try {
+                const { data: logs, error } = await supabase
+                    .from('usage_logs')
+                    .select('*')
+                    .eq('user_id', session.user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (error || !logs || logs.length === 0) {
+                    activityContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-chart-line"></i>
+                            <p>No recent activity</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                activityContainer.innerHTML = logs.map(log => {
+                    const date = new Date(log.created_at).toLocaleDateString();
+                    const time = new Date(log.created_at).toLocaleTimeString();
+                    return `
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="activity-details">
+                                <p class="activity-model">${log.model_id.split('/').pop()}</p>
+                                <p class="activity-meta">
+                                    <span>${log.credits_used} credits</span>
+                                    <span>•</span>
+                                    <span>${date} ${time}</span>
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Failed to load activity:', error);
+                activityContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Failed to load activity</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load chat count
+        async function loadChatCount(session) {
+            try {
+                const { count, error } = await supabase
+                    .from('chat_history')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', session.user.id);
+                
+                if (!error && count !== null) {
+                    document.getElementById('totalChats').textContent = count;
+                }
+            } catch (error) {
+                console.error('Failed to load chat count:', error);
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            localStorage.clear();
+            window.location.href = '/';
+        });
+        
+        document.getElementById('upgradeBtn').addEventListener('click', () => {
+            window.location.href = '/dashboard/billing.html';
+        });
+        
+        document.getElementById('buyCreditsBtn').addEventListener('click', () => {
+            window.location.href = '/dashboard/billing.html';
+        });
+        
+        // Initialize dashboard
+        loadDashboard();
+    </script>
+</body>
+</html>
