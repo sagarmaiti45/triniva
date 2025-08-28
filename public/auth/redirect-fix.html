@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script>
+        // This is a temporary fix for redirect issues
+        // Check if we're on localhost with auth tokens
+        if (window.location.hostname === 'localhost' && window.location.hash.includes('access_token')) {
+            // Extract the hash
+            const hash = window.location.hash;
+            // Redirect to production with the same hash
+            window.location.replace('https://triniva.com/auth/callback.html' + hash);
+        } else {
+            // If not on localhost or no tokens, go to home
+            window.location.replace('/');
+        }
+    </script>
+</head>
+<body>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: system-ui;">
+        <div style="text-align: center;">
+            <h2>Redirecting to Triniva AI...</h2>
+            <p>If you're not redirected, <a href="https://triniva.com">click here</a></p>
+        </div>
+    </div>
+</body>
+</html>

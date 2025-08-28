@@ -234,12 +234,16 @@
         // Handle Google OAuth
         document.getElementById('googleAuth').addEventListener('click', async () => {
             try {
+                // Force production redirect URL
+                const redirectUrl = 'https://triniva.com/auth/callback.html';
+                
                 const { data, error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                            ? `${window.location.origin}/auth/callback.html`
-                            : 'https://triniva.com/auth/callback.html'
+                        redirectTo: redirectUrl,
+                        queryParams: {
+                            redirect_to: redirectUrl
+                        }
                     }
                 });
                 
