@@ -296,10 +296,9 @@ class ChatApp {
             { value: 'x-ai/grok-4', label: 'Grok 4', logo: 'xai.png', isFree: false, supportsImages: true },
             { value: 'x-ai/grok-3-mini', label: 'Grok 3 Mini', logo: 'xai.png', isFree: false, supportsImages: false },
             { value: 'meta-llama/llama-4-maverick', label: 'Llama 4 Maverick', logo: 'metaai-color.png', isFree: false, supportsImages: false },
-            { value: 'meta-llama/llama-3.3-70b-instruct', label: 'Llama 3.3 70B', logo: 'metaai-color.png', isFree: false, supportsImages: false },
+            { value: 'meta-llama/llama-4-maverick:free', label: 'Llama 4 Maverick', logo: 'metaai-color.png', isFree: true, supportsImages: false },
             { value: 'z-ai/glm-4.5', label: 'GLM 4.5', logo: 'zlm_ai.png', isFree: false, supportsImages: false },
-            { value: 'deepseek/deepseek-r1-0528:free', label: 'DeepSeek R1', logo: 'deepseek-color.png', isFree: true, supportsImages: false },
-            { value: 'deepseek/deepseek-chat-v3-0324', label: 'DeepSeek Chat V3', logo: 'deepseek-color.png', isFree: false, supportsImages: false }
+            { value: 'deepseek/deepseek-r1-0528:free', label: 'DeepSeek R1', logo: 'deepseek-color.png', isFree: true, supportsImages: false }
         ];
         
         // Build dropdown menu
