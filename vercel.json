@@ -79,6 +79,5 @@
   "env": {
     "NODE_ENV": "production"
   },
-  "buildCommand": "node scripts/generate-env-config.js",
   "regions": ["bom1"]
 }

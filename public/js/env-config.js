@@ -1,8 +1,7 @@
-// This file should be generated at build time with environment variables
-// For local development, create a .env.local file with these values
-// DO NOT commit actual keys to version control
+// Environment configuration
+// These are public keys safe to expose in frontend
 
 window.__ENV__ = {
-    SUPABASE_URL: window.NEXT_PUBLIC_SUPABASE_URL || 'YOUR_SUPABASE_URL',
-    SUPABASE_ANON_KEY: window.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'YOUR_ANON_KEY'
+    SUPABASE_URL: 'https://oofecaxnadoyqwxmyqtq.supabase.co',
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vZmVjYXhuYWRveXF3eG15cXRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNjYxMDQsImV4cCI6MjA3MTY0MjEwNH0.L19YnCtFI1t4wBtKvCYqPSkA0ly7cYcp_ewhpzK79Vo'
 };
