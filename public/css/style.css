@@ -1821,24 +1821,24 @@ h3.ai-heading {
     }
 }
 
-/* Tablet Landscape - Reduce dropdown height to prevent footer overlap */
+/* Tablet Landscape - Position dropdown upward to avoid footer */
 @media (max-width: 1024px) and (orientation: landscape) {
     .custom-model-dropdown.open .custom-model-dropdown-menu {
-        max-height: 80px !important; /* Very small height */
-        bottom: auto;
-        top: 40px;
-        overflow-y: auto;
-        position: fixed !important; /* Force fixed positioning */
+        position: fixed !important;
+        top: auto !important; /* Remove top positioning */
+        bottom: 120px !important; /* Position well above footer */
         right: 20px !important;
+        left: auto !important;
         width: 200px !important;
+        max-height: 200px !important; /* Restore reasonable height */
         z-index: 9999 !important;
+        overflow-y: auto;
     }
     
-    /* Alternative positioning - open upward if needed */
+    /* For welcome view, position even higher */
     .welcome-view .custom-model-dropdown.open .custom-model-dropdown-menu {
-        max-height: 60px !important; /* Even smaller in welcome view */
-        bottom: 60px !important; /* Position above the input area */
-        top: auto !important;
+        bottom: 140px !important; /* Even higher in welcome view */
+        max-height: 180px !important;
     }
 }
 
