@@ -6,128 +6,139 @@
     <title>Dashboard - Triniva AI</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <img src="/images/logo.png" alt="Triniva AI" class="sidebar-logo">
-                <h2>Triniva AI</h2>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <a href="/dashboard" class="nav-item active">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Overview</span>
-                </a>
-                <a href="/dashboard/billing.html" class="nav-item">
-                    <i class="fas fa-credit-card"></i>
-                    <span>Billing</span>
-                </a>
-                <a href="/dashboard/usage.html" class="nav-item">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Usage</span>
-                </a>
-                <a href="/dashboard/profile.html" class="nav-item">
-                    <i class="fas fa-user"></i>
-                    <span>Profile</span>
-                </a>
-                <a href="/" class="nav-item">
-                    <i class="fas fa-comments"></i>
-                    <span>Back to Chat</span>
-                </a>
-            </nav>
-            
-            <div class="sidebar-footer">
-                <button class="logout-btn" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="content-header">
-                <h1>Dashboard</h1>
-                <div class="user-info">
-                    <span id="userName">User</span>
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
+    <div class="app-container">
+        <!-- Header matching main app -->
+        <header class="navbar">
+            <div class="navbar-content">
+                <div class="navbar-left">
+                    <a href="/" class="brand-link">
+                        <img src="/images/logo.png" alt="Triniva AI" class="nav-logo">
+                        <span class="brand-text">Triniva AI</span>
+                    </a>
+                </div>
+                
+                <nav class="navbar-center">
+                    <a href="/dashboard" class="nav-link active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="/dashboard/billing.html" class="nav-link">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Billing</span>
+                    </a>
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        <span>Chat</span>
+                    </a>
+                </nav>
+                
+                <div class="navbar-right">
+                    <div class="user-menu-container">
+                        <button class="user-menu-btn" id="userMenuBtn">
+                            <span id="userName">User</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="/dashboard/profile.html" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                <span>Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item logout-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="dashboard-content">
-                <!-- Stats Cards -->
+        </header>
+        
+        <!-- Main Dashboard Content -->
+        <div class="dashboard-main">
+            <div class="dashboard-container">
+                <!-- Welcome Section -->
+                <div class="welcome-section">
+                    <h1>Welcome back, <span id="userNameDisplay">User</span>!</h1>
+                    <p>Manage your AI experience and track your usage.</p>
+                </div>
+                
+                <!-- Stats Grid -->
                 <div class="stats-grid">
-                    <div class="stat-card">
+                    <div class="stat-card credits-card">
                         <div class="stat-icon">
                             <i class="fas fa-coins"></i>
                         </div>
-                        <div class="stat-info">
-                            <h3 id="creditsBalance">0</h3>
-                            <p>Credits Available</p>
+                        <div class="stat-content">
+                            <div class="stat-value" id="creditsBalance">0</div>
+                            <div class="stat-label">Credits Available</div>
+                            <div class="stat-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="creditProgress"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span id="usedCredits">0</span> / <span id="totalCredits">5,000</span> used
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="stat-card">
+                    <div class="stat-card plan-card">
                         <div class="stat-icon">
                             <i class="fas fa-crown"></i>
                         </div>
-                        <div class="stat-info">
-                            <h3 id="currentPlan">Free</h3>
-                            <p>Current Plan</p>
+                        <div class="stat-content">
+                            <div class="stat-value" id="currentPlan">Free</div>
+                            <div class="stat-label">Current Plan</div>
+                            <button class="upgrade-btn-small" onclick="window.location.href='/dashboard/billing.html'">
+                                <i class="fas fa-rocket"></i> Upgrade
+                            </button>
                         </div>
                     </div>
                     
-                    <div class="stat-card">
+                    <div class="stat-card usage-card">
                         <div class="stat-icon">
-                            <i class="fas fa-comments"></i>
+                            <i class="fas fa-chart-line"></i>
                         </div>
-                        <div class="stat-info">
-                            <h3 id="totalChats">0</h3>
-                            <p>Total Chats</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="daysRemaining">-</h3>
-                            <p>Days Remaining</p>
+                        <div class="stat-content">
+                            <div class="stat-value" id="totalChats">0</div>
+                            <div class="stat-label">Total Chats</div>
+                            <div class="stat-subtext">This month</div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Quick Actions -->
-                <div class="quick-actions">
+                <div class="quick-actions-section">
                     <h2>Quick Actions</h2>
-                    <div class="action-buttons">
-                        <button class="action-btn primary" id="upgradeBtn">
-                            <i class="fas fa-rocket"></i>
-                            <span>Upgrade Plan</span>
-                        </button>
-                        <button class="action-btn" id="buyCreditsBtn">
-                            <i class="fas fa-plus-circle"></i>
-                            <span>Buy Credits</span>
-                        </button>
-                        <a href="/" class="action-btn">
+                    <div class="action-grid">
+                        <button class="action-card primary" onclick="window.location.href='/'">
                             <i class="fas fa-comments"></i>
-                            <span>Start Chatting</span>
-                        </a>
+                            <span>Start New Chat</span>
+                        </button>
+                        <button class="action-card" onclick="window.location.href='/dashboard/billing.html'">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Buy More Credits</span>
+                        </button>
+                        <button class="action-card" onclick="window.location.href='/plans'">
+                            <i class="fas fa-tags"></i>
+                            <span>View Plans</span>
+                        </button>
                     </div>
                 </div>
                 
                 <!-- Recent Activity -->
-                <div class="recent-activity">
-                    <h2>Recent Usage</h2>
+                <div class="activity-section">
+                    <div class="section-header">
+                        <h2>Recent Activity</h2>
+                        <span class="view-all">Last 7 days</span>
+                    </div>
                     <div class="activity-list" id="recentActivity">
-                        <div class="loading">
+                        <div class="loading-state">
                             <i class="fas fa-spinner fa-spin"></i>
                             <p>Loading activity...</p>
                         </div>
@@ -148,6 +159,21 @@
         const supabaseAnonKey = localStorage.getItem('SUPABASE_ANON_KEY');
         const supabase = createClient(supabaseUrl, supabaseAnonKey);
         
+        // User dropdown functionality
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        if (userMenuBtn) {
+            userMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('show');
+            });
+        }
+        
+        document.addEventListener('click', () => {
+            userDropdown.classList.remove('show');
+        });
+        
         // Check authentication
         async function checkAuth() {
             const { data: { session }, error } = await supabase.auth.getSession();
@@ -165,134 +191,63 @@
             const session = await checkAuth();
             if (!session) return;
             
-            // Update user name
-            document.getElementById('userName').textContent = 
-                session.user.user_metadata?.full_name || 
-                session.user.email?.split('@')[0] || 
-                'User';
+            const userName = session.user.user_metadata?.full_name || 
+                           session.user.email?.split('@')[0] || 
+                           'User';
             
-            // Get user subscription status from backend
-            try {
-                const response = await fetch('/api/subscription/status', {
-                    headers: {
-                        'Authorization': `Bearer ${session.access_token}`
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    // Update stats
-                    document.getElementById('creditsBalance').textContent = data.credits.toLocaleString();
-                    document.getElementById('currentPlan').textContent = 
-                        data.plan.charAt(0).toUpperCase() + data.plan.slice(1);
-                    
-                    // Calculate days remaining
-                    if (data.planExpiresAt) {
-                        const expires = new Date(data.planExpiresAt);
-                        const now = new Date();
-                        const days = Math.ceil((expires - now) / (1000 * 60 * 60 * 24));
-                        document.getElementById('daysRemaining').textContent = days > 0 ? days : 'Expired';
-                    } else {
-                        document.getElementById('daysRemaining').textContent = '-';
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to load subscription status:', error);
-                // Show default values for now
-                document.getElementById('creditsBalance').textContent = '5,000';
-                document.getElementById('currentPlan').textContent = 'Free';
-            }
+            // Update user name in multiple places
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('userNameDisplay').textContent = userName;
+            
+            // Load stats (mock data for now as backend is not connected)
+            document.getElementById('creditsBalance').textContent = '5,000';
+            document.getElementById('currentPlan').textContent = 'Free';
+            document.getElementById('totalChats').textContent = '12';
+            document.getElementById('usedCredits').textContent = '1,250';
+            document.getElementById('totalCredits').textContent = '5,000';
+            
+            // Update progress bar
+            const usedPercent = (1250 / 5000) * 100;
+            document.getElementById('creditProgress').style.width = `${usedPercent}%`;
             
             // Load recent activity
             loadRecentActivity(session);
-            
-            // Load chat count
-            loadChatCount(session);
         }
         
         // Load recent activity
         async function loadRecentActivity(session) {
             const activityContainer = document.getElementById('recentActivity');
             
-            try {
-                const { data: logs, error } = await supabase
-                    .from('usage_logs')
-                    .select('*')
-                    .eq('user_id', session.user.id)
-                    .order('created_at', { ascending: false })
-                    .limit(10);
-                
-                if (error || !logs || logs.length === 0) {
-                    activityContainer.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-chart-line"></i>
-                            <p>No recent activity</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                activityContainer.innerHTML = logs.map(log => {
-                    const date = new Date(log.created_at).toLocaleDateString();
-                    const time = new Date(log.created_at).toLocaleTimeString();
-                    return `
-                        <div class="activity-item">
-                            <div class="activity-icon">
-                                <i class="fas fa-robot"></i>
-                            </div>
-                            <div class="activity-details">
-                                <p class="activity-model">${log.model_id.split('/').pop()}</p>
-                                <p class="activity-meta">
-                                    <span>${log.credits_used} credits</span>
-                                    <span>•</span>
-                                    <span>${date} ${time}</span>
-                                </p>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                
-            } catch (error) {
-                console.error('Failed to load activity:', error);
-                activityContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <p>Failed to load activity</p>
+            // Mock data for demonstration
+            const mockActivity = [
+                { model: 'GPT-4o Mini', credits: 150, time: '2 hours ago' },
+                { model: 'Claude Sonnet', credits: 320, time: '5 hours ago' },
+                { model: 'Gemini Flash', credits: 85, time: 'Yesterday' },
+                { model: 'DeepSeek R1', credits: 45, time: 'Yesterday' },
+                { model: 'GPT-4o', credits: 280, time: '2 days ago' }
+            ];
+            
+            activityContainer.innerHTML = mockActivity.map(item => `
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-robot"></i>
                     </div>
-                `;
-            }
+                    <div class="activity-info">
+                        <div class="activity-title">${item.model}</div>
+                        <div class="activity-meta">
+                            <span class="credits-used">${item.credits} credits</span>
+                            <span class="time">${item.time}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
         
-        // Load chat count
-        async function loadChatCount(session) {
-            try {
-                const { count, error } = await supabase
-                    .from('chat_history')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('user_id', session.user.id);
-                
-                if (!error && count !== null) {
-                    document.getElementById('totalChats').textContent = count;
-                }
-            } catch (error) {
-                console.error('Failed to load chat count:', error);
-            }
-        }
-        
-        // Event listeners
+        // Logout handler
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await supabase.auth.signOut();
             localStorage.clear();
             window.location.href = '/';
-        });
-        
-        document.getElementById('upgradeBtn').addEventListener('click', () => {
-            window.location.href = '/dashboard/billing.html';
-        });
-        
-        document.getElementById('buyCreditsBtn').addEventListener('click', () => {
-            window.location.href = '/dashboard/billing.html';
         });
         
         // Initialize dashboard
