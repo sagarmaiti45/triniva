@@ -2,15 +2,11 @@
 // This file uses environment variables in production (Vercel)
 // For local development, you can hardcode values here or use .env.local
 
+// Load configuration from env-config.js (which contains the actual keys)
+// This approach works better with Vercel's static file serving
 const SUPABASE_CONFIG = {
-    // Check for environment variables first (Vercel), then use hardcoded values (local dev)
-    url: typeof window !== 'undefined' && window.ENV?.SUPABASE_URL 
-        ? window.ENV.SUPABASE_URL 
-        : 'https://oofecaxnadoyqwxmyqtq.supabase.co',
-    
-    anonKey: typeof window !== 'undefined' && window.ENV?.SUPABASE_ANON_KEY 
-        ? window.ENV.SUPABASE_ANON_KEY 
-        : 'your-anon-key-here'  // ← Replace for local development
+    url: (typeof window !== 'undefined' && window.__ENV__?.SUPABASE_URL) || 'https://oofecaxnadoyqwxmyqtq.supabase.co',
+    anonKey: (typeof window !== 'undefined' && window.__ENV__?.SUPABASE_ANON_KEY) || 'your-anon-key-here'
 };
 
 // Store in localStorage for auth pages
