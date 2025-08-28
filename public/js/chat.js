@@ -636,10 +636,21 @@ class ChatApp {
             shareMenuItem.style.display = isInChatView ? 'flex' : 'none';
         }
         
-        // Show signup button only if not logged in
+        // Show signup button and divider only if not logged in
+        const isLoggedIn = !!this.authToken;
         if (signupMenuItem) {
-            const isLoggedIn = !!this.authToken;
             signupMenuItem.style.display = isLoggedIn ? 'none' : 'flex';
+        }
+        
+        const menuDivider = document.getElementById('menuDivider');
+        if (menuDivider) {
+            menuDivider.style.display = isLoggedIn ? 'none' : 'block';
+        }
+        
+        // Show logout button only if logged in
+        const logoutMenuItem = document.getElementById('logoutMenuItem');
+        if (logoutMenuItem) {
+            logoutMenuItem.style.display = isLoggedIn ? 'flex' : 'none';
         }
     }
     
@@ -1370,6 +1381,15 @@ class ChatApp {
         
         if (logoutBtn) {
             logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.logout();
+            });
+        }
+        
+        // Add logout handler for 3-dot menu logout button
+        const logoutMenuItem = document.getElementById('logoutMenuItem');
+        if (logoutMenuItem) {
+            logoutMenuItem.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.logout();
             });
