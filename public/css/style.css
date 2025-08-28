@@ -1821,25 +1821,33 @@ h3.ai-heading {
     }
 }
 
-/* Tablet Landscape specific - typical iPad landscape is 1024x768 */
+/* Tablet Landscape specific - prevent viewport overflow */
 @media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) and (max-height: 768px) {
     .custom-model-dropdown.open .custom-model-dropdown-menu {
         position: fixed !important;
-        top: auto !important;
-        bottom: 80px !important; /* Position above the input area and footer */
-        right: 85px !important; /* Align with button position */
+        top: 50% !important; /* Center vertically */
+        transform: translateY(-50%) !important; /* Perfect center */
+        bottom: auto !important;
+        right: 20px !important;
         left: auto !important;
-        width: 220px !important;
-        max-height: 150px !important; /* Compact height for landscape */
+        width: 240px !important;
+        max-height: 40vh !important; /* 40% of viewport height - stays within bounds */
         z-index: 9999 !important;
         overflow-y: auto;
-        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15) !important; /* Shadow going up */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
     }
     
-    /* For welcome view in tablet landscape */
-    .welcome-view .custom-model-dropdown.open .custom-model-dropdown-menu {
-        bottom: 100px !important; /* Higher in welcome view */
-        max-height: 120px !important; /* Even more compact */
+    /* Ensure body doesn't scroll when dropdown is open */
+    .custom-model-dropdown.open ~ * {
+        overflow: hidden !important;
+    }
+}
+
+/* For very small tablet landscape heights */
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) and (max-height: 600px) {
+    .custom-model-dropdown.open .custom-model-dropdown-menu {
+        max-height: 35vh !important; /* Even smaller for very short screens */
+        top: 45% !important;
     }
 }
 
