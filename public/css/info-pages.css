@@ -383,6 +383,208 @@ a:hover {
 }
 
 /* Responsive Design */
+/* Credit System Styles */
+.section-subtitle {
+    color: var(--text-tertiary);
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.credit-tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.credit-tier-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.credit-tier-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.tier-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tier-badge.free {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+}
+
+.tier-badge.budget {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+}
+
+.tier-badge.mid {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+}
+
+.tier-badge.premium {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.tier-title {
+    margin: 15px 0 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.tier-multiplier {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 10px 0;
+}
+
+.tier-description {
+    color: var(--text-tertiary);
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Model Access Styles */
+.model-access-grid {
+    display: grid;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.model-access-card {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 30px;
+    transition: all 0.3s ease;
+}
+
+.model-access-card.starter-plan {
+    border-color: #22c55e;
+}
+
+.model-access-card.pro-plan {
+    border-color: #8b5cf6;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(139, 92, 246, 0.02));
+}
+
+.access-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.model-count {
+    margin-left: auto;
+    padding: 6px 12px;
+    background: var(--bg-hover);
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.model-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin: 20px 0;
+}
+
+.model-category {
+    background: var(--bg-primary);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.category-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.model-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.model-list li {
+    padding: 8px 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.model-list li:last-child {
+    border-bottom: none;
+}
+
+.premium-list li {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.premium-list li .fa-star {
+    color: #f59e0b;
+    margin-right: 8px;
+}
+
+.access-warning {
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.access-warning i {
+    margin-right: 8px;
+}
+
+.access-success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.access-success i {
+    margin-right: 8px;
+}
+
+.access-description {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
 @media (max-width: 768px) {
     .info-container {
         padding: 15px;
