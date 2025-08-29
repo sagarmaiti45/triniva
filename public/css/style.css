@@ -679,24 +679,24 @@ textarea:focus {
     display: none;
     width: 36px;
     height: 36px;
-    border: 1px solid var(--border-color);
-    background: var(--bg-secondary);
+    border: none;
+    background: transparent;
     cursor: pointer;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
     flex-shrink: 0;
-    margin-right: 12px;
-    border-radius: 8px;
+    margin-right: 8px;
+    border-radius: 0;
     position: relative;
     flex-direction: column;
-    gap: 3px;
-    padding: 10px;
-    opacity: 0.9;
+    gap: 4px;
+    padding: 8px;
+    opacity: 1;
 }
 
 .hamburger-line {
-    width: 16px;
+    width: 20px;
     height: 2px;
     background: var(--text-primary);
     border-radius: 2px;
@@ -705,17 +705,17 @@ textarea:focus {
 }
 
 .mobile-menu-toggle:hover {
-    background: var(--bg-hover);
-    border-color: var(--text-secondary);
+    background: transparent;
+    border: none;
     opacity: 1;
 }
 
 .mobile-menu-toggle:hover .hamburger-line {
-    background: var(--text-primary);
+    background: var(--accent-color);
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(1) {
-    transform: translateY(5px) rotate(45deg);
+    transform: translateY(6px) rotate(45deg);
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(2) {
@@ -724,11 +724,11 @@ textarea:focus {
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(3) {
-    transform: translateY(-5px) rotate(-45deg);
+    transform: translateY(-6px) rotate(-45deg);
 }
 
 .mobile-menu-toggle:active {
-    transform: scale(0.95);
+    transform: scale(0.9);
 }
 
 
