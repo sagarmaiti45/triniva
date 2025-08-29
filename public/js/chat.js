@@ -1364,7 +1364,6 @@ class ChatApp {
     setupUserDropdown() {
         const userMenuBtn = document.getElementById('userMenuBtn');
         const userDropdown = document.getElementById('userDropdown');
-        const logoutBtn = document.getElementById('logoutBtn');
         
         if (userMenuBtn && userDropdown) {
             userMenuBtn.addEventListener('click', (e) => {
@@ -1383,29 +1382,34 @@ class ChatApp {
             });
         }
         
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.logout();
-            });
-        }
-        
         // Add logout handler for 3-dot menu logout button
         const logoutMenuItem = document.getElementById('logoutMenuItem');
         if (logoutMenuItem) {
-            logoutMenuItem.addEventListener('click', (e) => {
+            logoutMenuItem.addEventListener('click', async (e) => {
                 e.preventDefault();
-                this.logout();
+                await this.logout();
             });
         }
     }
     
-    logout() {
-        // Clear auth data
+    async logout() {
+        // Clear auth data from localStorage
         localStorage.removeItem('authToken');
         localStorage.removeItem('userId');
         localStorage.removeItem('userEmail');
         localStorage.removeItem('userName');
+        
+        // Sign out from Supabase if available
+        if (window.supabase) {
+            try {
+                await window.supabase.auth.signOut();
+            } catch (error) {
+                console.error('Supabase signOut error:', error);
+            }
+        }
+        
+        // Clear all localStorage to ensure clean state
+        localStorage.clear();
         
         // Reload page to reset state
         window.location.reload();
