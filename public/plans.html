@@ -879,7 +879,14 @@
                     .eq('id', session.user.id)
                     .single();
                 
-                return userData?.plan || 'free';
+                if (error) {
+                    console.error('Supabase error:', error);
+                    return 'free';
+                }
+                
+                const userPlan = userData?.plan || 'free';
+                console.log('User plan from database:', userPlan);
+                return userPlan;
             } catch (error) {
                 console.error('Error fetching user plan:', error);
                 return 'free';
@@ -910,24 +917,34 @@
                     freePlanButton.style.color = 'var(--text-secondary)';
                 }
                 
-                // Update subscribe buttons for paid plans
+                // First, clean up ALL existing badges and styles from ALL cards
+                document.querySelectorAll('.pricing-card').forEach(card => {
+                    const existingBadge = card.querySelector('.current-plan-badge');
+                    if (existingBadge) {
+                        existingBadge.remove();
+                    }
+                    card.style.borderColor = '';
+                    card.style.boxShadow = '';
+                    card.style.position = '';
+                });
+                
+                // Now update subscribe buttons for paid plans
                 document.querySelectorAll('.subscribe-btn').forEach(btn => {
                     const planId = btn.dataset.plan;
                     const card = btn.closest('.pricing-card');
                     
-                    // First, clean up any existing badges from all cards
-                    const existingBadge = card?.querySelector('.current-plan-badge');
-                    if (existingBadge) {
-                        existingBadge.remove();
-                    }
+                    console.log('Checking button with plan ID:', planId, 'against user plan:', currentUserPlan);
                     
-                    // Reset card styles
-                    if (card) {
-                        card.style.borderColor = '';
-                        card.style.boxShadow = '';
-                    }
+                    // Reset button styles first
+                    btn.disabled = false;
+                    btn.style.opacity = '';
+                    btn.style.cursor = '';
+                    btn.style.background = '';
+                    btn.style.color = '';
+                    btn.style.border = '';
                     
                     if (planId === currentUserPlan) {
+                        console.log('MATCH! Current user plan found:', planId);
                         // User is already on this plan
                         btn.innerHTML = '<i class="fas fa-check-circle"></i> Current Plan';
                         btn.disabled = true;
@@ -937,8 +954,8 @@
                         btn.style.color = 'var(--text-secondary)';
                         btn.style.border = '2px solid var(--border-color)';
                         
-                        // Add a current plan badge ONLY to this card
-                        if (card) {
+                        // Add a current plan badge ONLY to this specific card
+                        if (card && !card.querySelector('.current-plan-badge')) {
                             const badge = document.createElement('div');
                             badge.className = 'current-plan-badge';
                             badge.innerHTML = '<i class="fas fa-star"></i> ACTIVE';
@@ -970,12 +987,6 @@
                     } else {
                         // Different plan - keep it clickable
                         btn.innerHTML = '<i class="fas fa-credit-card"></i> Choose Plan';
-                        btn.disabled = false;
-                        btn.style.opacity = '';
-                        btn.style.cursor = '';
-                        btn.style.background = '';
-                        btn.style.color = '';
-                        btn.style.border = '';
                         
                         // Remove old event listeners by cloning
                         const newBtn = btn.cloneNode(true);
