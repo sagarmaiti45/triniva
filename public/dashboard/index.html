@@ -199,16 +199,69 @@
             document.getElementById('userName').textContent = userName;
             document.getElementById('userNameDisplay').textContent = userName;
             
-            // Load stats (mock data for now as backend is not connected)
-            document.getElementById('creditsBalance').textContent = '5,000';
-            document.getElementById('currentPlan').textContent = 'Free';
-            document.getElementById('totalChats').textContent = '12';
-            document.getElementById('usedCredits').textContent = '1,250';
-            document.getElementById('totalCredits').textContent = '5,000';
-            
-            // Update progress bar
-            const usedPercent = (1250 / 5000) * 100;
-            document.getElementById('creditProgress').style.width = `${usedPercent}%`;
+            // Load real user stats from Supabase
+            try {
+                // Get user data from users table
+                const { data: userData, error: userError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+                
+                if (userData) {
+                    // Display real data
+                    document.getElementById('creditsBalance').textContent = userData.credits.toLocaleString();
+                    document.getElementById('currentPlan').textContent = userData.plan.charAt(0).toUpperCase() + userData.plan.slice(1);
+                    document.getElementById('totalCredits').textContent = userData.credits.toLocaleString();
+                    
+                    // Calculate used credits (you can track this better with usage_logs)
+                    const { count: usageCount } = await supabase
+                        .from('usage_logs')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('user_id', session.user.id);
+                    
+                    const { data: usageData } = await supabase
+                        .from('usage_logs')
+                        .select('credits_used')
+                        .eq('user_id', session.user.id);
+                    
+                    const totalUsed = usageData ? usageData.reduce((sum, log) => sum + log.credits_used, 0) : 0;
+                    document.getElementById('usedCredits').textContent = totalUsed.toLocaleString();
+                    
+                    // Update progress bar
+                    const maxCredits = userData.plan === 'free' ? 5000 : 
+                                      userData.plan === 'starter' ? 15000 :
+                                      userData.plan === 'pro' ? 50000 : 150000;
+                    const usedPercent = (totalUsed / maxCredits) * 100;
+                    document.getElementById('creditProgress').style.width = `${Math.min(usedPercent, 100)}%`;
+                    
+                    // Get chat count
+                    const { count: chatCount } = await supabase
+                        .from('chat_history')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('user_id', session.user.id);
+                    
+                    document.getElementById('totalChats').textContent = chatCount || 0;
+                    
+                } else {
+                    // User not in database yet (new user) - show defaults
+                    document.getElementById('creditsBalance').textContent = '5,000';
+                    document.getElementById('currentPlan').textContent = 'Free';
+                    document.getElementById('totalChats').textContent = '0';
+                    document.getElementById('usedCredits').textContent = '0';
+                    document.getElementById('totalCredits').textContent = '5,000';
+                    document.getElementById('creditProgress').style.width = '0%';
+                }
+            } catch (error) {
+                console.error('Error loading user stats:', error);
+                // Show defaults on error
+                document.getElementById('creditsBalance').textContent = '5,000';
+                document.getElementById('currentPlan').textContent = 'Free';
+                document.getElementById('totalChats').textContent = '0';
+                document.getElementById('usedCredits').textContent = '0';
+                document.getElementById('totalCredits').textContent = '5,000';
+                document.getElementById('creditProgress').style.width = '0%';
+            }
             
             // Load recent activity
             loadRecentActivity(session);
@@ -218,29 +271,74 @@
         async function loadRecentActivity(session) {
             const activityContainer = document.getElementById('recentActivity');
             
-            // Mock data for demonstration
-            const mockActivity = [
-                { model: 'GPT-4o Mini', credits: 150, time: '2 hours ago' },
-                { model: 'Claude Sonnet', credits: 320, time: '5 hours ago' },
-                { model: 'Gemini Flash', credits: 85, time: 'Yesterday' },
-                { model: 'DeepSeek R1', credits: 45, time: 'Yesterday' },
-                { model: 'GPT-4o', credits: 280, time: '2 days ago' }
-            ];
-            
-            activityContainer.innerHTML = mockActivity.map(item => `
-                <div class="activity-item">
-                    <div class="activity-icon">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <div class="activity-info">
-                        <div class="activity-title">${item.model}</div>
-                        <div class="activity-meta">
-                            <span class="credits-used">${item.credits} credits</span>
-                            <span class="time">${item.time}</span>
+            try {
+                // Get real usage logs from database
+                const { data: logs, error } = await supabase
+                    .from('usage_logs')
+                    .select('*')
+                    .eq('user_id', session.user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (logs && logs.length > 0) {
+                    activityContainer.innerHTML = logs.map(log => {
+                        // Format time ago
+                        const timeAgo = getTimeAgo(new Date(log.created_at));
+                        // Extract model name from model_id
+                        const modelName = log.model_id.split('/').pop().replace(/-/g, ' ');
+                        
+                        return `
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="activity-info">
+                                    <div class="activity-title">${modelName}</div>
+                                    <div class="activity-meta">
+                                        <span class="credits-used">${log.credits_used} credits</span>
+                                        <span class="time">${timeAgo}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    // Show empty state for new users
+                    activityContainer.innerHTML = `
+                        <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                            <i class="fas fa-comments" style="font-size: 48px; opacity: 0.3; margin-bottom: 15px;"></i>
+                            <p>No activity yet</p>
+                            <p style="font-size: 14px; margin-top: 10px;">Start chatting to see your usage here</p>
                         </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading activity:', error);
+                // Show empty state on error
+                activityContainer.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                        <i class="fas fa-comments" style="font-size: 48px; opacity: 0.3; margin-bottom: 15px;"></i>
+                        <p>No activity yet</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Start chatting to see your usage here</p>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }
+        }
+        
+        // Helper function to format time ago
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " minutes ago";
+            return "Just now";
         }
         
         // Logout handler
