@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/css/info-pages.css">
+    <link rel="stylesheet" href="/css/skeleton.css">
     <link rel="stylesheet" href="/css/payment-modal.css">
 </head>
 <body>
@@ -28,8 +29,17 @@
                 Flexible pricing to match your AI usage needs. Cancel anytime.
             </p>
             
+            <!-- Skeleton Loader for Free Plan -->
+            <div class="skeleton-free-banner" id="freePlanSkeleton" style="display: none;">
+                <div class="skeleton-free-info">
+                    <div class="skeleton skeleton-free-title"></div>
+                    <div class="skeleton skeleton-free-desc"></div>
+                </div>
+                <div class="skeleton skeleton-free-button"></div>
+            </div>
+
             <!-- Free Plan - Slim -->
-            <div class="free-plan-container" id="freePlanBanner">
+            <div class="free-plan-container" id="freePlanBanner" style="display: none;">
                 <div class="free-plan-slim">
                     <div class="free-plan-info">
                         <h3>Free Plan - ₹0/month</h3>
@@ -41,8 +51,104 @@
                 </div>
             </div>
 
+            <!-- Skeleton Loaders for Pricing Cards -->
+            <div class="paid-plans-container" id="pricingCardsSkeleton">
+                <div class="skeleton-pricing-card">
+                    <div class="skeleton-plan-header">
+                        <div class="skeleton skeleton-plan-name"></div>
+                        <div class="skeleton skeleton-plan-price"></div>
+                        <div class="skeleton skeleton-plan-desc"></div>
+                    </div>
+                    <div class="plan-features">
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text"></div>
+                        </div>
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text" style="width: 85%;"></div>
+                        </div>
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text" style="width: 70%;"></div>
+                        </div>
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text" style="width: 90%;"></div>
+                        </div>
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton skeleton-button"></div>
+                </div>
+                
+                <div class="skeleton-pricing-card">
+                    <div class="skeleton-plan-header">
+                        <div class="skeleton skeleton-plan-name"></div>
+                        <div class="skeleton skeleton-plan-price"></div>
+                        <div class="skeleton skeleton-plan-desc"></div>
+                    </div>
+                    <div class="plan-features">
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text"></div>
+                        </div>
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text" style="width: 85%;"></div>
+                        </div>
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text" style="width: 70%;"></div>
+                        </div>
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text" style="width: 90%;"></div>
+                        </div>
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton skeleton-button"></div>
+                </div>
+                
+                <div class="skeleton-pricing-card">
+                    <div class="skeleton-plan-header">
+                        <div class="skeleton skeleton-plan-name"></div>
+                        <div class="skeleton skeleton-plan-price"></div>
+                        <div class="skeleton skeleton-plan-desc"></div>
+                    </div>
+                    <div class="plan-features">
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text"></div>
+                        </div>
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text" style="width: 85%;"></div>
+                        </div>
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text" style="width: 70%;"></div>
+                        </div>
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text" style="width: 90%;"></div>
+                        </div>
+                        <div class="skeleton-feature">
+                            <div class="skeleton skeleton-feature-icon"></div>
+                            <div class="skeleton skeleton-feature-text" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton skeleton-button"></div>
+                </div>
+            </div>
+
             <!-- Paid Plans - Side by Side -->
-            <div class="paid-plans-container">
+            <div class="paid-plans-container" id="pricingCards" style="display: none;">
                 <!-- Starter Plan -->
                 <div class="pricing-card">
                     <div class="plan-header">
@@ -896,9 +1002,37 @@
             }
         }
         
+        // Show/hide skeleton loaders
+        function showSkeletons() {
+            document.getElementById('pricingCardsSkeleton').style.display = '';
+            document.getElementById('pricingCards').style.display = 'none';
+            
+            // Show free plan skeleton for non-logged in users
+            const freePlanSkeleton = document.getElementById('freePlanSkeleton');
+            if (freePlanSkeleton) {
+                freePlanSkeleton.style.display = 'flex';
+            }
+        }
+        
+        function hideSkeletons() {
+            document.getElementById('pricingCardsSkeleton').style.display = 'none';
+            document.getElementById('pricingCards').style.display = '';
+            
+            const freePlanSkeleton = document.getElementById('freePlanSkeleton');
+            if (freePlanSkeleton) {
+                freePlanSkeleton.style.display = 'none';
+            }
+        }
+        
         // Update buttons based on user's current plan
         async function updateButtons() {
+            // Show skeletons while loading
+            showSkeletons();
+            
             const session = await checkAuth();
+            
+            // Small delay to make loading feel smooth
+            await new Promise(resolve => setTimeout(resolve, 300));
             
             if (session) {
                 // Get user's current plan
@@ -908,6 +1042,8 @@
                 const freePlanBanner = document.getElementById('freePlanBanner');
                 if (freePlanBanner && currentUserPlan !== 'free') {
                     freePlanBanner.style.display = 'none';
+                } else if (freePlanBanner && currentUserPlan === 'free') {
+                    freePlanBanner.style.display = 'block';
                 }
                 
                 // Handle free plan button for logged-in free users
@@ -1019,6 +1155,9 @@
                     });
                 });
             }
+            
+            // Hide skeletons after everything is loaded
+            hideSkeletons();
         }
         
         // Initialize

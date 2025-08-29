@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/dashboard.css">
     <link rel="stylesheet" href="/css/billing.css">
+    <link rel="stylesheet" href="/css/skeleton.css">
     <link rel="stylesheet" href="/css/payment-modal.css">
 </head>
 <body>
@@ -64,8 +65,24 @@
         <div class="dashboard-main">
             <div class="dashboard-container">
             
+                <!-- Current Plan Skeleton -->
+                <div class="current-plan-section" id="currentPlanSkeleton">
+                    <h2>Current Plan</h2>
+                    <div class="skeleton-current-plan">
+                        <div class="skeleton-plan-info">
+                            <div class="skeleton skeleton-plan-title"></div>
+                            <div class="skeleton skeleton-plan-credits"></div>
+                            <div class="skeleton skeleton-plan-expires"></div>
+                        </div>
+                        <div class="skeleton-usage-bar">
+                            <div class="skeleton skeleton-usage-progress"></div>
+                            <div class="skeleton skeleton-usage-text"></div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Current Plan -->
-                <div class="current-plan-section">
+                <div class="current-plan-section" id="currentPlanSection" style="display: none;">
                     <h2>Current Plan</h2>
                     <div class="current-plan-card">
                         <div class="plan-info">
@@ -211,10 +228,24 @@
             return session;
         }
         
+        // Show/hide skeleton loaders
+        function showSkeletons() {
+            document.getElementById('currentPlanSkeleton').style.display = 'block';
+            document.getElementById('currentPlanSection').style.display = 'none';
+        }
+        
+        function hideSkeletons() {
+            document.getElementById('currentPlanSkeleton').style.display = 'none';
+            document.getElementById('currentPlanSection').style.display = 'block';
+        }
+        
         // Load billing data
         async function loadBillingData() {
             const session = await checkAuth();
             if (!session) return;
+            
+            // Show skeletons while loading
+            showSkeletons();
             
             // Update user name
             document.getElementById('userName').textContent = 
@@ -257,6 +288,9 @@
                 });
                 displayUpgradePlans('free');
             }
+            
+            // Hide skeletons after data is loaded
+            hideSkeletons();
             
             // Load payment history
             loadPaymentHistory(session);

@@ -1,0 +1,331 @@
+/* Skeleton Loader Styles */
+
+/* Base skeleton animation */
+@keyframes skeleton-loading {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bg-secondary) 25%,
+        var(--bg-tertiary) 50%,
+        var(--bg-secondary) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton-text {
+    height: 16px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.skeleton-text.small {
+    height: 12px;
+    width: 60%;
+}
+
+.skeleton-text.medium {
+    height: 14px;
+    width: 80%;
+}
+
+.skeleton-text.large {
+    height: 20px;
+    width: 40%;
+}
+
+.skeleton-button {
+    height: 44px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* Pricing Card Skeleton */
+.skeleton-pricing-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 30px;
+    height: 520px;
+}
+
+.skeleton-plan-header {
+    text-align: center;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 25px;
+}
+
+.skeleton-plan-name {
+    width: 100px;
+    height: 28px;
+    margin: 0 auto 15px;
+}
+
+.skeleton-plan-price {
+    width: 120px;
+    height: 48px;
+    margin: 0 auto 10px;
+}
+
+.skeleton-plan-desc {
+    width: 180px;
+    height: 14px;
+    margin: 0 auto;
+}
+
+.skeleton-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.skeleton-feature-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.skeleton-feature-text {
+    flex: 1;
+    height: 16px;
+}
+
+/* Dashboard Card Skeleton */
+.skeleton-stat-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 30px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.skeleton-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.skeleton-stat-content {
+    flex: 1;
+}
+
+.skeleton-stat-value {
+    height: 36px;
+    width: 120px;
+    margin-bottom: 8px;
+}
+
+.skeleton-stat-label {
+    height: 16px;
+    width: 100px;
+}
+
+.skeleton-progress-bar {
+    height: 8px;
+    width: 100%;
+    margin-top: 12px;
+}
+
+/* Activity List Skeleton */
+.skeleton-activity-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.skeleton-activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.skeleton-activity-info {
+    flex: 1;
+}
+
+.skeleton-activity-title {
+    height: 16px;
+    width: 140px;
+    margin-bottom: 8px;
+}
+
+.skeleton-activity-meta {
+    height: 12px;
+    width: 200px;
+}
+
+/* Free Plan Banner Skeleton */
+.skeleton-free-banner {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.skeleton-free-info {
+    flex: 1;
+}
+
+.skeleton-free-title {
+    height: 20px;
+    width: 150px;
+    margin-bottom: 8px;
+}
+
+.skeleton-free-desc {
+    height: 14px;
+    width: 300px;
+}
+
+.skeleton-free-button {
+    width: 140px;
+    height: 40px;
+    border-radius: 6px;
+}
+
+/* Pulse animation variant */
+@keyframes skeleton-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.skeleton-pulse {
+    background: var(--bg-tertiary);
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* Table Skeleton */
+.skeleton-table-row {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    gap: 20px;
+}
+
+.skeleton-table-cell {
+    height: 16px;
+    flex: 1;
+}
+
+.skeleton-table-cell.small {
+    flex: 0.5;
+}
+
+.skeleton-table-cell.large {
+    flex: 2;
+}
+
+/* Billing Page Skeleton */
+.skeleton-current-plan {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.skeleton-plan-info {
+    margin-bottom: 20px;
+}
+
+.skeleton-plan-title {
+    height: 24px;
+    width: 150px;
+    margin-bottom: 12px;
+}
+
+.skeleton-plan-credits {
+    height: 16px;
+    width: 200px;
+    margin-bottom: 8px;
+}
+
+.skeleton-plan-expires {
+    height: 14px;
+    width: 180px;
+}
+
+.skeleton-usage-bar {
+    margin-top: 20px;
+}
+
+.skeleton-usage-progress {
+    height: 12px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.skeleton-usage-text {
+    height: 14px;
+    width: 150px;
+}
+
+/* Container for skeleton layouts */
+.skeleton-container {
+    padding: 20px;
+}
+
+.skeleton-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.skeleton-grid.cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.skeleton-grid.cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+    .skeleton-grid.cols-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .skeleton-grid.cols-3,
+    .skeleton-grid.cols-2 {
+        grid-template-columns: 1fr;
+    }
+    
+    .skeleton-free-banner {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .skeleton-free-button {
+        width: 100%;
+    }
+}
