@@ -295,13 +295,13 @@ textarea:focus {
     min-height: 40px;
 }
 
-.sidebar.collapsed .conversation-item {
+.sidebar:not(.expanded) .conversation-item {
     padding: 8px;
     justify-content: center;
     min-height: 40px;
 }
 
-.sidebar.collapsed .conversation-item svg {
+.sidebar:not(.expanded) .conversation-item svg {
     margin: 0;
 }
 
@@ -366,7 +366,7 @@ textarea:focus {
 }
 
 /* Collapsed sidebar - hide no conversations placeholder completely */
-.sidebar.collapsed .no-conversations {
+.sidebar:not(.expanded) .no-conversations {
     display: none;
 }
 
