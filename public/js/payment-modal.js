@@ -72,6 +72,17 @@ export class PaymentModal {
                             <a href="/dashboard" class="success-button">Go to Dashboard</a>
                         </div>
                         
+                        <!-- Already Subscribed State -->
+                        <div class="already-subscribed" id="alreadySubscribed" style="display: none;">
+                            <i class="fas fa-info-circle"></i>
+                            <h3>You're Already Subscribed!</h3>
+                            <p id="alreadySubscribedMessage">You already have an active subscription</p>
+                            <div class="already-subscribed-buttons">
+                                <a href="/dashboard/billing.html" class="success-button">View Billing</a>
+                                <button class="secondary-button" onclick="paymentModal.close()">Close</button>
+                            </div>
+                        </div>
+                        
                         <div class="secure-badge">
                             <i class="fas fa-lock"></i>
                             <span>Secure payment with 256-bit encryption</span>
@@ -149,12 +160,31 @@ export class PaymentModal {
         this.currentPlan = { id: planId, ...plans[planId] };
         if (!this.currentPlan.name) return;
 
-        // Update plan summary
-        this.updatePlanSummary();
-
         // Check authentication
         const { data: { session } } = await this.supabase.auth.getSession();
         this.session = session;
+
+        // Check if user already has this plan
+        if (session) {
+            try {
+                const { data: userData } = await this.supabase
+                    .from('users')
+                    .select('plan')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (userData && userData.plan === planId) {
+                    // User already has this plan - show message instead
+                    this.showAlreadySubscribedMessage(planId);
+                    return;
+                }
+            } catch (error) {
+                console.error('Error checking user plan:', error);
+            }
+        }
+
+        // Update plan summary
+        this.updatePlanSummary();
 
         // Show appropriate section
         const authSection = document.getElementById('authSection');
@@ -319,6 +349,35 @@ export class PaymentModal {
         }
     }
 
+    showAlreadySubscribedMessage(planId) {
+        const planNames = {
+            'starter': 'Starter',
+            'pro': 'Pro',
+            'business': 'Business'
+        };
+        
+        const planName = planNames[planId] || planId;
+        
+        // Hide all other sections
+        document.getElementById('authSection').style.display = 'none';
+        document.getElementById('paymentSection').style.display = 'none';
+        document.getElementById('paymentLoading').classList.remove('show');
+        document.getElementById('paymentSuccess').classList.remove('show');
+        document.getElementById('planSummary').style.display = 'none';
+        
+        // Update message and show already subscribed section
+        document.getElementById('alreadySubscribedMessage').innerHTML = 
+            `You're already on the <strong>${planName} Plan</strong>. Visit your billing page to manage your subscription or upgrade to a higher plan.`;
+        document.getElementById('alreadySubscribed').style.display = 'block';
+        
+        // Update modal header
+        document.querySelector('.payment-modal-title').textContent = 'Already Subscribed';
+        document.querySelector('.payment-modal-subtitle').textContent = `You have an active ${planName} subscription`;
+        
+        // Show modal
+        this.modalElement.classList.add('show');
+    }
+
     close() {
         this.modalElement.classList.remove('show');
         this.currentPlan = null;
@@ -329,6 +388,12 @@ export class PaymentModal {
         document.getElementById('paymentSection').style.display = 'none';
         document.getElementById('paymentLoading').classList.remove('show');
         document.getElementById('paymentSuccess').classList.remove('show');
+        document.getElementById('alreadySubscribed').style.display = 'none';
+        document.getElementById('planSummary').style.display = 'block';
+        
+        // Reset header text
+        document.querySelector('.payment-modal-title').textContent = 'Complete Your Subscription';
+        document.querySelector('.payment-modal-subtitle').textContent = 'Secure payment powered by Razorpay';
     }
 }
 

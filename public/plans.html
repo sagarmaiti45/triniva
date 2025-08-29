@@ -1231,6 +1231,31 @@
         // Initialize
         updateButtons();
         
+        // Check if user is coming back from auth with a plan to checkout
+        async function checkCheckoutParam() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const checkoutPlan = urlParams.get('checkout');
+            
+            if (checkoutPlan) {
+                // Remove the checkout param from URL
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.delete('checkout');
+                window.history.replaceState({}, document.title, newUrl.pathname);
+                
+                // Wait for auth to settle and then open payment modal
+                setTimeout(async () => {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (session) {
+                        // User is logged in, open payment modal
+                        // The modal will check if they already have this plan
+                        paymentModal.open(checkoutPlan);
+                    }
+                }, 1000);
+            }
+        }
+        
+        checkCheckoutParam();
+        
         // Re-check auth status when page becomes visible (in case user logged out in another tab)
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {

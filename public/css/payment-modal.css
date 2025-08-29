@@ -356,6 +356,69 @@
     to { transform: rotate(360deg); }
 }
 
+/* Already Subscribed State */
+.already-subscribed {
+    display: none;
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.already-subscribed i {
+    font-size: 48px;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+}
+
+.already-subscribed h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+}
+
+.already-subscribed p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.already-subscribed-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.already-subscribed-buttons .success-button {
+    padding: 12px 24px;
+    background: var(--accent-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.already-subscribed-buttons .success-button:hover {
+    background: var(--accent-hover);
+}
+
+.already-subscribed-buttons .secondary-button {
+    padding: 12px 24px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.already-subscribed-buttons .secondary-button:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 480px) {
     .payment-modal {
