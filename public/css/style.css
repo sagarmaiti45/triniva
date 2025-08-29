@@ -365,17 +365,8 @@ textarea:focus {
     transition: all 0.3s ease;
 }
 
-/* Collapsed sidebar - no conversations */
+/* Collapsed sidebar - hide no conversations placeholder completely */
 .sidebar.collapsed .no-conversations {
-    padding: 20px 8px;
-}
-
-.sidebar.collapsed .no-conversations i {
-    font-size: 24px;
-    margin-bottom: 8px;
-}
-
-.sidebar.collapsed .no-conversations p {
     display: none;
 }
 
