@@ -350,16 +350,33 @@ textarea:focus {
     text-align: center;
     padding: 40px 20px;
     color: var(--text-tertiary);
+    transition: all 0.3s ease;
 }
 
 .no-conversations i {
     font-size: 48px;
     margin-bottom: 12px;
     opacity: 0.3;
+    transition: all 0.3s ease;
 }
 
 .no-conversations p {
     font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+/* Collapsed sidebar - no conversations */
+.sidebar.collapsed .no-conversations {
+    padding: 20px 8px;
+}
+
+.sidebar.collapsed .no-conversations i {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.sidebar.collapsed .no-conversations p {
+    display: none;
 }
 
 .sidebar-footer {

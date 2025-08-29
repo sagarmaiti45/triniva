@@ -221,7 +221,7 @@ export class ChatManager {
         // If no conversations, show placeholder
         if (this.conversations.length === 0) {
             conversationsList.innerHTML = `
-                <div class="no-conversations">
+                <div class="no-conversations" title="Start a new chat to begin">
                     <i class="fas fa-comments"></i>
                     <p>Start a new chat to begin</p>
                 </div>
