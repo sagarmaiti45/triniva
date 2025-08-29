@@ -763,6 +763,12 @@ class ChatApp {
         const currentConv = this.conversations.find(c => c.id === this.currentConversationId);
         if (!currentConv) return;
 
+        // Clear the "no conversations" placeholder if it exists
+        const noConversations = this.conversationsList.querySelector('.no-conversations');
+        if (noConversations) {
+            this.conversationsList.innerHTML = '';
+        }
+
         let convItem = document.querySelector(`[data-conversation-id="${this.currentConversationId}"]`);
         
         if (!convItem) {

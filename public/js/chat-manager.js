@@ -218,6 +218,17 @@ export class ChatManager {
         // Clear existing items
         conversationsList.innerHTML = '';
         
+        // If no conversations, show placeholder
+        if (this.conversations.length === 0) {
+            conversationsList.innerHTML = `
+                <div class="no-conversations">
+                    <i class="fas fa-comments"></i>
+                    <p>Start a new chat to begin</p>
+                </div>
+            `;
+            return;
+        }
+        
         // Add each conversation
         this.conversations.forEach(conv => {
             const convItem = document.createElement('div');
@@ -252,16 +263,6 @@ export class ChatManager {
             
             conversationsList.appendChild(convItem);
         });
-        
-        // If no conversations, show placeholder
-        if (this.conversations.length === 0) {
-            conversationsList.innerHTML = `
-                <div class="no-conversations">
-                    <i class="fas fa-comments"></i>
-                    <p>No conversations yet</p>
-                </div>
-            `;
-        }
     }
 
     // Render messages in chat area
