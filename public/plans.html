@@ -545,7 +545,7 @@
             </section>
 
             <!-- CTA Section -->
-            <section class="info-section cta-section">
+            <section class="info-section cta-section" id="ctaSection">
                 <h2>Ready to Get Started?</h2>
                 <p>Join thousands of users who are already leveraging the power of AI with Triniva.</p>
                 <div class="cta-buttons">
@@ -972,9 +972,21 @@
         
         let currentUserPlan = null;
         
-        // Check authentication status
+        // Check authentication status with fresh check
         async function checkAuth() {
+            // Force refresh the session to ensure we have the latest auth state
             const { data: { session }, error } = await supabase.auth.getSession();
+            
+            // Double-check by also getting the user
+            if (session) {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    // Session exists but user doesn't - clear it
+                    await supabase.auth.signOut();
+                    return null;
+                }
+            }
+            
             return session;
         }
         
@@ -1029,10 +1041,10 @@
             // Show skeletons while loading
             showSkeletons();
             
-            // Reset current plan first
+            // Force complete reset
             currentUserPlan = null;
             
-            // Clean up any existing badges and styles from previous session
+            // Clean up ALL badges and styles
             document.querySelectorAll('.current-plan-badge').forEach(badge => badge.remove());
             document.querySelectorAll('.pricing-card').forEach(card => {
                 card.style.borderColor = '';
@@ -1040,7 +1052,28 @@
                 card.style.position = '';
             });
             
+            // Reset all buttons to default first
+            document.querySelectorAll('.subscribe-btn').forEach(btn => {
+                btn.innerHTML = 'Subscribe Now';
+                btn.disabled = false;
+                btn.style.opacity = '';
+                btn.style.cursor = '';
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.style.border = '';
+            });
+            
+            // Check for any stale auth tokens and clear them
+            const authToken = localStorage.getItem('authToken');
             const session = await checkAuth();
+            
+            // If we have a token but no session, clear everything
+            if (authToken && !session) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userId');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+            }
             
             // Small delay to make loading feel smooth
             await new Promise(resolve => setTimeout(resolve, 300));
@@ -1048,6 +1081,12 @@
             if (session) {
                 // Get user's current plan
                 currentUserPlan = await getUserPlan(session);
+                
+                // Hide CTA section for logged-in users
+                const ctaSection = document.getElementById('ctaSection');
+                if (ctaSection) {
+                    ctaSection.style.display = 'none';
+                }
                 
                 // Hide free plan banner for paid users
                 const freePlanBanner = document.getElementById('freePlanBanner');
@@ -1150,6 +1189,12 @@
             } else {
                 // Not logged in - reset everything and show free plan banner
                 currentUserPlan = null;
+                
+                // Show CTA section for non-logged in users
+                const ctaSection = document.getElementById('ctaSection');
+                if (ctaSection) {
+                    ctaSection.style.display = 'block';
+                }
                 
                 const freePlanBanner = document.getElementById('freePlanBanner');
                 if (freePlanBanner) {
