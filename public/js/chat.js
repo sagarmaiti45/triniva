@@ -195,7 +195,11 @@ class ChatApp {
 
         // New chat button
         this.newChatBtn.addEventListener('click', () => {
-            this.createNewConversation();
+            if (window.chatManager) {
+                window.chatManager.startNewChat();
+            } else {
+                this.createNewConversation();
+            }
         });
 
         // Sidebar toggle button
@@ -573,6 +577,27 @@ class ChatApp {
         });
     }
     
+    updateModelDisplay() {
+        // Update the custom dropdown display when model changes
+        const selectedOption = this.modelSelect.options[this.modelSelect.selectedIndex];
+        if (selectedOption && this.dropdownTrigger) {
+            const provider = selectedOption.value.split('/')[0];
+            const modelName = selectedOption.text;
+            
+            // Update dropdown trigger display
+            const logoImg = this.dropdownTrigger.querySelector('.model-logo');
+            const nameSpan = this.dropdownTrigger.querySelector('.model-name');
+            
+            if (logoImg) logoImg.src = `/images/models/${provider}.png`;
+            if (nameSpan) nameSpan.textContent = modelName;
+            
+            // Update mobile button if exists
+            if (this.mobileModelLogo) {
+                this.mobileModelLogo.src = `/images/models/${provider}.png`;
+            }
+        }
+    }
+
     clearAttachedImages(type) {
         this.attachedImages = [];
         const container = type === 'hero' ? this.heroImagePreview : this.chatImagePreview;
@@ -790,6 +815,22 @@ class ChatApp {
         
         if ((!message && !hasImages) || this.isStreaming) return;
 
+        // If using chat manager and logged in, handle through it
+        if (window.chatManager && window.chatManager.user) {
+            // Create conversation if first message
+            if (this.isFirstMessage) {
+                const title = window.chatManager.generateTitle(message);
+                const conversationId = await window.chatManager.createConversation(title, this.modelSelect.value);
+                if (conversationId) {
+                    this.currentConversationId = conversationId;
+                    this.isFirstMessage = false;
+                }
+            }
+            
+            // Save user message to database
+            await window.chatManager.saveMessage(message || "What's in this image?", 'user');
+        }
+
         this.addMessage(message || "What's in this image?", 'user', false, false, this.attachedImages);
         
         // Save images before clearing
@@ -832,6 +873,12 @@ class ChatApp {
         // Use the conversation's model, not the current selector value
         const modelToUse = currentConv ? currentConv.model : this.modelSelect.value;
         
+        // Get conversation context if using chat manager
+        let conversationContext = [];
+        if (window.chatManager && window.chatManager.currentConversationId) {
+            conversationContext = window.chatManager.getConversationContext(5); // Get last 5 messages for context
+        }
+        
         try {
             // Build headers with auth token if available
             const headers = {
@@ -849,6 +896,7 @@ class ChatApp {
                     message: message,
                     model: modelToUse,
                     sessionId: this.sessionId,
+                    context: conversationContext, // Include conversation history for better context
                     images: images.map(img => ({
                         type: 'image_url',
                         image_url: {
@@ -949,6 +997,11 @@ class ChatApp {
                                     role: 'assistant',
                                     content: fullResponse
                                 });
+                            }
+                            
+                            // Save to database if using chat manager
+                            if (window.chatManager && window.chatManager.currentConversationId) {
+                                window.chatManager.saveMessage(fullResponse, 'assistant', modelToUse);
                             }
                             break;
                         }
@@ -1444,5 +1497,5 @@ window.copyCodeBlock = function(codeId, button) {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    new ChatApp();
+    window.chatApp = new ChatApp();
 });

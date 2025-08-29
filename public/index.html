@@ -301,6 +301,7 @@
     <script type="module">
         import { UpgradePrompt } from '/js/upgrade-prompt.js';
         import { PaymentModal } from '/js/payment-modal.js';
+        import { ChatManager } from '/js/chat-manager.js';
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
         
         // Initialize Supabase and payment modal
@@ -310,6 +311,9 @@
             const supabase = createClient(supabaseUrl, supabaseAnonKey);
             window.supabase = supabase; // Make it globally available for logout
             window.paymentModal = new PaymentModal(supabase);
+            
+            // Initialize chat manager
+            window.chatManager = new ChatManager(supabase, window.chatApp || {});
         }
         
         // Initialize upgrade prompt
@@ -317,5 +321,23 @@
     </script>
     
     <script src="/js/chat.js"></script>
+    
+    <!-- Initialize chat manager after chat.js loads -->
+    <script type="module">
+        // Wait for chat app to be initialized
+        setTimeout(async () => {
+            if (window.chatApp && window.chatManager) {
+                window.chatManager.chatApp = window.chatApp;
+                
+                // Check for authenticated user
+                if (window.supabase) {
+                    const { data: { session } } = await window.supabase.auth.getSession();
+                    if (session) {
+                        await window.chatManager.initialize(session.user);
+                    }
+                }
+            }
+        }, 500);
+    </script>
 </body>
 </html>

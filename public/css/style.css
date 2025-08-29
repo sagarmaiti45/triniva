@@ -314,6 +314,54 @@ textarea:focus {
     color: var(--text-primary);
 }
 
+/* Conversation delete button */
+.conv-delete-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all 0.2s;
+    display: none;
+}
+
+.conversation-item:hover .conv-delete-btn {
+    opacity: 1;
+    display: block;
+}
+
+.conv-delete-btn:hover {
+    background: rgba(255, 82, 82, 0.1);
+    color: #ff5252;
+}
+
+.conv-delete-btn i {
+    font-size: 12px;
+}
+
+/* No conversations placeholder */
+.no-conversations {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-tertiary);
+}
+
+.no-conversations i {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.3;
+}
+
+.no-conversations p {
+    font-size: 14px;
+}
+
 .sidebar-footer {
     padding: 12px;
 }
