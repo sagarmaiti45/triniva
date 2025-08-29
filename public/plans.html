@@ -29,13 +29,13 @@
             </p>
             
             <!-- Free Plan - Slim -->
-            <div class="free-plan-container">
+            <div class="free-plan-container" id="freePlanBanner">
                 <div class="free-plan-slim">
                     <div class="free-plan-info">
                         <h3>Free Plan - ₹0/month</h3>
-                        <span class="free-features">1,000 credits monthly • Access to 4 free models only</span>
+                        <span class="free-features">5,000 credits monthly • Access to 4 free models only</span>
                     </div>
-                    <a href="/auth/signup.html" class="free-plan-button">
+                    <a href="/auth/signup.html" class="free-plan-button" id="freePlanButton">
                         Get Started Free
                     </a>
                 </div>
@@ -58,7 +58,7 @@
                     <div class="plan-features">
                         <div class="feature">
                             <i class="fas fa-check"></i>
-                            <span><strong>10,000 credits</strong> monthly</span>
+                            <span><strong>15,000 credits</strong> monthly</span>
                         </div>
                         <div class="feature">
                             <i class="fas fa-check"></i>
@@ -103,7 +103,7 @@
                     <div class="plan-features">
                         <div class="feature">
                             <i class="fas fa-check"></i>
-                            <span><strong>30,000 credits</strong> monthly</span>
+                            <span><strong>50,000 credits</strong> monthly</span>
                         </div>
                         <div class="feature">
                             <i class="fas fa-check"></i>
@@ -151,7 +151,7 @@
                     <div class="plan-features">
                         <div class="feature">
                             <i class="fas fa-check"></i>
-                            <span><strong>80,000 credits</strong> monthly</span>
+                            <span><strong>150,000 credits</strong> monthly</span>
                         </div>
                         <div class="feature">
                             <i class="fas fa-check"></i>
@@ -271,10 +271,10 @@
                         <tbody>
                             <tr>
                                 <td>Monthly Credits</td>
-                                <td>1,000</td>
-                                <td>10,000</td>
-                                <td>30,000</td>
-                                <td>80,000</td>
+                                <td>5,000</td>
+                                <td>15,000</td>
+                                <td>50,000</td>
+                                <td>150,000</td>
                             </tr>
                             <tr>
                                 <td>AI Models</td>
@@ -894,8 +894,38 @@
                 // Get user's current plan
                 currentUserPlan = await getUserPlan(session);
                 
+                // Hide free plan banner for paid users
+                const freePlanBanner = document.getElementById('freePlanBanner');
+                if (freePlanBanner && currentUserPlan !== 'free') {
+                    freePlanBanner.style.display = 'none';
+                }
+                
+                // Handle free plan button for logged-in free users
+                const freePlanButton = document.getElementById('freePlanButton');
+                if (freePlanButton && currentUserPlan === 'free') {
+                    freePlanButton.innerHTML = '<i class="fas fa-check-circle"></i> Current Plan';
+                    freePlanButton.style.pointerEvents = 'none';
+                    freePlanButton.style.opacity = '0.7';
+                    freePlanButton.style.background = 'var(--bg-secondary)';
+                    freePlanButton.style.color = 'var(--text-secondary)';
+                }
+                
+                // Update subscribe buttons for paid plans
                 document.querySelectorAll('.subscribe-btn').forEach(btn => {
                     const planId = btn.dataset.plan;
+                    const card = btn.closest('.pricing-card');
+                    
+                    // First, clean up any existing badges from all cards
+                    const existingBadge = card?.querySelector('.current-plan-badge');
+                    if (existingBadge) {
+                        existingBadge.remove();
+                    }
+                    
+                    // Reset card styles
+                    if (card) {
+                        card.style.borderColor = '';
+                        card.style.boxShadow = '';
+                    }
                     
                     if (planId === currentUserPlan) {
                         // User is already on this plan
@@ -907,9 +937,8 @@
                         btn.style.color = 'var(--text-secondary)';
                         btn.style.border = '2px solid var(--border-color)';
                         
-                        // Add a current plan badge to the card
-                        const card = btn.closest('.pricing-card');
-                        if (card && !card.querySelector('.current-plan-badge')) {
+                        // Add a current plan badge ONLY to this card
+                        if (card) {
                             const badge = document.createElement('div');
                             badge.className = 'current-plan-badge';
                             badge.innerHTML = '<i class="fas fa-star"></i> ACTIVE';
@@ -925,6 +954,7 @@
                                 font-weight: 600;
                                 text-transform: uppercase;
                                 letter-spacing: 0.5px;
+                                z-index: 10;
                             `;
                             card.style.position = 'relative';
                             card.appendChild(badge);
@@ -934,14 +964,25 @@
                             card.style.boxShadow = '0 0 0 2px rgba(76, 175, 80, 0.1)';
                         }
                         
-                        // Remove click handler
-                        btn.replaceWith(btn.cloneNode(true));
+                        // Remove click handler by cloning
+                        const newBtn = btn.cloneNode(true);
+                        btn.parentNode.replaceChild(newBtn, btn);
                     } else {
                         // Different plan - keep it clickable
                         btn.innerHTML = '<i class="fas fa-credit-card"></i> Choose Plan';
+                        btn.disabled = false;
+                        btn.style.opacity = '';
+                        btn.style.cursor = '';
+                        btn.style.background = '';
+                        btn.style.color = '';
+                        btn.style.border = '';
                         
-                        // Add click handler
-                        btn.addEventListener('click', async (e) => {
+                        // Remove old event listeners by cloning
+                        const newBtn = btn.cloneNode(true);
+                        btn.parentNode.replaceChild(newBtn, btn);
+                        
+                        // Add new click handler
+                        newBtn.addEventListener('click', async (e) => {
                             e.preventDefault();
                             const targetPlanId = e.target.closest('.subscribe-btn').dataset.plan;
                             paymentModal.open(targetPlanId);
@@ -949,9 +990,18 @@
                     }
                 });
             } else {
-                // Not logged in - all buttons show "Subscribe Now"
+                // Not logged in - show free plan banner and all buttons as "Subscribe Now"
+                const freePlanBanner = document.getElementById('freePlanBanner');
+                if (freePlanBanner) {
+                    freePlanBanner.style.display = 'block';
+                }
+                
                 document.querySelectorAll('.subscribe-btn').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
+                    // Remove old event listeners by cloning
+                    const newBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(newBtn, btn);
+                    
+                    newBtn.addEventListener('click', async (e) => {
                         e.preventDefault();
                         const planId = e.target.closest('.subscribe-btn').dataset.plan;
                         paymentModal.open(planId);
