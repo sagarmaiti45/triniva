@@ -860,35 +860,108 @@
         const paymentModal = new PaymentModal(supabase);
         window.paymentModal = paymentModal; // Make it globally accessible
         
+        let currentUserPlan = null;
+        
         // Check authentication status
         async function checkAuth() {
             const { data: { session }, error } = await supabase.auth.getSession();
             return session;
         }
         
-        // Handle subscribe button clicks
-        document.querySelectorAll('.subscribe-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const planId = e.target.closest('.subscribe-btn').dataset.plan;
+        // Get user's current plan
+        async function getUserPlan(session) {
+            if (!session) return null;
+            
+            try {
+                const { data: userData, error } = await supabase
+                    .from('users')
+                    .select('plan')
+                    .eq('id', session.user.id)
+                    .single();
                 
-                // Open payment modal
-                paymentModal.open(planId);
-            });
-        });
+                return userData?.plan || 'free';
+            } catch (error) {
+                console.error('Error fetching user plan:', error);
+                return 'free';
+            }
+        }
         
-        // Update button text based on auth status
-        async function updateButtonText() {
+        // Update buttons based on user's current plan
+        async function updateButtons() {
             const session = await checkAuth();
+            
             if (session) {
+                // Get user's current plan
+                currentUserPlan = await getUserPlan(session);
+                
                 document.querySelectorAll('.subscribe-btn').forEach(btn => {
-                    btn.innerHTML = '<i class="fas fa-credit-card"></i> Choose Plan';
+                    const planId = btn.dataset.plan;
+                    
+                    if (planId === currentUserPlan) {
+                        // User is already on this plan
+                        btn.innerHTML = '<i class="fas fa-check-circle"></i> Current Plan';
+                        btn.disabled = true;
+                        btn.style.opacity = '0.7';
+                        btn.style.cursor = 'not-allowed';
+                        btn.style.background = 'var(--bg-secondary)';
+                        btn.style.color = 'var(--text-secondary)';
+                        btn.style.border = '2px solid var(--border-color)';
+                        
+                        // Add a current plan badge to the card
+                        const card = btn.closest('.pricing-card');
+                        if (card && !card.querySelector('.current-plan-badge')) {
+                            const badge = document.createElement('div');
+                            badge.className = 'current-plan-badge';
+                            badge.innerHTML = '<i class="fas fa-star"></i> ACTIVE';
+                            badge.style.cssText = `
+                                position: absolute;
+                                top: -12px;
+                                right: 20px;
+                                background: #4caf50;
+                                color: white;
+                                padding: 4px 16px;
+                                border-radius: 20px;
+                                font-size: 11px;
+                                font-weight: 600;
+                                text-transform: uppercase;
+                                letter-spacing: 0.5px;
+                            `;
+                            card.style.position = 'relative';
+                            card.appendChild(badge);
+                            
+                            // Add green border to current plan card
+                            card.style.borderColor = '#4caf50';
+                            card.style.boxShadow = '0 0 0 2px rgba(76, 175, 80, 0.1)';
+                        }
+                        
+                        // Remove click handler
+                        btn.replaceWith(btn.cloneNode(true));
+                    } else {
+                        // Different plan - keep it clickable
+                        btn.innerHTML = '<i class="fas fa-credit-card"></i> Choose Plan';
+                        
+                        // Add click handler
+                        btn.addEventListener('click', async (e) => {
+                            e.preventDefault();
+                            const targetPlanId = e.target.closest('.subscribe-btn').dataset.plan;
+                            paymentModal.open(targetPlanId);
+                        });
+                    }
+                });
+            } else {
+                // Not logged in - all buttons show "Subscribe Now"
+                document.querySelectorAll('.subscribe-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        const planId = e.target.closest('.subscribe-btn').dataset.plan;
+                        paymentModal.open(planId);
+                    });
                 });
             }
         }
         
         // Initialize
-        updateButtonText();
+        updateButtons();
         
         // Check if user just signed up and wants to checkout
         const urlParams = new URLSearchParams(window.location.search);
