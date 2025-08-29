@@ -131,7 +131,7 @@
                         </div>
                     </div>
                     
-                    <button class="plan-button primary subscribe-btn" data-plan="starter">
+                    <button class="plan-button primary subscribe-btn" data-plan="pro">
                         Subscribe Now
                     </button>
                 </div>
@@ -175,7 +175,7 @@
                         </div>
                     </div>
                     
-                    <button class="plan-button primary subscribe-btn" data-plan="starter">
+                    <button class="plan-button primary subscribe-btn" data-plan="business">
                         Subscribe Now
                     </button>
                 </div>
@@ -885,7 +885,6 @@
                 }
                 
                 const userPlan = userData?.plan || 'free';
-                console.log('User plan from database:', userPlan);
                 return userPlan;
             } catch (error) {
                 console.error('Error fetching user plan:', error);
@@ -933,8 +932,6 @@
                     const planId = btn.dataset.plan;
                     const card = btn.closest('.pricing-card');
                     
-                    console.log('Checking button with plan ID:', planId, 'against user plan:', currentUserPlan);
-                    
                     // Reset button styles first
                     btn.disabled = false;
                     btn.style.opacity = '';
@@ -944,7 +941,6 @@
                     btn.style.border = '';
                     
                     if (planId === currentUserPlan) {
-                        console.log('MATCH! Current user plan found:', planId);
                         // User is already on this plan
                         btn.innerHTML = '<i class="fas fa-check-circle"></i> Current Plan';
                         btn.disabled = true;
