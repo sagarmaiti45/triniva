@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Triniva AI</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/profile.css">
+    <link rel="stylesheet" href="/css/skeleton.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header matching main app -->
+        <header class="navbar">
+            <div class="navbar-content">
+                <div class="navbar-left">
+                    <a href="/" class="brand-link">
+                        <img src="/images/logo.png" alt="Triniva AI" class="nav-logo">
+                        <span class="brand-text">Triniva AI</span>
+                    </a>
+                </div>
+                
+                <nav class="navbar-center">
+                    <a href="/dashboard" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="/dashboard/billing.html" class="nav-link">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Billing</span>
+                    </a>
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        <span>Chat</span>
+                    </a>
+                </nav>
+                
+                <div class="navbar-right">
+                    <div class="user-menu-container">
+                        <button class="user-menu-btn" id="userMenuBtn">
+                            <span id="userName">User</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="/dashboard/profile.html" class="dropdown-item active">
+                                <i class="fas fa-user"></i>
+                                <span>Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item logout-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <div class="dashboard-container">
+                <h1 class="page-title">Profile Settings</h1>
+                
+                <!-- Profile Skeleton -->
+                <div id="profileSkeleton" class="skeleton-container">
+                    <!-- Account Info Skeleton -->
+                    <div class="skeleton-profile-section">
+                        <div class="skeleton skeleton-section-title"></div>
+                        <div class="skeleton-profile-card">
+                            <div class="skeleton-form-group">
+                                <div class="skeleton skeleton-label"></div>
+                                <div class="skeleton skeleton-input"></div>
+                            </div>
+                            <div class="skeleton-form-group">
+                                <div class="skeleton skeleton-label"></div>
+                                <div class="skeleton skeleton-input"></div>
+                            </div>
+                            <div class="skeleton-form-group">
+                                <div class="skeleton skeleton-label"></div>
+                                <div class="skeleton skeleton-input"></div>
+                            </div>
+                            <div class="skeleton skeleton-button"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Password Skeleton -->
+                    <div class="skeleton-profile-section">
+                        <div class="skeleton skeleton-section-title"></div>
+                        <div class="skeleton-profile-card">
+                            <div class="skeleton-form-group">
+                                <div class="skeleton skeleton-label"></div>
+                                <div class="skeleton skeleton-input"></div>
+                            </div>
+                            <div class="skeleton-form-group">
+                                <div class="skeleton skeleton-label"></div>
+                                <div class="skeleton skeleton-input"></div>
+                            </div>
+                            <div class="skeleton skeleton-button"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Content (hidden initially) -->
+                <div id="profileContent" style="display: none;">
+                    <!-- Account Information -->
+                    <div class="profile-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-user-circle"></i>
+                            Account Information
+                        </h2>
+                        <div class="profile-card">
+                            <form id="profileForm">
+                                <div class="form-group">
+                                    <label for="fullName">Full Name</label>
+                                    <input type="text" id="fullName" class="form-input" placeholder="Enter your name">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" class="form-input" readonly>
+                                    <span class="form-hint">Email cannot be changed</span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="tel" id="phone" class="form-input" placeholder="+91 98765 43210">
+                                </div>
+                                
+                                <button type="submit" class="btn-primary" id="saveProfileBtn">
+                                    <i class="fas fa-save"></i>
+                                    Save Changes
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Password Change -->
+                    <div class="profile-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-lock"></i>
+                            Change Password
+                        </h2>
+                        <div class="profile-card">
+                            <form id="passwordForm">
+                                <div class="form-group">
+                                    <label for="newPassword">New Password</label>
+                                    <div class="password-input-wrapper">
+                                        <input type="password" id="newPassword" class="form-input" placeholder="Enter new password">
+                                        <button type="button" class="password-toggle" onclick="togglePassword('newPassword')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <span class="form-hint">Minimum 8 characters</span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="confirmPassword">Confirm Password</label>
+                                    <div class="password-input-wrapper">
+                                        <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm new password">
+                                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn-primary" id="changePasswordBtn">
+                                    <i class="fas fa-key"></i>
+                                    Update Password
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Stats -->
+                    <div class="profile-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-chart-line"></i>
+                            Account Statistics
+                        </h2>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="memberSince">-</div>
+                                    <div class="stat-label">Member Since</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="currentPlan">-</div>
+                                    <div class="stat-label">Current Plan</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="totalChats">-</div>
+                                    <div class="stat-label">Total Chats</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="creditsUsed">-</div>
+                                    <div class="stat-label">Credits Used</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Danger Zone -->
+                    <div class="profile-section danger-zone">
+                        <h2 class="section-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Danger Zone
+                        </h2>
+                        <div class="profile-card danger-card">
+                            <div class="danger-item">
+                                <div class="danger-info">
+                                    <h3>Delete Account</h3>
+                                    <p>Permanently delete your account and all associated data. This action cannot be undone.</p>
+                                </div>
+                                <button class="btn-danger" id="deleteAccountBtn">
+                                    <i class="fas fa-trash"></i>
+                                    Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success/Error Messages -->
+    <div id="messageToast" class="message-toast"></div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Delete Account</h2>
+            <p>Are you absolutely sure you want to delete your account? This action cannot be undone.</p>
+            <p class="warning-text">
+                <i class="fas fa-exclamation-triangle"></i>
+                All your data, including chat history and subscriptions, will be permanently deleted.
+            </p>
+            <div class="modal-input">
+                <label>Type "DELETE" to confirm:</label>
+                <input type="text" id="deleteConfirmInput" placeholder="Type DELETE">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn-danger" id="confirmDeleteBtn" disabled onclick="confirmDelete()">
+                    Delete My Account
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load configuration -->
+    <script src="/js/env-config.js"></script>
+    <script src="/js/config.js"></script>
+    
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        
+        const supabaseUrl = localStorage.getItem('SUPABASE_URL');
+        const supabaseAnonKey = localStorage.getItem('SUPABASE_ANON_KEY');
+        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+        
+        let currentSession = null;
+        
+        // Check authentication
+        async function checkAuth() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (!session) {
+                window.location.href = '/auth/login.html';
+                return null;
+            }
+            
+            currentSession = session;
+            return session;
+        }
+        
+        // Show/hide skeleton
+        function showSkeleton() {
+            document.getElementById('profileSkeleton').style.display = 'block';
+            document.getElementById('profileContent').style.display = 'none';
+        }
+        
+        function hideSkeleton() {
+            document.getElementById('profileSkeleton').style.display = 'none';
+            document.getElementById('profileContent').style.display = 'block';
+        }
+        
+        // Load user profile
+        async function loadProfile() {
+            const session = await checkAuth();
+            if (!session) return;
+            
+            showSkeleton();
+            
+            // Update header username
+            document.getElementById('userName').textContent = 
+                session.user.user_metadata?.full_name || 
+                session.user.email?.split('@')[0] || 
+                'User';
+            
+            // Load user data
+            try {
+                // Get user data from database
+                const { data: userData, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+                
+                // Populate form fields
+                document.getElementById('fullName').value = 
+                    session.user.user_metadata?.full_name || userData?.full_name || '';
+                document.getElementById('email').value = session.user.email;
+                document.getElementById('phone').value = 
+                    session.user.user_metadata?.phone || userData?.phone || '';
+                
+                // Load statistics
+                if (userData) {
+                    // Member since
+                    const memberDate = new Date(userData.created_at);
+                    document.getElementById('memberSince').textContent = 
+                        memberDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                    
+                    // Current plan
+                    const planNames = {
+                        'free': 'Free',
+                        'starter': 'Starter',
+                        'pro': 'Pro',
+                        'business': 'Business'
+                    };
+                    document.getElementById('currentPlan').textContent = 
+                        planNames[userData.plan] || 'Free';
+                    
+                    // Credits used
+                    const { data: usageData } = await supabase
+                        .from('usage_logs')
+                        .select('credits_used')
+                        .eq('user_id', session.user.id);
+                    
+                    const totalCredits = usageData ? 
+                        usageData.reduce((sum, log) => sum + log.credits_used, 0) : 0;
+                    document.getElementById('creditsUsed').textContent = 
+                        totalCredits.toLocaleString();
+                    
+                    // Total chats (simplified - you might want to track this differently)
+                    document.getElementById('totalChats').textContent = 
+                        Math.floor(totalCredits / 50); // Rough estimate
+                }
+                
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+            
+            hideSkeleton();
+        }
+        
+        // Save profile changes
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const saveBtn = document.getElementById('saveProfileBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            try {
+                const fullName = document.getElementById('fullName').value;
+                const phone = document.getElementById('phone').value;
+                
+                // Update auth metadata
+                const { error: authError } = await supabase.auth.updateUser({
+                    data: { 
+                        full_name: fullName,
+                        phone: phone
+                    }
+                });
+                
+                if (authError) throw authError;
+                
+                // Update database
+                const { error: dbError } = await supabase
+                    .from('users')
+                    .update({
+                        full_name: fullName,
+                        phone: phone,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', currentSession.user.id);
+                
+                if (dbError) console.error('Database update error:', dbError);
+                
+                showMessage('Profile updated successfully!', 'success');
+                
+                // Update header username
+                if (fullName) {
+                    document.getElementById('userName').textContent = fullName;
+                }
+                
+            } catch (error) {
+                console.error('Profile update error:', error);
+                showMessage('Failed to update profile. Please try again.', 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            }
+        });
+        
+        // Change password
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword.length < 8) {
+                showMessage('Password must be at least 8 characters long', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showMessage('Passwords do not match', 'error');
+                return;
+            }
+            
+            const changeBtn = document.getElementById('changePasswordBtn');
+            changeBtn.disabled = true;
+            changeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            
+            try {
+                const { error } = await supabase.auth.updateUser({
+                    password: newPassword
+                });
+                
+                if (error) throw error;
+                
+                showMessage('Password updated successfully!', 'success');
+                document.getElementById('passwordForm').reset();
+                
+            } catch (error) {
+                console.error('Password update error:', error);
+                showMessage('Failed to update password. Please try again.', 'error');
+            } finally {
+                changeBtn.disabled = false;
+                changeBtn.innerHTML = '<i class="fas fa-key"></i> Update Password';
+            }
+        });
+        
+        // Toggle password visibility
+        window.togglePassword = function(inputId) {
+            const input = document.getElementById(inputId);
+            const button = input.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        };
+        
+        // Delete account
+        document.getElementById('deleteAccountBtn').addEventListener('click', () => {
+            document.getElementById('deleteModal').classList.add('show');
+        });
+        
+        // Close delete modal
+        window.closeDeleteModal = function() {
+            document.getElementById('deleteModal').classList.remove('show');
+            document.getElementById('deleteConfirmInput').value = '';
+            document.getElementById('confirmDeleteBtn').disabled = true;
+        };
+        
+        // Enable delete button when "DELETE" is typed
+        document.getElementById('deleteConfirmInput').addEventListener('input', (e) => {
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            confirmBtn.disabled = e.target.value !== 'DELETE';
+        });
+        
+        // Confirm account deletion
+        window.confirmDelete = async function() {
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            
+            try {
+                // Delete user account
+                // Note: You might want to call a backend function to properly clean up all user data
+                const { error } = await supabase.auth.admin.deleteUser(currentSession.user.id);
+                
+                if (error) {
+                    // If admin deletion fails, try regular signout
+                    await supabase.auth.signOut();
+                }
+                
+                localStorage.clear();
+                window.location.href = '/';
+                
+            } catch (error) {
+                console.error('Account deletion error:', error);
+                showMessage('Failed to delete account. Please contact support.', 'error');
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = 'Delete My Account';
+            }
+        };
+        
+        // Show message toast
+        function showMessage(message, type = 'info') {
+            const toast = document.getElementById('messageToast');
+            toast.textContent = message;
+            toast.className = `message-toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // User dropdown
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+        
+        document.addEventListener('click', () => {
+            userDropdown.classList.remove('show');
+        });
+        
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            localStorage.clear();
+            window.location.href = '/';
+        });
+        
+        // Initialize
+        loadProfile();
+    </script>
+</body>
+</html>
