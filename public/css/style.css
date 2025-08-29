@@ -456,6 +456,7 @@ textarea:focus {
     display: flex;
     align-items: center;
     gap: 6px;
+    position: relative;
 }
 
 .header-logo {
@@ -473,6 +474,26 @@ textarea:focus {
     line-height: 1;
     display: flex;
     align-items: center;
+}
+
+/* Mobile user menu button */
+.mobile-user-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 4px;
+}
+
+.mobile-user-menu-btn:hover {
+    color: var(--text-primary);
+}
+
+.mobile-user-menu-btn i {
+    font-size: 12px;
 }
 
 /* Simple navbar buttons - proper way */
@@ -2140,6 +2161,12 @@ h3.ai-heading {
     
     .greeting-container {
         display: none !important;
+    }
+    
+    /* Show mobile user menu button when logged in */
+    .mobile-user-menu-btn.show {
+        display: inline-flex !important;
+        align-items: center;
     }
     
     /* Show mobile model button */

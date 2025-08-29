@@ -1377,6 +1377,7 @@ class ChatApp {
         const authButtons = document.getElementById('authButtons');
         const greetingContainer = document.getElementById('greetingContainer');
         const userNameElement = document.querySelector('.user-name');
+        const mobileUserMenuBtn = document.getElementById('mobileUserMenuBtn');
         
         if (this.authToken && userId) {
             // User is logged in
@@ -1385,6 +1386,21 @@ class ChatApp {
             // Show greeting, hide auth buttons
             if (authButtons) authButtons.style.display = 'none';
             if (greetingContainer) greetingContainer.style.display = 'flex';
+            
+            // Show mobile user menu button on mobile
+            if (mobileUserMenuBtn) {
+                mobileUserMenuBtn.classList.add('show');
+                mobileUserMenuBtn.style.display = '';
+                
+                // Add click handler for mobile user menu
+                mobileUserMenuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const userDropdown = document.getElementById('userDropdown');
+                    if (userDropdown) {
+                        userDropdown.classList.toggle('show');
+                    }
+                });
+            }
             
             // Update user name
             if (userNameElement && userName) {
