@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/dashboard.css">
     <link rel="stylesheet" href="/css/billing.css">
+    <link rel="stylesheet" href="/css/payment-modal.css">
 </head>
 <body>
     <div class="app-container">
@@ -68,159 +69,32 @@
                     <h2>Current Plan</h2>
                     <div class="current-plan-card">
                         <div class="plan-info">
-                            <h3 id="currentPlanName">Free Plan</h3>
-                            <p class="plan-credits">Credits: <span id="currentCredits">5,000</span></p>
+                            <h3 id="currentPlanName">Loading...</h3>
+                            <p class="plan-credits">Credits: <span id="currentCredits">-</span></p>
                             <p class="plan-expires" id="planExpires"></p>
                         </div>
                         <div class="plan-usage">
                             <div class="usage-bar">
                                 <div class="usage-progress" id="usageProgress"></div>
                             </div>
-                            <p class="usage-text"><span id="usedCredits">0</span> / <span id="totalCredits">5,000</span> credits used</p>
+                            <p class="usage-text"><span id="usedCredits">0</span> / <span id="totalCredits">-</span> credits used</p>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Subscription Plans -->
-                <div class="plans-section">
-                    <h2>Choose Your Plan</h2>
-                    <div class="paid-plans-container">
-                        <!-- Starter Plan -->
-                        <div class="paid-plan-card">
-                            <div class="plan-header">
-                                <h2 class="plan-name">Starter</h2>
-                                <div class="plan-price">
-                                    <span class="currency">₹</span>
-                                    <span class="amount">297</span>
-                                    <span class="period">/month</span>
-                                </div>
-                                <p class="plan-description">For regular users and students</p>
-                            </div>
-                            
-                            <div class="plan-features">
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span><strong>15,000 credits</strong> monthly</span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>Access to <strong>12 models</strong> (No premium)</span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>Image upload support</span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>30-day chat history</span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>Email support</span>
-                                </div>
-                            </div>
-                            
-                            <button class="plan-button primary subscribe-btn" data-plan="starter">
-                                Choose Starter
-                            </button>
-                        </div>
-                        
-                        <!-- Pro Plan -->
-                        <div class="paid-plan-card featured">
-                            <div class="popular-badge">Most Popular</div>
-                            <div class="plan-header">
-                                <h2 class="plan-name">Pro</h2>
-                                <div class="plan-price">
-                                    <span class="currency">₹</span>
-                                    <span class="amount">697</span>
-                                    <span class="period">/month</span>
-                                </div>
-                                <p class="plan-description">For professionals and power users</p>
-                            </div>
-                            
-                            <div class="plan-features">
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span><strong>50,000 credits</strong> monthly</span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>Access to <strong>ALL 16 models</strong></span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>Image upload support</span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>30-day chat history</span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>Priority email support</span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>Early access to new features</span>
-                                </div>
-                            </div>
-                            
-                            <button class="plan-button primary subscribe-btn" data-plan="pro">
-                                Choose Pro
-                            </button>
-                        </div>
-                        
-                        <!-- Business Plan -->
-                        <div class="paid-plan-card">
-                            <div class="plan-header">
-                                <h2 class="plan-name">Business</h2>
-                                <div class="plan-price">
-                                    <span class="currency">₹</span>
-                                    <span class="amount">1,497</span>
-                                    <span class="period">/month</span>
-                                </div>
-                                <p class="plan-description">For teams and businesses</p>
-                            </div>
-                            
-                            <div class="plan-features">
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span><strong>150,000 credits</strong> monthly</span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>Access to <strong>ALL 16 models</strong></span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>Image upload support</span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>30-day chat history</span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>24/7 priority support</span>
-                                </div>
-                                <div class="feature">
-                                    <i class="fas fa-check"></i>
-                                    <span>Export conversations</span>
-                                </div>
-                            </div>
-                            
-                            <button class="plan-button primary subscribe-btn" data-plan="business">
-                                Choose Business
-                            </button>
-                        </div>
+                <!-- Upgrade Plans (dynamically populated) -->
+                <div class="plans-section" id="upgradeSection" style="display: none;">
+                    <h2>Upgrade Your Plan</h2>
+                    <div class="paid-plans-container" id="upgradePlansContainer">
+                        <!-- Plans will be dynamically added here -->
                     </div>
                 </div>
                 
                 <!-- Payment History -->
                 <div class="history-section">
                     <h2>Payment History</h2>
-                    <div class="history-table" id="paymentHistory">
-                        <div class="loading">
+                    <div class="payment-history" id="paymentHistory">
+                        <div class="loading-state">
                             <i class="fas fa-spinner fa-spin"></i>
                             <p>Loading payment history...</p>
                         </div>
@@ -230,7 +104,7 @@
         </div>
     </div>
     
-    <!-- Razorpay Script -->
+    <!-- Load Razorpay -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
     <!-- Load configuration -->
@@ -239,10 +113,74 @@
     
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { PaymentModal } from '/js/payment-modal.js';
         
         const supabaseUrl = localStorage.getItem('SUPABASE_URL');
         const supabaseAnonKey = localStorage.getItem('SUPABASE_ANON_KEY');
         const supabase = createClient(supabaseUrl, supabaseAnonKey);
+        
+        // Initialize payment modal
+        const paymentModal = new PaymentModal(supabase);
+        window.paymentModal = paymentModal;
+        
+        // Plan hierarchy
+        const planHierarchy = {
+            'free': 0,
+            'starter': 1,
+            'pro': 2,
+            'business': 3
+        };
+        
+        const planDetails = {
+            'free': {
+                name: 'Free',
+                credits: 5000,
+                price: 0,
+                features: [
+                    '5,000 credits monthly',
+                    'Access to 4 free models only',
+                    '7-day chat history',
+                    'Community support'
+                ]
+            },
+            'starter': {
+                name: 'Starter',
+                credits: 15000,
+                price: 297,
+                features: [
+                    '15,000 credits monthly',
+                    'Access to 12 models (No premium)',
+                    '30-day chat history',
+                    'Image upload support',
+                    'Email support'
+                ]
+            },
+            'pro': {
+                name: 'Pro',
+                credits: 50000,
+                price: 697,
+                mostPopular: true,
+                features: [
+                    '50,000 credits monthly',
+                    'Access to ALL 16 models',
+                    '30-day chat history',
+                    'Image upload support',
+                    'Priority email support'
+                ]
+            },
+            'business': {
+                name: 'Business',
+                credits: 150000,
+                price: 1497,
+                features: [
+                    '150,000 credits monthly',
+                    'Access to ALL 16 models',
+                    '30-day chat history',
+                    'Image upload support',
+                    '24/7 priority support'
+                ]
+            }
+        };
         
         // User dropdown functionality
         const userMenuBtn = document.getElementById('userMenuBtn');
@@ -259,10 +197,7 @@
             userDropdown.classList.remove('show');
         });
         
-        // Razorpay configuration
-        const RAZORPAY_KEY_ID = 'rzp_test_RAMe23vc9cnhWu';
-        
-        let currentUser = null;
+        let currentUserPlan = 'free';
         
         // Check authentication
         async function checkAuth() {
@@ -273,7 +208,6 @@
                 return null;
             }
             
-            currentUser = session.user;
             return session;
         }
         
@@ -288,44 +222,171 @@
                 session.user.email?.split('@')[0] || 
                 'User';
             
-            // Load subscription status
             try {
-                const response = await fetch('/api/subscription/status', {
-                    headers: {
-                        'Authorization': `Bearer ${session.access_token}`
-                    }
-                });
+                // Get user data from database
+                const { data: userData, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    updateCurrentPlan(data);
+                if (userData) {
+                    currentUserPlan = userData.plan || 'free';
+                    updateCurrentPlan(userData);
+                    displayUpgradePlans(userData.plan);
+                    
+                    // Load usage data
+                    loadUsageData(session.user.id);
+                } else {
+                    // User not in database - show free plan defaults
+                    currentUserPlan = 'free';
+                    updateCurrentPlan({
+                        plan: 'free',
+                        credits: 5000,
+                        plan_expires_at: null
+                    });
+                    displayUpgradePlans('free');
                 }
             } catch (error) {
-                console.error('Failed to load subscription status:', error);
+                console.error('Failed to load user data:', error);
+                // Show defaults on error
+                updateCurrentPlan({
+                    plan: 'free',
+                    credits: 5000,
+                    plan_expires_at: null
+                });
+                displayUpgradePlans('free');
             }
             
             // Load payment history
             loadPaymentHistory(session);
         }
         
+        // Load usage data
+        async function loadUsageData(userId) {
+            try {
+                // Get total credits used
+                const { data: usageData } = await supabase
+                    .from('usage_logs')
+                    .select('credits_used')
+                    .eq('user_id', userId);
+                
+                const totalUsed = usageData ? usageData.reduce((sum, log) => sum + log.credits_used, 0) : 0;
+                const totalCredits = parseInt(document.getElementById('totalCredits').textContent.replace(/,/g, ''));
+                
+                document.getElementById('usedCredits').textContent = totalUsed.toLocaleString();
+                const usagePercent = Math.min((totalUsed / totalCredits) * 100, 100);
+                document.getElementById('usageProgress').style.width = `${usagePercent}%`;
+                
+                // Change color based on usage
+                const progressBar = document.getElementById('usageProgress');
+                if (usagePercent > 80) {
+                    progressBar.style.background = '#ff5252';
+                } else if (usagePercent > 60) {
+                    progressBar.style.background = '#ff9800';
+                } else {
+                    progressBar.style.background = 'var(--accent-color)';
+                }
+            } catch (error) {
+                console.error('Failed to load usage data:', error);
+            }
+        }
+        
         // Update current plan display
         function updateCurrentPlan(data) {
-            const planName = data.plan.charAt(0).toUpperCase() + data.plan.slice(1);
-            document.getElementById('currentPlanName').textContent = `${planName} Plan`;
+            const plan = planDetails[data.plan] || planDetails.free;
+            document.getElementById('currentPlanName').textContent = `${plan.name} Plan`;
             document.getElementById('currentCredits').textContent = data.credits.toLocaleString();
             document.getElementById('totalCredits').textContent = data.credits.toLocaleString();
             
-            if (data.planExpiresAt) {
-                const expires = new Date(data.planExpiresAt);
-                document.getElementById('planExpires').textContent = 
-                    `Expires: ${expires.toLocaleDateString()}`;
+            if (data.plan_expires_at) {
+                const expires = new Date(data.plan_expires_at);
+                const today = new Date();
+                const daysLeft = Math.ceil((expires - today) / (1000 * 60 * 60 * 24));
+                
+                if (daysLeft > 0) {
+                    document.getElementById('planExpires').innerHTML = 
+                        `<i class="fas fa-clock"></i> ${daysLeft} days remaining`;
+                } else {
+                    document.getElementById('planExpires').innerHTML = 
+                        `<i class="fas fa-exclamation-triangle" style="color: #ff5252;"></i> Plan expired`;
+                }
+            } else if (data.plan === 'free') {
+                document.getElementById('planExpires').innerHTML = 
+                    `<i class="fas fa-infinity"></i> Never expires`;
+            }
+        }
+        
+        // Display upgrade plans
+        function displayUpgradePlans(currentPlan) {
+            const currentLevel = planHierarchy[currentPlan] || 0;
+            const upgradeContainer = document.getElementById('upgradePlansContainer');
+            const upgradeSection = document.getElementById('upgradeSection');
+            
+            // Clear existing plans
+            upgradeContainer.innerHTML = '';
+            
+            // Get available upgrades
+            const upgrades = Object.entries(planDetails).filter(([key, plan]) => 
+                planHierarchy[key] > currentLevel
+            );
+            
+            if (upgrades.length === 0) {
+                // User is on highest plan
+                upgradeSection.style.display = 'none';
+                return;
             }
             
-            // Update usage bar (mock data for now)
-            const usedCredits = Math.floor(data.credits * 0.3);
-            document.getElementById('usedCredits').textContent = usedCredits.toLocaleString();
-            const usagePercent = (usedCredits / data.credits) * 100;
-            document.getElementById('usageProgress').style.width = `${usagePercent}%`;
+            upgradeSection.style.display = 'block';
+            
+            // Create plan cards
+            upgrades.forEach(([planKey, plan]) => {
+                const planCard = document.createElement('div');
+                planCard.className = 'paid-plan-card';
+                if (plan.mostPopular) {
+                    planCard.className += ' featured';
+                }
+                
+                planCard.innerHTML = `
+                    ${plan.mostPopular ? '<div class="popular-badge">RECOMMENDED</div>' : ''}
+                    <div class="plan-header">
+                        <h2 class="plan-name">${plan.name}</h2>
+                        <div class="plan-price">
+                            <span class="currency">₹</span>
+                            <span class="amount">${plan.price}</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p class="plan-description">
+                            ${planKey === 'starter' ? 'For regular users and students' :
+                              planKey === 'pro' ? 'For professionals and power users' :
+                              'For teams and businesses'}
+                        </p>
+                    </div>
+                    
+                    <div class="plan-features">
+                        ${plan.features.map(feature => `
+                            <div class="feature">
+                                <i class="fas fa-check"></i>
+                                <span>${feature}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <button class="plan-button primary subscribe-btn" data-plan="${planKey}">
+                        <i class="fas fa-rocket"></i> Upgrade to ${plan.name}
+                    </button>
+                `;
+                
+                upgradeContainer.appendChild(planCard);
+            });
+            
+            // Attach click handlers
+            document.querySelectorAll('.subscribe-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const planId = e.target.closest('.subscribe-btn').dataset.plan;
+                    paymentModal.open(planId);
+                });
+            });
         }
         
         // Load payment history
@@ -333,150 +394,62 @@
             const historyContainer = document.getElementById('paymentHistory');
             
             try {
-                const response = await fetch('/api/subscription/history', {
-                    headers: {
-                        'Authorization': `Bearer ${session.access_token}`
-                    }
-                });
+                // Get subscription history from database
+                const { data: subscriptions, error } = await supabase
+                    .from('subscriptions')
+                    .select('*')
+                    .eq('user_id', session.user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
                 
-                if (!response.ok) throw new Error('Failed to load history');
-                
-                const subscriptions = await response.json();
-                
-                if (!subscriptions || subscriptions.length === 0) {
+                if (subscriptions && subscriptions.length > 0) {
+                    historyContainer.innerHTML = subscriptions.map(sub => {
+                        const date = new Date(sub.created_at);
+                        const plan = planDetails[sub.plan_id] || {};
+                        const status = sub.status === 'active' ? 
+                            '<span class="badge success">Active</span>' :
+                            '<span class="badge">Completed</span>';
+                        
+                        return `
+                            <div class="history-item">
+                                <div class="history-info">
+                                    <div class="history-title">${plan.name} Plan</div>
+                                    <div class="history-date">${date.toLocaleDateString()}</div>
+                                </div>
+                                <div class="history-amount">
+                                    <span class="amount">₹${sub.amount_paid}</span>
+                                    ${status}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
                     historyContainer.innerHTML = `
                         <div class="empty-state">
-                            <i class="fas fa-receipt"></i>
-                            <p>No payment history</p>
+                            <i class="fas fa-receipt" style="font-size: 48px; opacity: 0.3; margin-bottom: 15px;"></i>
+                            <p>No payment history yet</p>
                         </div>
                     `;
-                    return;
                 }
-                
-                historyContainer.innerHTML = `
-                    <table class="history-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Plan</th>
-                                <th>Amount</th>
-                                <th>Credits</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${subscriptions.map(sub => `
-                                <tr>
-                                    <td>${new Date(sub.created_at).toLocaleDateString()}</td>
-                                    <td>${sub.plan_id.charAt(0).toUpperCase() + sub.plan_id.slice(1)}</td>
-                                    <td>₹${(sub.amount / 100).toFixed(2)}</td>
-                                    <td>${sub.credits_granted.toLocaleString()}</td>
-                                    <td><span class="status-badge ${sub.status}">${sub.status}</span></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
             } catch (error) {
                 console.error('Failed to load payment history:', error);
                 historyContainer.innerHTML = `
                     <div class="empty-state">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <p>Failed to load payment history</p>
+                        <i class="fas fa-receipt" style="font-size: 48px; opacity: 0.3; margin-bottom: 15px;"></i>
+                        <p>No payment history yet</p>
                     </div>
                 `;
             }
         }
         
-        // Handle subscription
-        async function handleSubscription(planId) {
-            const session = await checkAuth();
-            if (!session) return;
-            
-            try {
-                // Create order on backend
-                const response = await fetch('/api/subscription/create-order', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${session.access_token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ planId })
-                });
-                
-                if (!response.ok) throw new Error('Failed to create order');
-                
-                const order = await response.json();
-                
-                // Open Razorpay checkout
-                const options = {
-                    key: RAZORPAY_KEY_ID,
-                    amount: order.amount,
-                    currency: order.currency,
-                    name: 'Triniva AI',
-                    description: `${planId.charAt(0).toUpperCase() + planId.slice(1)} Plan Subscription`,
-                    order_id: order.orderId,
-                    handler: async function(response) {
-                        // Verify payment on backend
-                        try {
-                            const verifyResponse = await fetch('/api/subscription/verify-payment', {
-                                method: 'POST',
-                                headers: {
-                                    'Authorization': `Bearer ${session.access_token}`,
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    orderId: response.razorpay_order_id,
-                                    paymentId: response.razorpay_payment_id,
-                                    signature: response.razorpay_signature
-                                })
-                            });
-                            
-                            if (verifyResponse.ok) {
-                                alert('Subscription activated successfully!');
-                                loadBillingData();
-                            } else {
-                                alert('Payment verification failed. Please contact support.');
-                            }
-                        } catch (error) {
-                            console.error('Payment verification error:', error);
-                            alert('Payment verification failed. Please contact support.');
-                        }
-                    },
-                    prefill: {
-                        name: currentUser.user_metadata?.full_name || '',
-                        email: currentUser.email || ''
-                    },
-                    theme: {
-                        color: '#50c7c7'
-                    }
-                };
-                
-                const rzp = new Razorpay(options);
-                rzp.open();
-                
-            } catch (error) {
-                console.error('Subscription error:', error);
-                alert('Failed to initiate payment. Please try again.');
-            }
-        }
-        
-        // Event listeners
+        // Logout handler
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await supabase.auth.signOut();
             localStorage.clear();
             window.location.href = '/';
         });
         
-        // Subscribe button handlers
-        document.querySelectorAll('.subscribe-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const planId = e.target.dataset.plan;
-                handleSubscription(planId);
-            });
-        });
-        
-        // Initialize billing page
+        // Initialize
         loadBillingData();
     </script>
 </body>
