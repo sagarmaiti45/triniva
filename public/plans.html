@@ -1029,6 +1029,17 @@
             // Show skeletons while loading
             showSkeletons();
             
+            // Reset current plan first
+            currentUserPlan = null;
+            
+            // Clean up any existing badges and styles from previous session
+            document.querySelectorAll('.current-plan-badge').forEach(badge => badge.remove());
+            document.querySelectorAll('.pricing-card').forEach(card => {
+                card.style.borderColor = '';
+                card.style.boxShadow = '';
+                card.style.position = '';
+            });
+            
             const session = await checkAuth();
             
             // Small delay to make loading feel smooth
@@ -1137,13 +1148,25 @@
                     }
                 });
             } else {
-                // Not logged in - show free plan banner and all buttons as "Subscribe Now"
+                // Not logged in - reset everything and show free plan banner
+                currentUserPlan = null;
+                
                 const freePlanBanner = document.getElementById('freePlanBanner');
                 if (freePlanBanner) {
                     freePlanBanner.style.display = 'block';
                 }
                 
+                // Reset all buttons to default state for non-logged in users
                 document.querySelectorAll('.subscribe-btn').forEach(btn => {
+                    // Reset button to default state
+                    btn.innerHTML = 'Subscribe Now';
+                    btn.disabled = false;
+                    btn.style.opacity = '';
+                    btn.style.cursor = '';
+                    btn.style.background = '';
+                    btn.style.color = '';
+                    btn.style.border = '';
+                    
                     // Remove old event listeners by cloning
                     const newBtn = btn.cloneNode(true);
                     btn.parentNode.replaceChild(newBtn, btn);
@@ -1162,6 +1185,21 @@
         
         // Initialize
         updateButtons();
+        
+        // Re-check auth status when page becomes visible (in case user logged out in another tab)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                updateButtons();
+            }
+        });
+        
+        // Also listen for auth state changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT') {
+                // User logged out - immediately update the page
+                updateButtons();
+            }
+        });
         
         // Check if user just signed up and wants to checkout
         const urlParams = new URLSearchParams(window.location.search);
