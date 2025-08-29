@@ -166,9 +166,21 @@
             // Update loading text
             document.querySelector('.loading-text').textContent = 'Authentication successful! Redirecting...';
             
-            // Redirect to main app
+            // Check if user was trying to subscribe
+            const redirectAfterAuth = sessionStorage.getItem('redirectAfterAuth');
+            const selectedPlan = sessionStorage.getItem('selectedPlan');
+            const urlParams = new URLSearchParams(window.location.search);
+            const planFromUrl = urlParams.get('plan');
+            
             setTimeout(() => {
-                window.location.href = '/';
+                if (redirectAfterAuth === 'checkout' && (selectedPlan || planFromUrl)) {
+                    // User was trying to subscribe - go to plans page to complete checkout
+                    sessionStorage.removeItem('redirectAfterAuth');
+                    window.location.href = `/plans?checkout=${selectedPlan || planFromUrl}`;
+                } else {
+                    // Normal login - go to dashboard
+                    window.location.href = '/dashboard';
+                }
             }, 1000);
         }
 

@@ -864,7 +864,11 @@ class ChatApp {
                 if (response.status === 403) {
                     throw new Error(errorData?.message || 'Please login to use this model');
                 } else if (response.status === 402) {
-                    throw new Error(errorData?.message || 'Insufficient tokens. Please purchase more tokens to continue.');
+                    // Show upgrade prompt for insufficient credits
+                    if (window.upgradePrompt) {
+                        window.upgradePrompt.show(errorData?.message || 'You have run out of credits. Upgrade your plan to continue using AI models.');
+                    }
+                    throw new Error(errorData?.message || 'Insufficient credits. Please upgrade your plan to continue.');
                 } else if (response.status === 401) {
                     throw new Error('Session expired. Please login again.');
                 } else {

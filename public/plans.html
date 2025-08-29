@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/css/info-pages.css">
+    <link rel="stylesheet" href="/css/payment-modal.css">
 </head>
 <body>
     <div class="info-container">
@@ -840,16 +841,24 @@
         }
     </style>
     
+    <!-- Razorpay Checkout -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
     <!-- Load configuration -->
     <script src="/js/env-config.js"></script>
     <script src="/js/config.js"></script>
     
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { PaymentModal } from '/js/payment-modal.js';
         
         const supabaseUrl = localStorage.getItem('SUPABASE_URL');
         const supabaseAnonKey = localStorage.getItem('SUPABASE_ANON_KEY');
         const supabase = createClient(supabaseUrl, supabaseAnonKey);
+        
+        // Initialize payment modal
+        const paymentModal = new PaymentModal(supabase);
+        window.paymentModal = paymentModal; // Make it globally accessible
         
         // Check authentication status
         async function checkAuth() {
@@ -860,18 +869,11 @@
         // Handle subscribe button clicks
         document.querySelectorAll('.subscribe-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
-                const planId = e.target.dataset.plan;
+                e.preventDefault();
+                const planId = e.target.closest('.subscribe-btn').dataset.plan;
                 
-                // Check if user is logged in
-                const session = await checkAuth();
-                
-                if (!session) {
-                    // Not logged in - redirect to signup
-                    window.location.href = `/auth/signup.html?plan=${planId}`;
-                } else {
-                    // Logged in - redirect to billing page
-                    window.location.href = `/dashboard/billing.html?plan=${planId}`;
-                }
+                // Open payment modal
+                paymentModal.open(planId);
             });
         });
         
@@ -887,6 +889,25 @@
         
         // Initialize
         updateButtonText();
+        
+        // Check if user just signed up and wants to checkout
+        const urlParams = new URLSearchParams(window.location.search);
+        const checkoutPlan = urlParams.get('checkout');
+        
+        if (checkoutPlan) {
+            // User just signed up and wants to subscribe
+            checkAuth().then(session => {
+                if (session) {
+                    // Clear the session storage
+                    sessionStorage.removeItem('selectedPlan');
+                    sessionStorage.removeItem('redirectAfterAuth');
+                    // Auto-open payment modal
+                    setTimeout(() => {
+                        paymentModal.open(checkoutPlan);
+                    }, 500);
+                }
+            });
+        }
     </script>
 </body>
 </html>

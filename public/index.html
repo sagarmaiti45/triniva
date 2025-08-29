@@ -294,6 +294,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+    
+    <!-- Load Razorpay -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <!-- Load configuration -->
+    <script src="/js/env-config.js"></script>
+    <script src="/js/config.js"></script>
+    
+    <!-- Load payment and upgrade modules -->
+    <script type="module">
+        import { UpgradePrompt } from '/js/upgrade-prompt.js';
+        import { PaymentModal } from '/js/payment-modal.js';
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        
+        // Initialize Supabase and payment modal
+        const supabaseUrl = localStorage.getItem('SUPABASE_URL');
+        const supabaseAnonKey = localStorage.getItem('SUPABASE_ANON_KEY');
+        if (supabaseUrl && supabaseAnonKey) {
+            const supabase = createClient(supabaseUrl, supabaseAnonKey);
+            window.paymentModal = new PaymentModal(supabase);
+        }
+        
+        // Initialize upgrade prompt
+        window.upgradePrompt = new UpgradePrompt();
+    </script>
+    
     <script src="/js/chat.js"></script>
 </body>
 </html>
