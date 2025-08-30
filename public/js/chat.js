@@ -1395,9 +1395,17 @@ class ChatApp {
                 // Add click handler for mobile user menu
                 mobileUserMenuBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const userDropdown = document.getElementById('userDropdown');
-                    if (userDropdown) {
-                        userDropdown.classList.toggle('show');
+                    const mobileDropdown = document.getElementById('mobileUserDropdown');
+                    if (mobileDropdown) {
+                        mobileDropdown.classList.toggle('show');
+                    }
+                });
+                
+                // Close mobile dropdown when clicking outside
+                document.addEventListener('click', () => {
+                    const mobileDropdown = document.getElementById('mobileUserDropdown');
+                    if (mobileDropdown) {
+                        mobileDropdown.classList.remove('show');
                     }
                 });
             }
