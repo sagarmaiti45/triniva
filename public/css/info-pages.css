@@ -68,6 +68,7 @@ body {
 
 .back-link:hover {
     color: var(--accent-color);
+    text-decoration: none;
 }
 
 .logo-section {
