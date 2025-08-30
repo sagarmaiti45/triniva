@@ -482,10 +482,10 @@ textarea:focus {
     background: none;
     border: none;
     color: var(--text-secondary);
-    padding: 4px 6px;
+    padding: 4px 4px;
     cursor: pointer;
     transition: all 0.2s;
-    margin-left: 2px;
+    margin-left: 0;
     position: relative;
 }
 
@@ -2162,7 +2162,7 @@ h3.ai-heading {
     }
     
     .logo-container {
-        gap: 5px;
+        gap: 3px;
     }
     
     .greeting-container {
@@ -2182,16 +2182,22 @@ h3.ai-heading {
     
     /* Position mobile dropdown properly */
     .mobile-user-dropdown {
-        position: fixed !important;
-        top: 50px;
-        left: auto;
-        right: 10px;
+        position: absolute !important;
+        top: 35px;
+        left: 50%;
+        transform: translateX(-50%);
         z-index: 1001;
         display: none;
+        min-width: 180px;
     }
     
     .mobile-user-dropdown.show {
         display: block !important;
+    }
+    
+    /* Make logo container relative for dropdown positioning */
+    .logo-container {
+        position: relative;
     }
     
     /* Show mobile model button */
