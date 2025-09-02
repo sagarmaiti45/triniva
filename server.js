@@ -6,7 +6,8 @@ import { fileURLToPath } from 'url';
 import { sql, supabase } from './server/config/database.js';
 import { verifyToken, checkTokenBalance } from './server/middleware/auth.js';
 import { countTokens } from './server/utils/tokenCounter.js';
-import { modelPricing } from './server/config/modelPricing.js';
+import { modelPricing, calculateCreditsConsumed, canUseModel } from './server/config/modelPricing.js';
+import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 
@@ -55,14 +56,50 @@ app.get('/contact-us', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'contact-us.html'));
 });
 
+// Chat routing with unique IDs
+app.get('/chat/:id', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// New chat creation endpoint
+app.post('/api/chat/new', verifyToken, async (req, res) => {
+    try {
+        const chatId = uuidv4();
+        const userId = req.userId;
+        const isGuest = req.isGuest;
+        
+        if (!isGuest && userId) {
+            // Create new conversation in database for authenticated users
+            await sql`
+                INSERT INTO conversations (id, user_id, session_id, title, messages, created_at, updated_at)
+                VALUES (${chatId}, ${userId}, ${chatId}, 'New Chat', '[]'::jsonb, NOW(), NOW())
+            `;
+        }
+        
+        res.json({ chatId, url: `/chat/${chatId}` });
+    } catch (error) {
+        console.error('Error creating new chat:', error);
+        res.status(500).json({ error: 'Failed to create new chat' });
+    }
+});
+
 // Apply auth middleware to chat endpoint
 app.post('/api/chat', verifyToken, checkTokenBalance, async (req, res) => {
-    const { message, model, sessionId, images = [] } = req.body;
+    const { message, model, chatId, images = [] } = req.body;
     const userId = req.userId; // From auth middleware
     const isGuest = req.isGuest; // From auth middleware
+    const userPlan = req.subscriptionTier || 'free';
 
-    if ((!message && images.length === 0) || !model) {
-        return res.status(400).json({ error: 'Message/images and model are required' });
+    if ((!message && images.length === 0) || !model || !chatId) {
+        return res.status(400).json({ error: 'Message/images, model, and chatId are required' });
+    }
+    
+    // Check if user can use the selected model
+    if (!canUseModel(userPlan, model)) {
+        return res.status(403).json({ 
+            error: 'Model not available', 
+            message: `The ${model} model is not available in your ${userPlan} plan. Please upgrade to access this model.`
+        });
     }
 
     let conversation = [];
@@ -76,7 +113,7 @@ app.post('/api/chat', verifyToken, checkTokenBalance, async (req, res) => {
                 SELECT id, messages 
                 FROM conversations 
                 WHERE user_id = ${userId} 
-                AND session_id = ${sessionId}
+                AND id = ${chatId}
                 LIMIT 1
             `;
             
@@ -86,8 +123,8 @@ app.post('/api/chat', verifyToken, checkTokenBalance, async (req, res) => {
             } else {
                 // Create new conversation in database
                 const newConv = await sql`
-                    INSERT INTO conversations (user_id, session_id, title, messages)
-                    VALUES (${userId}, ${sessionId}, 'New Chat', '[]'::jsonb)
+                    INSERT INTO conversations (id, user_id, session_id, title, messages)
+                    VALUES (${chatId}, ${userId}, ${chatId}, 'New Chat', '[]'::jsonb)
                     RETURNING id
                 `;
                 conversationId = newConv[0].id;
@@ -95,17 +132,17 @@ app.post('/api/chat', verifyToken, checkTokenBalance, async (req, res) => {
         } catch (dbError) {
             console.error('Database error:', dbError);
             // Fall back to in-memory storage
-            if (!conversations.has(sessionId)) {
-                conversations.set(sessionId, []);
+            if (!conversations.has(chatId)) {
+                conversations.set(chatId, []);
             }
-            conversation = conversations.get(sessionId);
+            conversation = conversations.get(chatId);
         }
     } else {
         // For guests, use in-memory storage
-        if (!conversations.has(sessionId)) {
-            conversations.set(sessionId, []);
+        if (!conversations.has(chatId)) {
+            conversations.set(chatId, []);
         }
-        conversation = conversations.get(sessionId);
+        conversation = conversations.get(chatId);
     }
     
     // Build message content based on whether images are included
@@ -220,16 +257,17 @@ app.post('/api/chat', verifyToken, checkTokenBalance, async (req, res) => {
                                     WHERE id = ${conversationId}
                                 `;
                                 
-                                // Calculate and deduct tokens
+                                // Calculate credits consumed
                                 const inputTokens = countTokens(JSON.stringify(conversation));
                                 const outputTokens = countTokens(assistantMessage);
                                 const totalTokens = inputTokens + outputTokens;
+                                const creditsUsed = calculateCreditsConsumed(totalTokens, model);
                                 const cost = calculateCost(model, inputTokens, outputTokens);
                                 
-                                // Deduct tokens from user balance
+                                // Deduct credits from user balance
                                 await sql`
                                     UPDATE user_profiles
-                                    SET token_balance = token_balance - ${totalTokens},
+                                    SET token_balance = token_balance - ${creditsUsed},
                                         total_tokens_used = total_tokens_used + ${totalTokens}
                                     WHERE user_id = ${userId}
                                 `;
@@ -237,9 +275,19 @@ app.post('/api/chat', verifyToken, checkTokenBalance, async (req, res) => {
                                 // Record usage
                                 await sql`
                                     INSERT INTO usage_logs 
-                                    (user_id, model, input_tokens, output_tokens, total_tokens, cost)
-                                    VALUES (${userId}, ${model}, ${inputTokens}, ${outputTokens}, ${totalTokens}, ${cost})
+                                    (user_id, model, input_tokens, output_tokens, total_tokens, credits_used, cost, chat_id)
+                                    VALUES (${userId}, ${model}, ${inputTokens}, ${outputTokens}, ${totalTokens}, ${creditsUsed}, ${cost}, ${chatId})
                                 `;
+                                
+                                // Update conversation title if it's the first message
+                                if (conversation.length === 2) { // User message + Assistant response
+                                    const title = message.substring(0, 50) + (message.length > 50 ? '...' : '');
+                                    await sql`
+                                        UPDATE conversations
+                                        SET title = ${title}
+                                        WHERE id = ${conversationId}
+                                    `;
+                                }
                             } catch (err) {
                                 console.error('Error saving to database:', err);
                             }
@@ -273,15 +321,96 @@ app.post('/api/chat', verifyToken, checkTokenBalance, async (req, res) => {
     }
 });
 
-app.get('/api/session', (req, res) => {
-    const sessionId = Date.now().toString(36) + Math.random().toString(36).substr(2);
-    res.json({ sessionId });
+// Get specific conversation
+app.get('/api/chat/:chatId', verifyToken, async (req, res) => {
+    const { chatId } = req.params;
+    const userId = req.userId;
+    const isGuest = req.isGuest;
+    
+    try {
+        if (!isGuest && userId) {
+            // Get conversation from database
+            const result = await sql`
+                SELECT c.*, 
+                       array_agg(
+                           json_build_object(
+                               'id', m.id,
+                               'role', m.role,
+                               'content', m.content,
+                               'created_at', m.created_at
+                           ) ORDER BY m.created_at
+                       ) as messages
+                FROM conversations c
+                LEFT JOIN messages m ON m.conversation_id = c.id
+                WHERE c.id = ${chatId} AND c.user_id = ${userId}
+                GROUP BY c.id
+            `;
+            
+            if (result.length === 0) {
+                return res.status(404).json({ error: 'Conversation not found' });
+            }
+            
+            res.json({ conversation: result[0] });
+        } else {
+            // Get from memory for guests
+            const history = conversations.get(chatId) || [];
+            res.json({ 
+                conversation: {
+                    id: chatId,
+                    messages: history,
+                    title: 'Guest Chat'
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching conversation:', error);
+        res.status(500).json({ error: 'Failed to fetch conversation' });
+    }
 });
 
-app.get('/api/history/:sessionId', (req, res) => {
-    const { sessionId } = req.params;
-    const history = conversations.get(sessionId) || [];
-    res.json({ history });
+// Delete conversation
+app.delete('/api/chat/:chatId', verifyToken, async (req, res) => {
+    const { chatId } = req.params;
+    const userId = req.userId;
+    
+    if (req.isGuest) {
+        conversations.delete(chatId);
+        return res.json({ success: true });
+    }
+    
+    try {
+        await sql`
+            DELETE FROM conversations
+            WHERE id = ${chatId} AND user_id = ${userId}
+        `;
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting conversation:', error);
+        res.status(500).json({ error: 'Failed to delete conversation' });
+    }
+});
+
+// Update conversation title
+app.patch('/api/chat/:chatId', verifyToken, async (req, res) => {
+    const { chatId } = req.params;
+    const { title } = req.body;
+    const userId = req.userId;
+    
+    if (req.isGuest) {
+        return res.status(403).json({ error: 'Guests cannot rename conversations' });
+    }
+    
+    try {
+        await sql`
+            UPDATE conversations
+            SET title = ${title}, updated_at = NOW()
+            WHERE id = ${chatId} AND user_id = ${userId}
+        `;
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error updating conversation:', error);
+        res.status(500).json({ error: 'Failed to update conversation' });
+    }
 });
 
 // Helper function to calculate cost based on model pricing
@@ -339,14 +468,23 @@ app.get('/api/user/profile', verifyToken, async (req, res) => {
     if (req.isGuest) {
         return res.json({ 
             isGuest: true,
-            tokenBalance: 0
+            tokenBalance: 0,
+            credits: 0,
+            plan: 'guest'
         });
     }
     
     try {
         const profile = await sql`
-            SELECT * FROM user_profiles
-            WHERE user_id = ${req.userId}
+            SELECT 
+                up.*,
+                COUNT(DISTINCT c.id) as total_chats,
+                COALESCE(SUM(ul.credits_used), 0) as total_credits_used
+            FROM user_profiles up
+            LEFT JOIN conversations c ON c.user_id = up.user_id
+            LEFT JOIN usage_logs ul ON ul.user_id = up.user_id
+            WHERE up.user_id = ${req.userId}
+            GROUP BY up.user_id, up.subscription_tier, up.token_balance, up.total_tokens_used, up.created_at, up.updated_at
             LIMIT 1
         `;
         
@@ -359,6 +497,62 @@ app.get('/api/user/profile', verifyToken, async (req, res) => {
         console.error('Error fetching profile:', error);
         res.status(500).json({ error: 'Failed to fetch profile' });
     }
+});
+
+// Get user usage statistics
+app.get('/api/user/usage', verifyToken, async (req, res) => {
+    if (req.isGuest) {
+        return res.json({ usage: [] });
+    }
+    
+    try {
+        const usage = await sql`
+            SELECT 
+                DATE(created_at) as date,
+                model,
+                SUM(input_tokens) as input_tokens,
+                SUM(output_tokens) as output_tokens,
+                SUM(credits_used) as credits_used,
+                COUNT(*) as requests
+            FROM usage_logs
+            WHERE user_id = ${req.userId}
+            AND created_at >= NOW() - INTERVAL '30 days'
+            GROUP BY DATE(created_at), model
+            ORDER BY date DESC, credits_used DESC
+        `;
+        
+        res.json({ usage });
+    } catch (error) {
+        console.error('Error fetching usage:', error);
+        res.status(500).json({ error: 'Failed to fetch usage' });
+    }
+});
+
+// Get available models for user's plan
+app.get('/api/user/models', verifyToken, async (req, res) => {
+    const userPlan = req.subscriptionTier || (req.isGuest ? 'guest' : 'free');
+    
+    const availableModels = Object.entries(modelPricing).filter(([modelId, model]) => {
+        return canUseModel(userPlan, modelId);
+    }).map(([modelId, model]) => ({
+        id: modelId,
+        ...model,
+        available: true
+    }));
+    
+    const restrictedModels = Object.entries(modelPricing).filter(([modelId, model]) => {
+        return !canUseModel(userPlan, modelId);
+    }).map(([modelId, model]) => ({
+        id: modelId,
+        ...model,
+        available: false
+    }));
+    
+    res.json({ 
+        availableModels,
+        restrictedModels,
+        userPlan
+    });
 });
 
 app.listen(PORT, () => {
