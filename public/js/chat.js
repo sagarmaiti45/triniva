@@ -260,6 +260,14 @@ class ChatApp {
             });
         }
         
+        // Sidebar overlay click handler
+        const overlay = document.getElementById('sidebarOverlay');
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                this.closeMobileSidebar();
+            });
+        }
+        
         // Mobile sidebar close button
         if (this.sidebarCloseMobile) {
             this.sidebarCloseMobile.addEventListener('click', () => {
@@ -311,12 +319,37 @@ class ChatApp {
     toggleMobileSidebar() {
         this.sidebar.classList.toggle('open');
         this.mobileMenuToggle.classList.toggle('active');
+        
+        // Handle overlay
+        const overlay = document.getElementById('sidebarOverlay');
+        if (overlay) {
+            if (this.sidebar.classList.contains('open')) {
+                overlay.style.display = 'block';
+                // Force reflow to ensure transition works
+                overlay.offsetHeight;
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 300); // Match transition duration
+            }
+        }
     }
     
     closeMobileSidebar() {
         this.sidebar.classList.remove('open');
         if (this.mobileMenuToggle) {
             this.mobileMenuToggle.classList.remove('active');
+        }
+        
+        // Handle overlay
+        const overlay = document.getElementById('sidebarOverlay');
+        if (overlay) {
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300); // Match transition duration
         }
     }
     
