@@ -2279,11 +2279,28 @@ h3.ai-heading {
     .welcome-view {
         padding: 20px 20px 100px 20px; /* Extra bottom padding for footer */
         min-height: calc(100dvh - 50px - 40px); /* Account for header and footer */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     
     .welcome-content {
         position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: space-between;
         padding-bottom: 60px; /* Space for footer hint */
+    }
+    
+    .welcome-subtitle {
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+    
+    .hero-input-container {
+        margin-top: auto;
+        margin-bottom: 0;
     }
     
     .footer-hint {
