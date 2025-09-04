@@ -1628,14 +1628,7 @@ class ChatApp {
                     }
                 });
                 
-                // Add logout handler for mobile dropdown
-                const mobileLogout = document.getElementById('mobileUserDropdownLogout');
-                if (mobileLogout) {
-                    mobileLogout.addEventListener('click', async (e) => {
-                        e.preventDefault();
-                        await this.logout();
-                    });
-                }
+                // Mobile logout removed - logout is now handled via 3-dot menu only
             }
             
             // Update user name
@@ -1730,14 +1723,7 @@ class ChatApp {
             });
         }
         
-        // Add logout handler for user dropdown logout button
-        const userDropdownLogout = document.getElementById('userDropdownLogout');
-        if (userDropdownLogout) {
-            userDropdownLogout.addEventListener('click', async (e) => {
-                e.preventDefault();
-                await this.logout();
-            });
-        }
+        // User dropdown logout removed - logout is now handled via 3-dot menu only
         
         // Add logout handler for 3-dot menu logout button (already handled in initMainMenu)
         // Kept here for backward compatibility
