@@ -877,10 +877,10 @@ textarea:focus {
     text-align: center;
 }
 
-/* Desktop only - upshift welcome content */
+/* Desktop only - welcome content positioning */
 @media (min-width: 769px) {
     .welcome-content {
-        transform: translateY(-50px);
+        /* Content naturally centered, no transform needed */
     }
 }
 
