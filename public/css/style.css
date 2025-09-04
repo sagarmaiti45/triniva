@@ -2277,7 +2277,7 @@ h3.ai-heading {
     
     /* Adjust welcome view for mobile viewport */
     .welcome-view {
-        padding: 20px 20px 100px 20px; /* Extra bottom padding for footer */
+        padding: 20px 20px 20px 20px; /* Reduced bottom padding */
         min-height: calc(100dvh - 50px - 40px); /* Account for header and footer */
         display: flex;
         flex-direction: column;
@@ -2290,7 +2290,7 @@ h3.ai-heading {
         flex-direction: column;
         height: 100%;
         justify-content: space-between;
-        padding-bottom: 60px; /* Space for footer hint */
+        padding-bottom: 0; /* Remove bottom padding */
     }
     
     .welcome-subtitle {
@@ -2300,7 +2300,7 @@ h3.ai-heading {
     
     .hero-input-container {
         margin-top: auto;
-        margin-bottom: 0;
+        margin-bottom: 8px; /* Very small space above footer */
     }
     
     .footer-hint {
