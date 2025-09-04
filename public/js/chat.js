@@ -914,6 +914,14 @@ class ChatApp {
         textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
     }
 
+    generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
     switchToChatView() {
         this.welcomeView.style.display = 'none';
         this.chatView.style.display = 'flex';
@@ -1027,11 +1035,47 @@ class ChatApp {
         
         if ((!message && !hasImages) || this.isStreaming) return;
 
+        // Create new conversation if this is the first message
+        if (!this.currentConversationId) {
+            // Generate a UUID for the conversation
+            const conversationId = this.generateUUID();
+            this.currentConversationId = conversationId;
+            
+            // Create a new conversation
+            const conversation = {
+                id: conversationId,
+                title: message.substring(0, 30) + (message.length > 30 ? '...' : ''),
+                messages: [],
+                model: this.modelSelect.value,
+                createdAt: new Date().toISOString()
+            };
+            this.conversations.push(conversation);
+            
+            // Update URL with the new chat ID
+            window.history.pushState({}, '', `/chat/${conversationId}`);
+            
+            // If using chat manager and logged in, create in database
+            if (window.chatManager && window.chatManager.user) {
+                const title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
+                await window.chatManager.createConversation(title, this.modelSelect.value, conversationId);
+                window.chatManager.currentConversationId = conversationId;
+                this.isFirstMessage = false;
+            }
+        }
+
         // Switch to chat view
         this.switchToChatView();
         
+        // Save images before clearing
+        const images = [...this.attachedImages];
+        
         // Add user message with images
         this.addMessage(message || "What's in this image?", 'user', false, false, this.attachedImages);
+        
+        // Save user message to database if using chat manager
+        if (window.chatManager && window.chatManager.user && this.currentConversationId) {
+            await window.chatManager.saveMessage(message || "What's in this image?", 'user');
+        }
         
         // Clear hero input and images
         this.heroMessageInput.value = '';
@@ -1039,7 +1083,7 @@ class ChatApp {
         this.clearAttachedImages('hero');
         
         // Process message with images
-        await this.processMessage(message || "What's in this image?", this.attachedImages);
+        await this.processMessage(message || "What's in this image?", images);
     }
 
     async sendMessage() {

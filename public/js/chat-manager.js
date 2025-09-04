@@ -84,17 +84,24 @@ export class ChatManager {
     }
 
     // Create new conversation
-    async createConversation(title, model) {
+    async createConversation(title, model, conversationId = null) {
         if (!this.supabase || !this.user) return null;
         
         try {
+            const conversationData = {
+                user_id: this.user.id,
+                title: title || 'New Chat',
+                model: model
+            };
+            
+            // If a specific ID is provided, use it
+            if (conversationId) {
+                conversationData.id = conversationId;
+            }
+            
             const { data: conversation, error } = await this.supabase
                 .from('conversations')
-                .insert({
-                    user_id: this.user.id,
-                    title: title || 'New Chat',
-                    model: model
-                })
+                .insert(conversationData)
                 .select()
                 .single();
             
