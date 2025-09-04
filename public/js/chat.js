@@ -932,8 +932,7 @@ class ChatApp {
                 body: JSON.stringify({
                     message: message,
                     model: modelToUse,
-                    sessionId: this.sessionId,
-                    context: conversationContext, // Include conversation history for better context
+                    chatId: this.currentConversationId || this.sessionId,
                     images: images.map(img => ({
                         type: 'image_url',
                         image_url: {
