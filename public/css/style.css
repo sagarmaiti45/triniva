@@ -2242,7 +2242,7 @@ h3.ai-heading {
         display: block !important;
         position: fixed;
         top: auto;
-        bottom: 80px;
+        bottom: 88px; /* Added 8px gap from button */
         right: 10px;
         left: auto;
         width: 240px;
