@@ -18,9 +18,9 @@
     --accent-color: #10a37f;
     --user-bubble: linear-gradient(135deg, #10a37f 0%, #0d8968 100%);
     --assistant-bubble: #f0f5f4; /* Light teal-tinted assistant bubble */
-    --shadow-sm: 0 1px 2px rgba(16, 163, 127, 0.05);
-    --shadow-md: 0 4px 6px rgba(16, 163, 127, 0.07);
-    --shadow-lg: 0 10px 25px rgba(16, 163, 127, 0.08);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
     --message-hover: rgba(16, 163, 127, 0.02);
 }
 
