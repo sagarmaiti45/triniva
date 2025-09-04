@@ -8,7 +8,11 @@ class ChatApp {
         this.authToken = null;
         this.user = null;
         this.initElements();
-        this.checkAuthStatus();
+        this.init();
+    }
+    
+    async init() {
+        await this.checkAuthStatus();
         this.initSession();
         this.bindEvents();
         this.enableSendButtons();
@@ -663,6 +667,8 @@ class ChatApp {
     updateMainMenuItems() {
         const shareMenuItem = document.getElementById('shareMenuItem');
         const signupMenuItem = document.getElementById('signupMenuItem');
+        const logoutMenuItem = document.getElementById('logoutMenuItem');
+        const menuDivider = document.getElementById('menuDivider');
         
         // Show share button only in chat view
         if (shareMenuItem) {
@@ -672,19 +678,28 @@ class ChatApp {
         
         // Show signup button and divider only if not logged in
         const isLoggedIn = !!this.authToken;
+        
+        console.log('Updating main menu items:', {
+            isLoggedIn: isLoggedIn,
+            authToken: this.authToken,
+            signupMenuItem: !!signupMenuItem,
+            logoutMenuItem: !!logoutMenuItem,
+            menuDivider: !!menuDivider
+        });
+        
         if (signupMenuItem) {
             signupMenuItem.style.display = isLoggedIn ? 'none' : 'flex';
+            console.log('Signup menu item display set to:', signupMenuItem.style.display);
         }
         
-        const menuDivider = document.getElementById('menuDivider');
         if (menuDivider) {
             menuDivider.style.display = isLoggedIn ? 'none' : 'block';
         }
         
         // Show logout button only if logged in
-        const logoutMenuItem = document.getElementById('logoutMenuItem');
         if (logoutMenuItem) {
             logoutMenuItem.style.display = isLoggedIn ? 'flex' : 'none';
+            console.log('Logout menu item display set to:', logoutMenuItem.style.display);
         }
     }
     
@@ -1383,19 +1398,60 @@ class ChatApp {
         }
     }
     
-    checkAuthStatus() {
-        // Check if user is logged in
+    async checkAuthStatus() {
+        // Check if user is logged in via localStorage first
         this.authToken = localStorage.getItem('authToken');
-        const userId = localStorage.getItem('userId');
-        const userEmail = localStorage.getItem('userEmail');
-        const userName = localStorage.getItem('userName');
+        let userId = localStorage.getItem('userId');
+        let userEmail = localStorage.getItem('userEmail');
+        let userName = localStorage.getItem('userName');
+        
+        // If no localStorage auth, check Supabase auth
+        if (window.supabase && (!this.authToken || !userId)) {
+            try {
+                const { data: { session } } = await window.supabase.auth.getSession();
+                if (session && session.user) {
+                    this.authToken = session.access_token;
+                    userId = session.user.id;
+                    userEmail = session.user.email;
+                    userName = session.user.user_metadata?.full_name || session.user.email;
+                    
+                    // Store in localStorage for consistency
+                    localStorage.setItem('authToken', this.authToken);
+                    localStorage.setItem('userId', userId);
+                    localStorage.setItem('userEmail', userEmail);
+                    localStorage.setItem('userName', userName);
+                    
+                    console.log('Found Supabase session, stored in localStorage');
+                }
+            } catch (error) {
+                console.error('Error checking Supabase session:', error);
+            }
+        }
+        
+        // Debug logging
+        console.log('Auth Status Check:', {
+            authToken: this.authToken ? 'Present' : 'Missing',
+            userId: userId,
+            userEmail: userEmail,
+            userName: userName,
+            supabaseAvailable: !!window.supabase
+        });
         
         const authButtons = document.getElementById('authButtons');
         const greetingContainer = document.getElementById('greetingContainer');
         const userNameElement = document.querySelector('.user-name');
         const mobileUserMenuBtn = document.getElementById('mobileUserMenuBtn');
         
+        // Debug UI elements
+        console.log('UI Elements Found:', {
+            authButtons: !!authButtons,
+            greetingContainer: !!greetingContainer,
+            userNameElement: !!userNameElement,
+            mobileUserMenuBtn: !!mobileUserMenuBtn
+        });
+        
         if (this.authToken && userId) {
+            console.log('User is logged in, updating UI...');
             // User is logged in
             this.user = { id: userId, email: userEmail, name: userName };
             
@@ -1453,6 +1509,7 @@ class ChatApp {
             // Update main menu items to show logout
             this.updateMainMenuItems();
         } else {
+            console.log('User is NOT logged in, showing auth buttons...');
             // User is not logged in
             this.user = null;
             
@@ -1549,6 +1606,69 @@ class ChatApp {
         const freeModels = ['openai/gpt-oss-20b:free', 'moonshotai/kimi-k2:free', 'deepseek/deepseek-r1-0528:free'];
         return !this.user && !freeModels.includes(model);
     }
+}
+
+// Test function to simulate login (for debugging)
+window.testLogin = function() {
+    localStorage.setItem('authToken', 'test-token-123');
+    localStorage.setItem('userId', 'test-user-id');
+    localStorage.setItem('userEmail', 'test@example.com');
+    localStorage.setItem('userName', 'Test User');
+    
+    // Re-check auth status
+    if (window.chatApp) {
+        window.chatApp.checkAuthStatus();
+    }
+    
+    console.log('Test login data set. Refresh page or call window.chatApp.checkAuthStatus()');
+}
+
+// Test function to simulate logout (for debugging)
+window.testLogout = function() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userName');
+    
+    // Re-check auth status
+    if (window.chatApp) {
+        window.chatApp.checkAuthStatus();
+    }
+    
+    console.log('Test logout completed.');
+}
+
+// Function to refresh auth status
+window.refreshAuth = function() {
+    if (window.chatApp) {
+        window.chatApp.checkAuthStatus();
+        console.log('Auth status refreshed');
+    } else {
+        console.log('ChatApp not available yet');
+    }
+}
+
+// Debug function to check all localStorage data
+window.checkLocalStorage = function() {
+    const allKeys = Object.keys(localStorage);
+    const authRelated = {};
+    
+    allKeys.forEach(key => {
+        if (key.includes('auth') || key.includes('user') || key.includes('token') || key.includes('User') || key.includes('Token')) {
+            authRelated[key] = localStorage.getItem(key);
+        }
+    });
+    
+    console.log('All localStorage keys:', allKeys);
+    console.log('Potential auth-related data:', authRelated);
+    console.log('Expected keys:', {
+        authToken: localStorage.getItem('authToken'),
+        userId: localStorage.getItem('userId'),
+        userEmail: localStorage.getItem('userEmail'),
+        userName: localStorage.getItem('userName')
+    });
+    
+    return authRelated;
 }
 
 // Global function for copying code blocks
