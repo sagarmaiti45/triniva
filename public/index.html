@@ -29,11 +29,21 @@
                 </button>
             </div>
             
-            <div class="conversations-list">
-                <!-- Conversations will be loaded here dynamically -->
-                <div class="no-conversations" title="Start a new chat to begin">
+            <div class="conversations-list" id="conversationsList">
+                <!-- Recent conversations will be loaded here -->
+                <div class="no-conversations" id="noConversations" title="Start a new chat to begin">
                     <i class="fas fa-comments"></i>
                     <p>Start a new chat to begin</p>
+                </div>
+                <!-- Chat history container -->
+                <div class="chat-history-container" id="chatHistoryContainer" style="display: none;">
+                    <div class="chat-history-header">
+                        <span>Recent Chats</span>
+                        <span class="chat-limit" id="chatLimitText"></span>
+                    </div>
+                    <div class="recent-chats" id="recentChats">
+                        <!-- Individual chat items will be added here -->
+                    </div>
                 </div>
             </div>
 

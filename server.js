@@ -7,6 +7,7 @@ import { sql, supabase } from './server/config/database.js';
 import { verifyToken, checkTokenBalance } from './server/middleware/auth.js';
 import { countTokens } from './server/utils/tokenCounter.js';
 import { modelPricing, calculateCreditsConsumed, canUseModel } from './server/config/modelPricing.js';
+import { ChatManager } from './server/utils/chatManager.js';
 import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
@@ -18,6 +19,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const conversations = new Map();
+const chatManager = new ChatManager();
 
 app.use(cors());
 app.use(express.json());
@@ -83,139 +85,132 @@ app.post('/api/chat/new', verifyToken, async (req, res) => {
     }
 });
 
-// Apply auth middleware to chat endpoint
+// Enhanced chat endpoint with proper session management and token limits
 app.post('/api/chat', verifyToken, checkTokenBalance, async (req, res) => {
     const { message, model, chatId, images = [] } = req.body;
-    const userId = req.userId; // From auth middleware
-    const isGuest = req.isGuest; // From auth middleware
+    const userId = req.userId;
+    const isGuest = req.isGuest;
     const userPlan = req.subscriptionTier || 'free';
 
+    console.log('[Chat API] Request received:', { 
+        hasMessage: !!message, 
+        model, 
+        chatId, 
+        userId: userId || 'guest', 
+        userPlan,
+        hasImages: images.length > 0
+    });
+
     if ((!message && images.length === 0) || !model || !chatId) {
+        console.log('[Chat API] Missing required fields');
         return res.status(400).json({ error: 'Message/images, model, and chatId are required' });
     }
     
     // Check if user can use the selected model
     if (!canUseModel(userPlan, model)) {
+        console.log('[Chat API] Model not available for user plan:', userPlan);
         return res.status(403).json({ 
             error: 'Model not available', 
             message: `The ${model} model is not available in your ${userPlan} plan. Please upgrade to access this model.`
         });
     }
 
-    let conversation = [];
-    let conversationId = null;
+    let conversation = null;
+    let currentMessages = [];
     
-    // For authenticated users, load or create conversation from database
-    if (!isGuest && userId) {
-        try {
-            // Check if conversation exists in database
-            const existingConv = await sql`
-                SELECT id, messages 
-                FROM conversations 
-                WHERE user_id = ${userId} 
-                AND id = ${chatId}
-                LIMIT 1
-            `;
+    try {
+        if (!isGuest && userId) {
+            // For authenticated users, use ChatManager
+            conversation = await chatManager.getConversation(chatId, userId);
             
-            if (existingConv.length > 0) {
-                conversationId = existingConv[0].id;
-                conversation = existingConv[0].messages || [];
-            } else {
-                // Create new conversation in database
-                const newConv = await sql`
-                    INSERT INTO conversations (id, user_id, session_id, title, messages)
-                    VALUES (${chatId}, ${userId}, ${chatId}, 'New Chat', '[]'::jsonb)
-                    RETURNING id
-                `;
-                conversationId = newConv[0].id;
+            if (!conversation) {
+                // Create new conversation
+                const messageText = typeof message === 'string' ? message : 
+                    (images.length > 0 ? "What's in this image?" : 'New Chat');
+                conversation = await chatManager.createNewChat(userId, userPlan, messageText);
+                console.log('[Chat API] Created new chat:', conversation.chatId);
             }
-        } catch (dbError) {
-            console.error('Database error:', dbError);
-            // Fall back to in-memory storage
+            
+            currentMessages = conversation.messages || [];
+            console.log('[Chat API] Loaded conversation with', currentMessages.length, 'messages');
+            
+            // Check if adding this message would exceed token limit
+            const messageText = typeof message === 'string' ? message : 
+                JSON.stringify(images.length > 0 ? [{ type: 'text', text: message || "What's in this image?" }, ...images] : message);
+                
+            if (chatManager.wouldExceedTokenLimit(currentMessages, messageText)) {
+                console.log('[Chat API] Token limit would be exceeded');
+                return res.status(413).json({ 
+                    error: 'Token limit exceeded', 
+                    message: 'This chat has reached the maximum token limit. Please start a new chat to continue.',
+                    tokenCount: conversation.tokenCount,
+                    maxTokens: chatManager.maxTokensPerChat,
+                    suggestNewChat: true
+                });
+            }
+        } else {
+            // For guests, use simple in-memory storage
             if (!conversations.has(chatId)) {
                 conversations.set(chatId, []);
             }
-            conversation = conversations.get(chatId);
+            currentMessages = conversations.get(chatId);
+            console.log('[Chat API] Guest conversation with', currentMessages.length, 'messages');
         }
-    } else {
-        // For guests, use in-memory storage
-        if (!conversations.has(chatId)) {
-            conversations.set(chatId, []);
+
+        // Build the new user message
+        let userMessage;
+        if (images.length > 0) {
+            userMessage = {
+                role: 'user',
+                content: [
+                    { type: 'text', text: message || "What's in this image?" },
+                    ...images
+                ]
+            };
+        } else {
+            userMessage = { role: 'user', content: message };
         }
-        conversation = conversations.get(chatId);
-    }
-    
-    // Build message content based on whether images are included
-    if (images.length > 0) {
-        // Create content array for multimodal message
-        const messageContent = [
-            { type: 'text', text: message || "What's in this image?" }
-        ];
-        // Add images to content
-        images.forEach(img => {
-            messageContent.push(img);
+
+        // Add user message to conversation
+        const updatedMessages = [...currentMessages, userMessage];
+        console.log('[Chat API] Total messages after user input:', updatedMessages.length);
+
+        // Set up streaming response
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
         });
-        const userMessage = { role: 'user', content: messageContent };
-        conversation.push(userMessage);
-        
-        // Save to database for authenticated users
-        if (!isGuest && userId && conversationId) {
-            try {
-                await sql`
-                    INSERT INTO messages (conversation_id, role, content)
-                    VALUES (${conversationId}, 'user', ${JSON.stringify(messageContent)})
-                `;
-            } catch (err) {
-                console.error('Error saving user message:', err);
-            }
-        }
-    } else {
-        // Simple text message
-        const userMessage = { role: 'user', content: message };
-        conversation.push(userMessage);
-        
-        // Save to database for authenticated users
-        if (!isGuest && userId && conversationId) {
-            try {
-                await sql`
-                    INSERT INTO messages (conversation_id, role, content)
-                    VALUES (${conversationId}, 'user', ${message})
-                `;
-            } catch (err) {
-                console.error('Error saving user message:', err);
-            }
-        }
-    }
 
-    res.writeHead(200, {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive'
-    });
+        console.log('[Chat API] Making request to OpenRouter with', updatedMessages.length, 'messages');
 
-    try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        // Make API request to OpenRouter
+        const apiResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
                 'Content-Type': 'application/json',
-                'HTTP-Referer': 'http://localhost:3000',
-                'X-Title': 'AI Chat Platform'
+                'HTTP-Referer': process.env.NODE_ENV === 'production' ? 'https://triniva.com' : 'http://localhost:3000',
+                'X-Title': 'Triniva AI Chat Platform'
             },
             body: JSON.stringify({
                 model: model,
-                messages: conversation,
+                messages: updatedMessages,
                 stream: true,
                 temperature: 0.7,
                 max_tokens: 2000
             })
         });
 
-        if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
+        if (!apiResponse.ok) {
+            const errorBody = await apiResponse.text();
+            console.error('[Chat API] OpenRouter API error:', apiResponse.status, errorBody);
+            throw new Error(`OpenRouter API error: ${apiResponse.status} - ${errorBody}`);
         }
 
-        const reader = response.body.getReader();
+        console.log('[Chat API] OpenRouter API response OK, starting stream');
+
+        const reader = apiResponse.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
         let assistantMessage = '';
@@ -237,28 +232,19 @@ app.post('/api/chat', verifyToken, checkTokenBalance, async (req, res) => {
                     const data = line.slice(6);
                     
                     if (data === '[DONE]') {
+                        console.log('[Chat API] Stream completed, assistant message length:', assistantMessage.length);
                         res.write(`data: [DONE]\n\n`);
-                        conversation.push({ role: 'assistant', content: assistantMessage });
                         
-                        // Save assistant message and update conversation
-                        if (!isGuest && userId && conversationId) {
+                        // Add assistant message to conversation
+                        const finalMessages = [...updatedMessages, { role: 'assistant', content: assistantMessage }];
+                        
+                        // Save conversation for authenticated users
+                        if (!isGuest && userId) {
                             try {
-                                // Save assistant message
-                                await sql`
-                                    INSERT INTO messages (conversation_id, role, content)
-                                    VALUES (${conversationId}, 'assistant', ${assistantMessage})
-                                `;
+                                await chatManager.updateConversation(chatId, finalMessages);
                                 
-                                // Update conversation with latest messages
-                                await sql`
-                                    UPDATE conversations
-                                    SET messages = ${JSON.stringify(conversation)}::jsonb,
-                                        updated_at = NOW()
-                                    WHERE id = ${conversationId}
-                                `;
-                                
-                                // Calculate credits consumed
-                                const inputTokens = countTokens(JSON.stringify(conversation));
+                                // Calculate and record usage
+                                const inputTokens = countTokens(JSON.stringify(updatedMessages));
                                 const outputTokens = countTokens(assistantMessage);
                                 const totalTokens = inputTokens + outputTokens;
                                 const creditsUsed = calculateCreditsConsumed(totalTokens, model);
@@ -279,18 +265,13 @@ app.post('/api/chat', verifyToken, checkTokenBalance, async (req, res) => {
                                     VALUES (${userId}, ${model}, ${inputTokens}, ${outputTokens}, ${totalTokens}, ${creditsUsed}, ${cost}, ${chatId})
                                 `;
                                 
-                                // Update conversation title if it's the first message
-                                if (conversation.length === 2) { // User message + Assistant response
-                                    const title = message.substring(0, 50) + (message.length > 50 ? '...' : '');
-                                    await sql`
-                                        UPDATE conversations
-                                        SET title = ${title}
-                                        WHERE id = ${conversationId}
-                                    `;
-                                }
+                                console.log('[Chat API] Saved conversation and usage for user:', userId);
                             } catch (err) {
-                                console.error('Error saving to database:', err);
+                                console.error('[Chat API] Error saving conversation:', err);
                             }
+                        } else {
+                            // Update guest conversation in memory
+                            conversations.set(chatId, finalMessages);
                         }
                         
                         break;
@@ -306,7 +287,7 @@ app.post('/api/chat', verifyToken, checkTokenBalance, async (req, res) => {
                                 res.write(`data: ${JSON.stringify({ content })}\n\n`);
                             }
                         } catch (e) {
-                            console.error('Parse error:', e);
+                            console.error('[Chat API] Parse error:', e);
                         }
                     }
                 }
@@ -315,7 +296,7 @@ app.post('/api/chat', verifyToken, checkTokenBalance, async (req, res) => {
 
         res.end();
     } catch (error) {
-        console.error('Error:', error);
+        console.error('[Chat API] Error:', error);
         res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
         res.end();
     }
@@ -419,20 +400,65 @@ function calculateCost(model, inputTokens, outputTokens) {
     return (inputTokens * pricing.input / 1000000) + (outputTokens * pricing.output / 1000000);
 }
 
-// New endpoints for authenticated features
+// Get recent chats with proper limits based on user plan
 app.get('/api/conversations', verifyToken, async (req, res) => {
     try {
-        const conversations = await sql`
-            SELECT id, title, created_at, updated_at
-            FROM conversations
-            WHERE user_id = ${req.userId}
-            ORDER BY updated_at DESC
-            LIMIT 50
-        `;
-        res.json({ conversations });
+        if (req.isGuest) {
+            return res.json({ conversations: [] });
+        }
+
+        const userPlan = req.subscriptionTier || 'free';
+        const recentChats = await chatManager.getRecentChats(req.userId, chatManager.getUserChatLimit(userPlan));
+        
+        res.json({ 
+            conversations: recentChats,
+            userPlan,
+            chatLimit: chatManager.getUserChatLimit(userPlan)
+        });
     } catch (error) {
         console.error('Error fetching conversations:', error);
         res.status(500).json({ error: 'Failed to fetch conversations' });
+    }
+});
+
+// Get chat info including token usage
+app.get('/api/chat/:chatId/info', verifyToken, async (req, res) => {
+    const { chatId } = req.params;
+    
+    if (req.isGuest) {
+        const guestMessages = conversations.get(chatId) || [];
+        return res.json({
+            chatId,
+            title: 'Guest Chat',
+            tokenCount: chatManager.calculateConversationTokens(guestMessages),
+            maxTokens: chatManager.maxTokensPerChat,
+            messageCount: guestMessages.length,
+            isNearLimit: false,
+            exceededLimit: false
+        });
+    }
+
+    try {
+        const conversation = await chatManager.getConversation(chatId, req.userId);
+        
+        if (!conversation) {
+            return res.status(404).json({ error: 'Chat not found' });
+        }
+
+        res.json({
+            chatId: conversation.id,
+            title: conversation.title,
+            tokenCount: conversation.tokenCount,
+            maxTokens: chatManager.maxTokensPerChat,
+            messageCount: conversation.messages.length,
+            isNearLimit: conversation.isNearLimit,
+            exceededLimit: conversation.exceededLimit,
+            createdAt: conversation.createdAt,
+            updatedAt: conversation.updatedAt
+        });
+    } catch (error) {
+        console.error('Error fetching chat info:', error);
+        res.status(500).json({ error: 'Failed to fetch chat info' });
     }
 });
 
