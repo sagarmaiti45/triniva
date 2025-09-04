@@ -74,6 +74,9 @@ class ChatApp {
         // Initialize attach menu visibility
         this.updateAttachMenuVisibility();
         
+        // Initialize cookie consent
+        this.initCookieConsent();
+        
         // Handle mobile viewport height
         this.handleMobileViewport();
     }
@@ -2046,6 +2049,62 @@ window.checkLocalStorage = function() {
     });
     
     return authRelated;
+    }
+
+    // Cookie Consent Management
+    initCookieConsent() {
+        const cookieConsent = document.getElementById('cookieConsent');
+        const acceptBtn = document.getElementById('cookieAccept');
+        const rejectBtn = document.getElementById('cookieReject');
+        
+        // Check if user has already made a choice
+        const cookieChoice = localStorage.getItem('cookieConsent');
+        
+        // Show banner if no choice has been made
+        if (!cookieChoice && cookieConsent) {
+            setTimeout(() => {
+                cookieConsent.classList.add('show');
+            }, 2000); // Show after 2 seconds
+        }
+        
+        // Handle accept button
+        if (acceptBtn) {
+            acceptBtn.addEventListener('click', () => {
+                localStorage.setItem('cookieConsent', 'accepted');
+                localStorage.setItem('cookieConsentTime', new Date().toISOString());
+                cookieConsent.classList.remove('show');
+                this.enableAnalytics();
+            });
+        }
+        
+        // Handle reject button
+        if (rejectBtn) {
+            rejectBtn.addEventListener('click', () => {
+                localStorage.setItem('cookieConsent', 'rejected');
+                localStorage.setItem('cookieConsentTime', new Date().toISOString());
+                cookieConsent.classList.remove('show');
+                this.disableAnalytics();
+            });
+        }
+        
+        // Initialize analytics based on saved choice
+        if (cookieChoice === 'accepted') {
+            this.enableAnalytics();
+        }
+    }
+    
+    enableAnalytics() {
+        // Enable analytics cookies and tracking
+        console.log('Analytics enabled');
+        // Add your analytics initialization code here
+        // Example: Google Analytics, Mixpanel, etc.
+    }
+    
+    disableAnalytics() {
+        // Disable analytics and remove cookies
+        console.log('Analytics disabled');
+        // Add code to disable analytics and clear cookies
+    }
 }
 
 // Global function for copying code blocks
