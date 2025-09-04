@@ -360,7 +360,7 @@
             // Clear existing plans
             upgradeContainer.innerHTML = '';
             
-            // Get available upgrades
+            // Get available upgrades (only higher tier plans)
             const upgrades = Object.entries(planDetails).filter(([key, plan]) => 
                 planHierarchy[key] > currentLevel
             );

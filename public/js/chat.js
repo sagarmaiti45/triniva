@@ -360,6 +360,12 @@ class ChatApp {
             const value = item.dataset.value;
             const model = this.modelConfig.find(m => m.value === value);
             
+            // Check if user can use this model
+            if (!this.canUserUseModel(value)) {
+                this.showModelRestrictionPopup(value, model);
+                return;
+            }
+            
             if (model) {
                 // Check if user can use this model
                 const isAvailable = model.isFree || this.authToken;
@@ -579,6 +585,141 @@ class ChatApp {
                 }
             }
         });
+    }
+    
+    canUserUseModel(modelId) {
+        // Get user plan (guest, free, starter, pro, business)
+        let userPlan = 'guest';
+        if (this.authToken) {
+            // Get from stored profile
+            const storedProfile = localStorage.getItem('userProfile');
+            if (storedProfile) {
+                try {
+                    const profile = JSON.parse(storedProfile);
+                    userPlan = profile.plan || 'free';
+                } catch (e) {
+                    // Fallback to legacy storage
+                    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+                    userPlan = storedUser.plan || 'free';
+                }
+            } else {
+                userPlan = 'free'; // Default for authenticated users without profile
+            }
+        }
+        
+        // Free models - available to everyone
+        const freeModels = [
+            'openai/gpt-oss-20b:free',
+            'moonshotai/kimi-k2:free', 
+            'meta-llama/llama-4-maverick:free',
+            'deepseek/deepseek-r1-0528:free'
+        ];
+        
+        if (freeModels.includes(modelId)) {
+            return true;
+        }
+        
+        // Guest users can only use free models
+        if (userPlan === 'guest') {
+            return false;
+        }
+        
+        // Premium models - only pro and business
+        const premiumModels = [
+            'openai/gpt-5',
+            'anthropic/claude-sonnet-4',
+            'x-ai/grok-4',
+            'anthropic/claude-3.5-haiku'
+        ];
+        
+        if (premiumModels.includes(modelId)) {
+            return userPlan === 'pro' || userPlan === 'business';
+        }
+        
+        // Budget/Mid models - starter and above
+        return userPlan !== 'free';
+    }
+    
+    showModelRestrictionPopup(modelId, model) {
+        let userPlan = 'guest';
+        if (this.authToken) {
+            const storedProfile = localStorage.getItem('userProfile');
+            if (storedProfile) {
+                try {
+                    const profile = JSON.parse(storedProfile);
+                    userPlan = profile.plan || 'free';
+                } catch (e) {
+                    userPlan = 'free';
+                }
+            } else {
+                userPlan = 'free';
+            }
+        }
+        
+        let title = '';
+        let message = '';
+        let actionButton = '';
+        
+        if (userPlan === 'guest') {
+            title = 'Sign In Required';
+            message = `<p>The <strong>${model.label}</strong> model requires authentication.</p><p>Please sign in or create an account to access premium AI models.</p>`;
+            actionButton = `
+                <div class="popup-actions">
+                    <button class="popup-btn secondary" onclick="this.closest('.model-restriction-popup').remove()">Cancel</button>
+                    <a href="/auth/login.html" class="popup-btn primary">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </a>
+                </div>`;
+        } else {
+            const premiumModels = ['openai/gpt-5', 'anthropic/claude-sonnet-4', 'x-ai/grok-4', 'anthropic/claude-3.5-haiku'];
+            const isPremium = premiumModels.includes(modelId);
+            
+            if (isPremium && (userPlan === 'free' || userPlan === 'starter')) {
+                title = 'Upgrade Required';
+                message = `<p>The <strong>${model.label}</strong> model is only available on <strong>Pro</strong> and <strong>Business</strong> plans.</p><p>Upgrade your plan to access premium AI models with advanced capabilities.</p>`;
+                actionButton = `
+                    <div class="popup-actions">
+                        <button class="popup-btn secondary" onclick="this.closest('.model-restriction-popup').remove()">Cancel</button>
+                        <a href="/plans" class="popup-btn primary">
+                            <i class="fas fa-crown"></i> Upgrade Plan
+                        </a>
+                    </div>`;
+            } else if (userPlan === 'free') {
+                title = 'Upgrade Required';
+                message = `<p>The <strong>${model.label}</strong> model is only available on paid plans.</p><p>Upgrade to <strong>Starter</strong>, <strong>Pro</strong>, or <strong>Business</strong> to access this model.</p>`;
+                actionButton = `
+                    <div class="popup-actions">
+                        <button class="popup-btn secondary" onclick="this.closest('.model-restriction-popup').remove()">Cancel</button>
+                        <a href="/plans" class="popup-btn primary">
+                            <i class="fas fa-rocket"></i> Upgrade Plan
+                        </a>
+                    </div>`;
+            }
+        }
+        
+        // Create popup
+        const popup = document.createElement('div');
+        popup.className = 'model-restriction-popup';
+        popup.innerHTML = `
+            <div class="popup-overlay" onclick="this.closest('.model-restriction-popup').remove()"></div>
+            <div class="popup-content">
+                <div class="popup-header">
+                    <div class="popup-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>${title}</h3>
+                </div>
+                <div class="popup-body">
+                    ${message}
+                </div>
+                ${actionButton}
+            </div>
+        `;
+        
+        document.body.appendChild(popup);
+        
+        // Show with animation
+        setTimeout(() => popup.classList.add('show'), 10);
     }
     
     updateModelDisplay() {
@@ -1454,6 +1595,9 @@ class ChatApp {
             // User is logged in
             this.user = { id: userId, email: userEmail, name: userName };
             
+            // Load user profile with plan info
+            await this.loadUserProfile();
+            
             // Show greeting, hide auth buttons
             if (authButtons) authButtons.style.display = 'none';
             if (greetingContainer) {
@@ -1519,6 +1663,36 @@ class ChatApp {
             // Update main menu items to show signup
             this.updateMainMenuItems();
         }
+    }
+    
+    async loadUserProfile() {
+        if (!this.authToken) return null;
+        
+        try {
+            const response = await fetch('/api/user/profile', {
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const userProfile = {
+                    plan: data.profile?.subscription_tier || 'free',
+                    credits: data.profile?.token_balance || 0,
+                    ...data.profile
+                };
+                
+                // Store user profile in localStorage for quick access
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                
+                console.log('[Profile] User plan loaded:', userProfile.plan);
+                return userProfile;
+            }
+        } catch (error) {
+            console.error('[Profile] Failed to load user profile:', error);
+        }
+        return null;
     }
     
     updateGreeting() {
