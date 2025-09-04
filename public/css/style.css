@@ -470,6 +470,7 @@ textarea:focus {
     font-size: 20px;
     font-weight: 700;
     color: var(--text-primary);
+    opacity: 0.7;
     margin: 0;
     line-height: 1;
     display: flex;
@@ -526,6 +527,7 @@ textarea:focus {
     align-items: center;
     gap: 6px;
     transition: all 0.2s ease;
+    opacity: 0.7;
 }
 
 .header-auth-btn i {
@@ -541,6 +543,7 @@ textarea:focus {
 .login-btn:hover {
     background: var(--bg-hover);
     border-color: var(--accent-color);
+    opacity: 1;
 }
 
 .signup-btn {
@@ -553,6 +556,7 @@ textarea:focus {
     background: #0e9571;
     transform: translateY(-1px);
     box-shadow: var(--shadow-sm);
+    opacity: 1;
 }
 
 /* Hide text on mobile */
@@ -2294,8 +2298,12 @@ h3.ai-heading {
     }
     
     .welcome-subtitle {
-        margin-top: auto;
-        margin-bottom: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        margin: 0;
     }
     
     .hero-input-container {
