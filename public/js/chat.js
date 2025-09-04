@@ -167,6 +167,37 @@ class ChatApp {
     }
 
     bindEvents() {
+        // Handle browser back/forward navigation
+        window.addEventListener('popstate', (e) => {
+            const path = window.location.pathname;
+            
+            // If we're back to the homepage
+            if (path === '/' || path === '') {
+                // Reset to welcome view
+                this.showWelcomeView();
+                this.currentConversationId = null;
+                
+                // Clear messages from chat view
+                this.chatMessages.innerHTML = '';
+                
+                // Clear any input fields
+                this.messageInput.value = '';
+                this.heroMessageInput.value = '';
+                
+                // Remove active state from sidebar conversations
+                document.querySelectorAll('.conversation-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+            }
+            // If we're on a chat URL
+            else if (path.startsWith('/chat/')) {
+                const chatId = path.split('/chat/')[1];
+                if (chatId && this.conversations.find(c => c.id === chatId)) {
+                    this.loadConversation(chatId);
+                }
+            }
+        });
+        
         // Hero input events
         this.heroSendButton.addEventListener('click', () => this.sendMessageFromHero());
         
@@ -948,10 +979,63 @@ class ChatApp {
         // Auto-focus on chat input for desktop
         this.autoFocusPrompt();
     }
+    
+    showWelcomeView() {
+        this.welcomeView.style.display = 'block';
+        this.chatView.style.display = 'none';
+        document.getElementById('chatHeader').style.display = 'none';
+        
+        // Remove class from auth buttons container
+        const authContainer = document.querySelector('.auth-buttons-container');
+        if (authContainer) {
+            authContainer.classList.remove('in-chat-view');
+        }
+        
+        // Update main menu items
+        this.updateMainMenuItems();
+        
+        this.isFirstMessage = true;
+        
+        // Show greeting container
+        const greetingContainer = document.querySelector('.greeting-container');
+        if (greetingContainer) {
+            greetingContainer.style.display = '';
+        }
+        
+        // Reset any streaming state
+        this.isStreaming = false;
+        this.setStreamingState(false);
+        
+        // Auto-focus on hero input for desktop
+        if (!this.isMobileDevice()) {
+            this.heroMessageInput.focus();
+        }
+    }
 
     createNewConversation() {
-        // Reload the page to start a fresh session
-        window.location.reload();
+        // Reset to homepage
+        window.history.pushState({}, '', '/');
+        this.showWelcomeView();
+        this.currentConversationId = null;
+        
+        // Clear messages
+        this.chatMessages.innerHTML = '';
+        
+        // Clear input fields
+        this.messageInput.value = '';
+        this.heroMessageInput.value = '';
+        
+        // Clear attached images
+        this.clearAttachedImages('hero');
+        this.clearAttachedImages('chat');
+        
+        // Remove active state from sidebar conversations
+        document.querySelectorAll('.conversation-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Reset first message flag
+        this.isFirstMessage = true;
     }
 
     loadConversation(conversationId) {
