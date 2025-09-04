@@ -1,17 +1,15 @@
 class ChatApp {
     constructor() {
-        this.chatId = null;
+        this.sessionId = null;
         this.isStreaming = false;
         this.conversations = [];
         this.currentConversationId = null;
         this.isFirstMessage = true;
         this.authToken = null;
         this.user = null;
-        this.userPlan = 'guest';
-        this.userCredits = 0;
         this.initElements();
         this.checkAuthStatus();
-        this.initChatSession();
+        this.initSession();
         this.bindEvents();
         this.enableSendButtons();
         this.autoFocusPrompt();
@@ -903,7 +901,7 @@ class ChatApp {
                 body: JSON.stringify({
                     message: message,
                     model: modelToUse,
-                    chatId: this.chatId,
+                    sessionId: this.sessionId,
                     context: conversationContext, // Include conversation history for better context
                     images: images.map(img => ({
                         type: 'image_url',
@@ -1502,223 +1500,8 @@ class ChatApp {
     
     // Check if model requires authentication
     isModelRestricted(model) {
-        const freeModels = ['openai/gpt-oss-20b:free', 'moonshotai/kimi-k2:free', 'deepseek/deepseek-r1-0528:free', 'meta-llama/llama-4-maverick:free'];
+        const freeModels = ['openai/gpt-oss-20b:free', 'moonshotai/kimi-k2:free', 'deepseek/deepseek-r1-0528:free'];
         return !this.user && !freeModels.includes(model);
-    }
-    
-    // Initialize chat session
-    async initChatSession() {
-        // Check if we're on a chat page with ID
-        const pathMatch = window.location.pathname.match(/^\/chat\/([a-f0-9-]+)$/);
-        
-        if (pathMatch) {
-            this.chatId = pathMatch[1];
-            await this.loadChat(this.chatId);
-        } else {
-            // Create new chat session
-            await this.createNewChat();
-        }
-    }
-    
-    // Create new chat
-    async createNewChat() {
-        try {
-            const headers = {};
-            if (this.authToken) {
-                headers['Authorization'] = `Bearer ${this.authToken}`;
-            }
-            
-            const response = await fetch('/api/chat/new', {
-                method: 'POST',
-                headers: {
-                    ...headers,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                this.chatId = data.chatId;
-                // Update URL without reloading
-                window.history.replaceState({}, '', `/chat/${this.chatId}`);
-            } else {
-                // Generate a local chat ID for guests
-                this.chatId = this.generateChatId();
-                window.history.replaceState({}, '', `/chat/${this.chatId}`);
-            }
-        } catch (error) {
-            console.error('Error creating chat:', error);
-            // Generate a local chat ID as fallback
-            this.chatId = this.generateChatId();
-            window.history.replaceState({}, '', `/chat/${this.chatId}`);
-        }
-    }
-    
-    // Load existing chat
-    async loadChat(chatId) {
-        try {
-            const headers = {};
-            if (this.authToken) {
-                headers['Authorization'] = `Bearer ${this.authToken}`;
-            }
-            
-            const response = await fetch(`/api/chat/${chatId}`, {
-                headers: headers
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                const conversation = data.conversation;
-                
-                // Load messages into UI
-                if (conversation.messages && conversation.messages.length > 0) {
-                    this.switchToChatView();
-                    this.messagesContainer.innerHTML = '';
-                    
-                    conversation.messages.forEach(msg => {
-                        const content = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
-                        this.addMessage(content, msg.role, false);
-                    });
-                    
-                    this.isFirstMessage = false;
-                }
-                
-                // Set conversation title if exists
-                if (conversation.title) {
-                    document.title = `${conversation.title} - Triniva AI`;
-                }
-            }
-        } catch (error) {
-            console.error('Error loading chat:', error);
-        }
-    }
-    
-    // Generate a client-side chat ID
-    generateChatId() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            const r = Math.random() * 16 | 0;
-            const v = c === 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
-    }
-    
-    // Check authentication status
-    async checkAuthStatus() {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            this.authToken = token;
-            try {
-                const response = await fetch('/api/user/profile', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    this.user = data.profile;
-                    this.userPlan = data.profile.subscription_tier || 'free';
-                    this.userCredits = data.profile.token_balance || 0;
-                    this.updateUIForAuth();
-                } else {
-                    // Invalid token, clear it
-                    localStorage.removeItem('authToken');
-                    this.authToken = null;
-                }
-            } catch (error) {
-                console.error('Error checking auth:', error);
-            }
-        }
-        
-        // Load available models based on user plan
-        await this.loadAvailableModels();
-    }
-    
-    // Load available models for user's plan
-    async loadAvailableModels() {
-        try {
-            const headers = {};
-            if (this.authToken) {
-                headers['Authorization'] = `Bearer ${this.authToken}`;
-            }
-            
-            const response = await fetch('/api/user/models', {
-                headers: headers
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                this.updateModelDropdown(data.availableModels, data.restrictedModels);
-            }
-        } catch (error) {
-            console.error('Error loading models:', error);
-        }
-    }
-    
-    // Update model dropdown based on available models
-    updateModelDropdown(availableModels, restrictedModels) {
-        if (!this.dropdownMenu) return;
-        
-        // Clear existing options
-        this.dropdownMenu.innerHTML = '';
-        
-        // Add available models
-        if (availableModels.length > 0) {
-            const availableGroup = document.createElement('div');
-            availableGroup.className = 'model-group';
-            availableGroup.innerHTML = '<div class="model-group-title">Available Models</div>';
-            
-            availableModels.forEach(model => {
-                const option = document.createElement('div');
-                option.className = 'model-option';
-                option.dataset.value = model.id;
-                option.innerHTML = `
-                    <span class="model-name">${model.displayName}</span>
-                    ${model.category === 'free' ? '<span class="model-badge free">Free</span>' : ''}
-                    ${model.multiplier > 1 ? `<span class="model-badge">${model.multiplier}x</span>` : ''}
-                `;
-                option.addEventListener('click', () => this.selectModel(model.id));
-                availableGroup.appendChild(option);
-            });
-            
-            this.dropdownMenu.appendChild(availableGroup);
-        }
-        
-        // Add restricted models (grayed out)
-        if (restrictedModels.length > 0) {
-            const restrictedGroup = document.createElement('div');
-            restrictedGroup.className = 'model-group';
-            restrictedGroup.innerHTML = '<div class="model-group-title">Upgrade Required</div>';
-            
-            restrictedModels.forEach(model => {
-                const option = document.createElement('div');
-                option.className = 'model-option disabled';
-                option.innerHTML = `
-                    <span class="model-name">${model.displayName}</span>
-                    <span class="model-badge locked"><i class="fas fa-lock"></i></span>
-                `;
-                option.addEventListener('click', () => {
-                    if (window.upgradePrompt) {
-                        window.upgradePrompt.show(`Upgrade to access ${model.displayName}`);
-                    }
-                });
-                restrictedGroup.appendChild(option);
-            });
-            
-            this.dropdownMenu.appendChild(restrictedGroup);
-        }
-    }
-    
-    // Update UI for authenticated users
-    updateUIForAuth() {
-        // Update user info in UI
-        const userBadge = document.querySelector('.user-badge');
-        if (userBadge && this.user) {
-            userBadge.innerHTML = `
-                <span class="plan-badge ${this.userPlan}">${this.userPlan.toUpperCase()}</span>
-                <span class="credits-badge">${this.userCredits.toLocaleString()} credits</span>
-            `;
-        }
     }
 }
 
