@@ -1300,6 +1300,7 @@ textarea:focus {
 }
 
 .mic-button {
+    display: none !important; /* Hidden for now */
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -1307,7 +1308,6 @@ textarea:focus {
     background: var(--bg-secondary);
     color: var(--text-secondary);
     cursor: pointer;
-    display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
