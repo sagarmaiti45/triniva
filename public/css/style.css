@@ -2319,6 +2319,9 @@ h3.ai-heading {
     .hero-input-container {
         margin-top: auto;
         margin-bottom: 16px; /* Small space above footer */
+        margin-left: 20px;
+        margin-right: 20px;
+        max-width: calc(100% - 40px); /* Account for left and right margins */
     }
     
     .footer-hint {
