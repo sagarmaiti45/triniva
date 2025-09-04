@@ -612,6 +612,7 @@ class ChatApp {
         const menuDropdown = document.getElementById('mainMenuDropdown');
         const shareMenuItem = document.getElementById('shareMenuItem');
         const signupMenuItem = document.getElementById('signupMenuItem');
+        const logoutMenuItem = document.getElementById('logoutMenuItem');
         
         if (!menuButton || !menuDropdown) return;
         
@@ -644,6 +645,14 @@ class ChatApp {
         if (signupMenuItem) {
             signupMenuItem.addEventListener('click', () => {
                 window.location.href = '/auth/signup.html';
+            });
+        }
+        
+        // Handle logout button click
+        if (logoutMenuItem) {
+            logoutMenuItem.addEventListener('click', async () => {
+                await this.logout();
+                menuDropdown.classList.remove('show');
             });
         }
         
@@ -710,9 +719,10 @@ class ChatApp {
         
         this.isFirstMessage = false;
         
-        // Hide greeting container in chat view
+        // Keep greeting visible for logged-in users in chat view
         const greetingContainer = document.querySelector('.greeting-container');
-        if (greetingContainer) {
+        if (greetingContainer && !this.user) {
+            // Only hide greeting if user is not logged in
             greetingContainer.style.display = 'none';
         }
         
@@ -740,6 +750,12 @@ class ChatApp {
             const authContainer = document.querySelector('.auth-buttons-container');
             if (authContainer) {
                 authContainer.classList.remove('in-chat-view');
+            }
+            
+            // Show greeting for logged-in users
+            const greetingContainer = document.querySelector('.greeting-container');
+            if (greetingContainer && this.user) {
+                greetingContainer.style.display = 'flex';
             }
             
             // Update main menu items
@@ -1385,7 +1401,11 @@ class ChatApp {
             
             // Show greeting, hide auth buttons
             if (authButtons) authButtons.style.display = 'none';
-            if (greetingContainer) greetingContainer.style.display = 'flex';
+            if (greetingContainer) {
+                greetingContainer.style.display = 'flex';
+                // Keep greeting visible on homepage
+                greetingContainer.classList.add('logged-in');
+            }
             
             // Show mobile user menu button on mobile
             if (mobileUserMenuBtn) {
@@ -1408,6 +1428,15 @@ class ChatApp {
                         mobileDropdown.classList.remove('show');
                     }
                 });
+                
+                // Add logout handler for mobile dropdown
+                const mobileLogout = document.getElementById('mobileUserDropdownLogout');
+                if (mobileLogout) {
+                    mobileLogout.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        await this.logout();
+                    });
+                }
             }
             
             // Update user name
@@ -1420,6 +1449,9 @@ class ChatApp {
             
             // Set up user dropdown
             this.setupUserDropdown();
+            
+            // Update main menu items to show logout
+            this.updateMainMenuItems();
         } else {
             // User is not logged in
             this.user = null;
@@ -1427,6 +1459,9 @@ class ChatApp {
             // Show auth buttons, hide greeting
             if (authButtons) authButtons.style.display = 'flex';
             if (greetingContainer) greetingContainer.style.display = 'none';
+            
+            // Update main menu items to show signup
+            this.updateMainMenuItems();
         }
     }
     
@@ -1465,9 +1500,20 @@ class ChatApp {
             });
         }
         
-        // Add logout handler for 3-dot menu logout button
+        // Add logout handler for user dropdown logout button
+        const userDropdownLogout = document.getElementById('userDropdownLogout');
+        if (userDropdownLogout) {
+            userDropdownLogout.addEventListener('click', async (e) => {
+                e.preventDefault();
+                await this.logout();
+            });
+        }
+        
+        // Add logout handler for 3-dot menu logout button (already handled in initMainMenu)
+        // Kept here for backward compatibility
         const logoutMenuItem = document.getElementById('logoutMenuItem');
-        if (logoutMenuItem) {
+        if (logoutMenuItem && !logoutMenuItem.hasAttribute('data-listener-attached')) {
+            logoutMenuItem.setAttribute('data-listener-attached', 'true');
             logoutMenuItem.addEventListener('click', async (e) => {
                 e.preventDefault();
                 await this.logout();
