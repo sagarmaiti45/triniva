@@ -2300,7 +2300,7 @@ h3.ai-heading {
     
     .hero-input-container {
         margin-top: auto;
-        margin-bottom: 8px; /* Very small space above footer */
+        margin-bottom: 16px; /* Small space above footer */
     }
     
     .footer-hint {
