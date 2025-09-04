@@ -216,6 +216,7 @@ class ChatApp {
             this.modelButtonMobile.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (this.customDropdown) {
+                    this.closeAllModals();
                     this.customDropdown.classList.toggle('open');
                 }
             });
@@ -349,6 +350,7 @@ class ChatApp {
         // Toggle dropdown on trigger click
         this.dropdownTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
+            this.closeAllModals();
             this.customDropdown.classList.toggle('open');
         });
         
@@ -425,6 +427,7 @@ class ChatApp {
         if (this.heroAttachButton) {
             this.heroAttachButton.addEventListener('click', (e) => {
                 e.stopPropagation();
+                this.closeAllModals();
                 this.toggleAttachMenu('hero');
             });
         }
@@ -433,6 +436,7 @@ class ChatApp {
         if (this.chatAttachButton) {
             this.chatAttachButton.addEventListener('click', (e) => {
                 e.stopPropagation();
+                this.closeAllModals();
                 this.toggleAttachMenu('chat');
             });
         }
@@ -764,6 +768,7 @@ class ChatApp {
         // Toggle menu on button click
         menuButton.addEventListener('click', (e) => {
             e.stopPropagation();
+            this.closeAllModals();
             menuDropdown.classList.toggle('show');
         });
         
@@ -810,6 +815,7 @@ class ChatApp {
         const signupMenuItem = document.getElementById('signupMenuItem');
         const logoutMenuItem = document.getElementById('logoutMenuItem');
         const menuDivider = document.getElementById('menuDivider');
+        const logoutDivider = document.getElementById('logoutDivider');
         
         // Show share button only in chat view
         if (shareMenuItem) {
@@ -842,6 +848,55 @@ class ChatApp {
             logoutMenuItem.style.display = isLoggedIn ? 'flex' : 'none';
             console.log('Logout menu item display set to:', logoutMenuItem.style.display);
         }
+        
+        // Show logout divider only if logged in (appears above logout)
+        if (logoutDivider) {
+            logoutDivider.style.display = isLoggedIn ? 'block' : 'none';
+        }
+    }
+    
+    // Global modal management - close all open modals/dropdowns
+    closeAllModals() {
+        // Close user dropdown
+        const userDropdown = document.getElementById('userDropdown');
+        if (userDropdown) {
+            userDropdown.classList.remove('show');
+        }
+        
+        // Close mobile user dropdown
+        const mobileUserDropdown = document.getElementById('mobileUserDropdown');
+        if (mobileUserDropdown) {
+            mobileUserDropdown.classList.remove('show');
+        }
+        
+        // Close main menu dropdown (3-dot menu)
+        const mainMenuDropdown = document.getElementById('mainMenuDropdown');
+        if (mainMenuDropdown) {
+            mainMenuDropdown.classList.remove('show');
+        }
+        
+        // Close custom model dropdown
+        const customDropdown = document.getElementById('customModelDropdown');
+        if (customDropdown) {
+            customDropdown.classList.remove('open');
+        }
+        
+        // Close any other modals like attach menu
+        const heroAttachMenu = document.getElementById('heroAttachMenu');
+        if (heroAttachMenu) {
+            heroAttachMenu.classList.remove('show');
+        }
+        
+        const chatAttachMenu = document.getElementById('chatAttachMenu');
+        if (chatAttachMenu) {
+            chatAttachMenu.classList.remove('show');
+        }
+        
+        // Close model restriction popups if any
+        const restrictionPopups = document.querySelectorAll('.model-restriction-popup');
+        restrictionPopups.forEach(popup => {
+            popup.remove();
+        });
     }
     
     enableSendButtons() {
@@ -1616,6 +1671,7 @@ class ChatApp {
                     e.stopPropagation();
                     const mobileDropdown = document.getElementById('mobileUserDropdown');
                     if (mobileDropdown) {
+                        this.closeAllModals();
                         mobileDropdown.classList.toggle('show');
                     }
                 });
@@ -1709,6 +1765,7 @@ class ChatApp {
         if (userMenuBtn && userDropdown) {
             userMenuBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                this.closeAllModals();
                 userDropdown.classList.toggle('show');
             });
             
