@@ -215,6 +215,9 @@ CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
+-- Drop existing function if it exists
+DROP FUNCTION IF EXISTS public.deduct_credits(UUID, INTEGER);
+
 -- Function to deduct credits from user balance
 CREATE OR REPLACE FUNCTION public.deduct_credits(
     user_id_param UUID,
@@ -245,6 +248,9 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Drop existing function if it exists
+DROP FUNCTION IF EXISTS public.add_credits(UUID, INTEGER, TEXT);
 
 -- Function to add credits after purchase
 CREATE OR REPLACE FUNCTION public.add_credits(
