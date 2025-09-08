@@ -68,6 +68,10 @@
       "dest": "/public/demo.html"
     },
     {
+      "src": "/chat/(.*)",
+      "dest": "/public/index.html"
+    },
+    {
       "src": "/",
       "dest": "/public/index.html"
     },
