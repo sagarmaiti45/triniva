@@ -29,20 +29,33 @@ class ChatApp {
         if (path.startsWith('/chat/')) {
             const chatId = path.split('/chat/')[1];
             if (chatId) {
-                // Wait for chat manager to be ready
-                setTimeout(async () => {
-                    if (window.chatManager) {
-                        // Check if this conversation exists
-                        const conversation = window.chatManager.conversations.find(c => c.id === chatId);
-                        if (conversation) {
+                // Store the chat ID to load
+                this.pendingChatId = chatId;
+                
+                // Wait for chat manager to be ready and load the conversation
+                const loadChat = async () => {
+                    if (window.chatManager && window.chatManager.initialized) {
+                        try {
+                            // Try to load the conversation
                             await window.chatManager.loadConversation(chatId);
-                        } else {
-                            // Try to load from database
                             this.currentConversationId = chatId;
-                            await window.chatManager.loadConversation(chatId);
+                        } catch (error) {
+                            console.error('Failed to load chat from URL:', error);
+                            // If loading fails, redirect to home
+                            window.history.replaceState({}, '', '/');
+                            if (this.welcomeView && this.chatView) {
+                                this.welcomeView.style.display = 'flex';
+                                this.chatView.style.display = 'none';
+                            }
                         }
+                    } else {
+                        // Retry after a short delay
+                        setTimeout(loadChat, 100);
                     }
-                }, 500); // Give chat manager time to initialize
+                };
+                
+                // Start trying to load the chat
+                setTimeout(loadChat, 500);
             }
         }
     }

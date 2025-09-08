@@ -31,11 +31,15 @@ export class ChatManager {
 
     async initialize(user) {
         this.user = user;
+        this.initialized = false;
+        
         if (user) {
             await this.loadUserConversations();
         } else {
             await this.loadGuestConversations();
         }
+        
+        this.initialized = true;
     }
 
     // Load guest conversations from localStorage and database
@@ -109,26 +113,65 @@ export class ChatManager {
 
     // Load specific conversation with messages
     async loadConversation(conversationId) {
-        if (!this.supabase || !conversationId) return;
+        if (!conversationId) {
+            console.error('No conversation ID provided');
+            return;
+        }
+        
+        // If no Supabase, try to load from localStorage
+        if (!this.supabase) {
+            const localConversations = JSON.parse(localStorage.getItem('guestConversations') || '[]');
+            const conversation = localConversations.find(c => c.id === conversationId);
+            if (conversation) {
+                this.currentConversationId = conversationId;
+                this.messages = conversation.messages || [];
+                this.chatApp.currentConversationId = conversationId;
+                this.chatApp.isFirstMessage = false;
+                this.chatApp.switchToChatView();
+                this.renderMessages();
+                this.updateActiveConversation(conversationId);
+            }
+            return;
+        }
         
         try {
             let messages, error;
+            let conversation, convError;
             
             if (this.user) {
-                // Load from authenticated user messages
+                // Load conversation details
+                ({ data: conversation, error: convError } = await this.supabase
+                    .from('conversations')
+                    .select('*')
+                    .eq('id', conversationId)
+                    .single());
+                    
+                // Load messages
                 ({ data: messages, error } = await this.supabase
                     .from('messages')
                     .select('*')
                     .eq('conversation_id', conversationId)
                     .order('created_at', { ascending: true }));
             } else {
-                // Load from guest messages
+                // Load guest conversation details
+                ({ data: conversation, error: convError } = await this.supabase
+                    .from('guest_conversations')
+                    .select('*')
+                    .eq('id', conversationId)
+                    .eq('session_id', this.sessionId)
+                    .single());
+                    
+                // Load guest messages
                 ({ data: messages, error } = await this.supabase
                     .from('guest_messages')
                     .select('*')
                     .eq('conversation_id', conversationId)
                     .eq('session_id', this.sessionId)
                     .order('created_at', { ascending: true }));
+            }
+            
+            if (convError) {
+                console.error('Failed to load conversation details:', convError);
             }
             
             if (error) throw error;
@@ -142,17 +185,22 @@ export class ChatManager {
             this.chatApp.messages = this.messages;
             
             // Show chat view and render messages
-            this.chatApp.showChatView();
+            this.chatApp.switchToChatView();
             this.renderMessages();
             
             // Update active conversation in sidebar
             this.updateActiveConversation(conversationId);
             
             // Update model selector to conversation's model
-            const conversation = this.conversations.find(c => c.id === conversationId);
             if (conversation && conversation.model) {
                 this.chatApp.modelSelect.value = conversation.model;
                 this.chatApp.updateModelDisplay();
+            }
+            
+            // Add conversation to list if not already there
+            if (conversation && !this.conversations.find(c => c.id === conversationId)) {
+                this.conversations.unshift(conversation);
+                this.renderConversationsList();
             }
         } catch (error) {
             console.error('Failed to load conversation:', error);
