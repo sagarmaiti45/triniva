@@ -349,14 +349,17 @@
         // Initialize Supabase and payment modal
         const supabaseUrl = localStorage.getItem('SUPABASE_URL');
         const supabaseAnonKey = localStorage.getItem('SUPABASE_ANON_KEY');
+        let supabase = null;
+        
         if (supabaseUrl && supabaseAnonKey) {
-            const supabase = createClient(supabaseUrl, supabaseAnonKey);
+            supabase = createClient(supabaseUrl, supabaseAnonKey);
             window.supabase = supabase; // Make it globally available for logout
             window.paymentModal = new PaymentModal(supabase);
-            
-            // Initialize chat manager
-            window.chatManager = new ChatManager(supabase, window.chatApp || {});
         }
+        
+        // Always initialize chat manager (with or without Supabase)
+        // This allows guest users to have chat sessions
+        window.chatManager = new ChatManager(supabase, window.chatApp || {});
         
         // Initialize upgrade prompt
         window.upgradePrompt = new UpgradePrompt();
@@ -376,7 +379,13 @@
                     const { data: { session } } = await window.supabase.auth.getSession();
                     if (session) {
                         await window.chatManager.initialize(session.user);
+                    } else {
+                        // Initialize for guest user
+                        await window.chatManager.initialize(null);
                     }
+                } else {
+                    // No Supabase, initialize for guest user
+                    await window.chatManager.initialize(null);
                 }
             }
         }, 500);

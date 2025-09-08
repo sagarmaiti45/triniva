@@ -17,6 +17,34 @@ class ChatApp {
         this.bindEvents();
         this.enableSendButtons();
         this.autoFocusPrompt();
+        
+        // Check if we're on a chat URL and load that conversation
+        this.handleInitialRoute();
+    }
+    
+    async handleInitialRoute() {
+        const path = window.location.pathname;
+        
+        // If we're on a chat URL, try to load that conversation
+        if (path.startsWith('/chat/')) {
+            const chatId = path.split('/chat/')[1];
+            if (chatId) {
+                // Wait for chat manager to be ready
+                setTimeout(async () => {
+                    if (window.chatManager) {
+                        // Check if this conversation exists
+                        const conversation = window.chatManager.conversations.find(c => c.id === chatId);
+                        if (conversation) {
+                            await window.chatManager.loadConversation(chatId);
+                        } else {
+                            // Try to load from database
+                            this.currentConversationId = chatId;
+                            await window.chatManager.loadConversation(chatId);
+                        }
+                    }
+                }, 500); // Give chat manager time to initialize
+            }
+        }
     }
 
     initElements() {
@@ -1174,8 +1202,8 @@ class ChatApp {
             // Update URL with the new chat ID
             window.history.pushState({}, '', `/chat/${conversationId}`);
             
-            // If using chat manager and logged in, create in database
-            if (window.chatManager && window.chatManager.user) {
+            // If using chat manager, create in database (works for both guest and authenticated users)
+            if (window.chatManager) {
                 const title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
                 await window.chatManager.createConversation(title, this.modelSelect.value, conversationId);
                 window.chatManager.currentConversationId = conversationId;
@@ -1192,8 +1220,8 @@ class ChatApp {
         // Add user message with images
         this.addMessage(message || "What's in this image?", 'user', false, false, this.attachedImages);
         
-        // Save user message to database if using chat manager
-        if (window.chatManager && window.chatManager.user && this.currentConversationId) {
+        // Save user message to database if using chat manager (works for both guest and authenticated users)
+        if (window.chatManager && this.currentConversationId) {
             await window.chatManager.saveMessage(message || "What's in this image?", 'user');
         }
         
@@ -1212,8 +1240,8 @@ class ChatApp {
         
         if ((!message && !hasImages) || this.isStreaming) return;
 
-        // If using chat manager and logged in, handle through it
-        if (window.chatManager && window.chatManager.user) {
+        // If using chat manager, handle through it (works for both guest and authenticated users)
+        if (window.chatManager) {
             // Create conversation if first message
             if (this.isFirstMessage) {
                 const title = window.chatManager.generateTitle(message);
@@ -1221,6 +1249,8 @@ class ChatApp {
                 if (conversationId) {
                     this.currentConversationId = conversationId;
                     this.isFirstMessage = false;
+                    // Update URL with the new chat ID
+                    window.history.pushState({}, '', `/chat/${conversationId}`);
                 }
             }
             

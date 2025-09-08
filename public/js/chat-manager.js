@@ -7,12 +7,76 @@ export class ChatManager {
         this.currentConversationId = null;
         this.messages = [];
         this.user = null;
+        this.sessionId = this.getOrCreateSessionId();
+    }
+
+    // Get or create a session ID for guest users
+    getOrCreateSessionId() {
+        let sessionId = localStorage.getItem('guestSessionId');
+        if (!sessionId) {
+            sessionId = 'guest-' + this.generateUUID();
+            localStorage.setItem('guestSessionId', sessionId);
+        }
+        return sessionId;
+    }
+
+    // Generate UUID
+    generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
     }
 
     async initialize(user) {
         this.user = user;
         if (user) {
             await this.loadUserConversations();
+        } else {
+            await this.loadGuestConversations();
+        }
+    }
+
+    // Load guest conversations from localStorage and database
+    async loadGuestConversations() {
+        if (!this.supabase) return;
+        
+        try {
+            // Load from Supabase guest_conversations table
+            const { data: conversations, error } = await this.supabase
+                .from('guest_conversations')
+                .select('*')
+                .eq('session_id', this.sessionId)
+                .eq('is_archived', false)
+                .order('updated_at', { ascending: false })
+                .limit(7); // Limit guest users to 7 conversations
+            
+            if (error) throw error;
+            
+            this.conversations = conversations || [];
+            
+            // Also check localStorage for any unsaved conversations
+            const localConversations = JSON.parse(localStorage.getItem('guestConversations') || '[]');
+            
+            // Merge local and database conversations
+            localConversations.forEach(localConv => {
+                if (!this.conversations.find(c => c.id === localConv.id)) {
+                    this.conversations.push(localConv);
+                }
+            });
+            
+            this.renderConversationsList();
+            
+            // Load the most recent conversation if exists
+            if (this.conversations.length > 0) {
+                await this.loadConversation(this.conversations[0].id);
+            }
+        } catch (error) {
+            console.error('Failed to load guest conversations:', error);
+            // Fall back to localStorage only
+            this.conversations = JSON.parse(localStorage.getItem('guestConversations') || '[]');
+            this.renderConversationsList();
         }
     }
 
@@ -48,12 +112,24 @@ export class ChatManager {
         if (!this.supabase || !conversationId) return;
         
         try {
-            // Load messages for this conversation
-            const { data: messages, error } = await this.supabase
-                .from('messages')
-                .select('*')
-                .eq('conversation_id', conversationId)
-                .order('created_at', { ascending: true });
+            let messages, error;
+            
+            if (this.user) {
+                // Load from authenticated user messages
+                ({ data: messages, error } = await this.supabase
+                    .from('messages')
+                    .select('*')
+                    .eq('conversation_id', conversationId)
+                    .order('created_at', { ascending: true }));
+            } else {
+                // Load from guest messages
+                ({ data: messages, error } = await this.supabase
+                    .from('guest_messages')
+                    .select('*')
+                    .eq('conversation_id', conversationId)
+                    .eq('session_id', this.sessionId)
+                    .order('created_at', { ascending: true }));
+            }
             
             if (error) throw error;
             
@@ -85,27 +161,67 @@ export class ChatManager {
 
     // Create new conversation
     async createConversation(title, model, conversationId = null) {
-        if (!this.supabase || !this.user) return null;
+        if (!this.supabase) return null;
         
         try {
-            const conversationData = {
-                user_id: this.user.id,
-                title: title || 'New Chat',
-                model: model
-            };
+            let conversation;
             
-            // If a specific ID is provided, use it
-            if (conversationId) {
-                conversationData.id = conversationId;
+            if (this.user) {
+                // Create for authenticated user
+                const conversationData = {
+                    user_id: this.user.id,
+                    title: title || 'New Chat',
+                    model: model
+                };
+                
+                if (conversationId) {
+                    conversationData.id = conversationId;
+                }
+                
+                const { data, error } = await this.supabase
+                    .from('conversations')
+                    .insert(conversationData)
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                conversation = data;
+            } else {
+                // Create for guest user
+                const conversationData = {
+                    session_id: this.sessionId,
+                    title: title || 'New Chat',
+                    model: model
+                };
+                
+                if (conversationId) {
+                    conversationData.id = conversationId;
+                }
+                
+                const { data, error } = await this.supabase
+                    .from('guest_conversations')
+                    .insert(conversationData)
+                    .select()
+                    .single();
+                
+                if (error) {
+                    // If database fails, save to localStorage
+                    console.warn('Failed to save to database, using localStorage:', error);
+                    conversation = {
+                        id: conversationId || this.generateUUID(),
+                        ...conversationData,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    };
+                    
+                    // Save to localStorage
+                    const localConversations = JSON.parse(localStorage.getItem('guestConversations') || '[]');
+                    localConversations.unshift(conversation);
+                    localStorage.setItem('guestConversations', JSON.stringify(localConversations.slice(0, 7)));
+                } else {
+                    conversation = data;
+                }
             }
-            
-            const { data: conversation, error } = await this.supabase
-                .from('conversations')
-                .insert(conversationData)
-                .select()
-                .single();
-            
-            if (error) throw error;
             
             this.currentConversationId = conversation.id;
             this.conversations.unshift(conversation);
@@ -121,28 +237,74 @@ export class ChatManager {
 
     // Save message to database
     async saveMessage(content, role, model = null, creditsUsed = 0) {
-        if (!this.supabase || !this.user || !this.currentConversationId) return;
+        if (!this.supabase || !this.currentConversationId) return;
         
         try {
-            const { data: message, error } = await this.supabase
-                .from('messages')
-                .insert({
-                    conversation_id: this.currentConversationId,
-                    user_id: this.user.id,
-                    role: role,
-                    content: content,
-                    model: model || this.chatApp.modelSelect.value,
-                    credits_used: creditsUsed
-                })
-                .select()
-                .single();
+            let message;
             
-            if (error) throw error;
+            if (this.user) {
+                // Save for authenticated user
+                const { data, error } = await this.supabase
+                    .from('messages')
+                    .insert({
+                        conversation_id: this.currentConversationId,
+                        user_id: this.user.id,
+                        role: role,
+                        content: content,
+                        model: model || this.chatApp.modelSelect.value,
+                        credits_used: creditsUsed
+                    })
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                message = data;
+            } else {
+                // Save for guest user
+                const { data, error } = await this.supabase
+                    .from('guest_messages')
+                    .insert({
+                        conversation_id: this.currentConversationId,
+                        session_id: this.sessionId,
+                        role: role,
+                        content: content,
+                        model: model || this.chatApp.modelSelect.value,
+                        credits_used: creditsUsed
+                    })
+                    .select()
+                    .single();
+                
+                if (error) {
+                    // If database fails, save to localStorage
+                    console.warn('Failed to save message to database:', error);
+                    message = {
+                        id: this.generateUUID(),
+                        conversation_id: this.currentConversationId,
+                        session_id: this.sessionId,
+                        role: role,
+                        content: content,
+                        model: model || this.chatApp.modelSelect.value,
+                        credits_used: creditsUsed,
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    // Update conversation in localStorage
+                    const localConversations = JSON.parse(localStorage.getItem('guestConversations') || '[]');
+                    const convIndex = localConversations.findIndex(c => c.id === this.currentConversationId);
+                    if (convIndex !== -1) {
+                        if (!localConversations[convIndex].messages) {
+                            localConversations[convIndex].messages = [];
+                        }
+                        localConversations[convIndex].messages.push(message);
+                        localConversations[convIndex].updated_at = new Date().toISOString();
+                        localStorage.setItem('guestConversations', JSON.stringify(localConversations));
+                    }
+                } else {
+                    message = data;
+                }
+            }
             
             this.messages.push(message);
-            
-            // Update conversation's updated_at is handled by database trigger
-            
             return message;
         } catch (error) {
             console.error('Failed to save message:', error);
