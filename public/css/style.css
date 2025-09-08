@@ -283,6 +283,7 @@ textarea:focus {
 
 .conversation-item {
     padding: 12px 16px;
+    padding-right: 40px; /* Make room for delete button */
     border-radius: 8px;
     cursor: pointer;
     display: flex;
@@ -293,6 +294,7 @@ textarea:focus {
     transition: all 0.2s ease;
     margin-bottom: 2px;
     min-height: 40px;
+    position: relative; /* For delete button positioning */
 }
 
 .sidebar:not(.expanded) .conversation-item {
@@ -303,6 +305,10 @@ textarea:focus {
 
 .sidebar:not(.expanded) .conversation-item svg {
     margin: 0;
+}
+
+.sidebar:not(.expanded) .conv-delete-btn {
+    display: none !important;
 }
 
 .conversation-item:hover {
@@ -324,16 +330,23 @@ textarea:focus {
     border: none;
     color: var(--text-tertiary);
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 6px;
     border-radius: 4px;
     opacity: 0;
-    transition: all 0.2s;
-    display: none;
+    transition: opacity 0.2s, background 0.2s;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .conversation-item:hover .conv-delete-btn {
+    opacity: 0.7;
+}
+
+.conversation-item .conv-delete-btn:hover {
     opacity: 1;
-    display: block;
 }
 
 .conv-delete-btn:hover {
@@ -2187,6 +2200,11 @@ h3.ai-heading {
     .sidebar.open .conversation-item {
         justify-content: flex-start !important;
         padding: 12px 16px !important;
+        padding-right: 40px !important; /* Make room for delete button */
+    }
+    
+    .sidebar.open .conv-delete-btn {
+        display: flex !important;
     }
     
     .sidebar.open .user-account-btn {
