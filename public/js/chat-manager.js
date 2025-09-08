@@ -44,7 +44,12 @@ export class ChatManager {
 
     // Load guest conversations from localStorage and database
     async loadGuestConversations() {
-        if (!this.supabase) return;
+        // If no Supabase, load from localStorage only
+        if (!this.supabase) {
+            this.conversations = JSON.parse(localStorage.getItem('guestConversations') || '[]');
+            this.renderConversationsList();
+            return;
+        }
         
         try {
             // Load from Supabase guest_conversations table
@@ -72,10 +77,8 @@ export class ChatManager {
             
             this.renderConversationsList();
             
-            // Load the most recent conversation if exists
-            if (this.conversations.length > 0) {
-                await this.loadConversation(this.conversations[0].id);
-            }
+            // Don't automatically load conversations on homepage
+            // Only load if we're on a chat URL (handled by handleInitialRoute)
         } catch (error) {
             console.error('Failed to load guest conversations:', error);
             // Fall back to localStorage only
@@ -102,10 +105,8 @@ export class ChatManager {
             this.conversations = conversations || [];
             this.renderConversationsList();
             
-            // Load the most recent conversation if exists
-            if (this.conversations.length > 0) {
-                await this.loadConversation(this.conversations[0].id);
-            }
+            // Don't automatically load conversations on homepage
+            // Only load if we're on a chat URL (handled by handleInitialRoute)
         } catch (error) {
             console.error('Failed to load conversations:', error);
         }
@@ -209,7 +210,30 @@ export class ChatManager {
 
     // Create new conversation
     async createConversation(title, model, conversationId = null) {
-        if (!this.supabase) return null;
+        // Handle case where there's no Supabase
+        if (!this.supabase) {
+            const conversation = {
+                id: conversationId || this.generateUUID(),
+                session_id: this.sessionId,
+                title: title || 'New Chat',
+                model: model,
+                messages: [],
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            const localConversations = JSON.parse(localStorage.getItem('guestConversations') || '[]');
+            localConversations.unshift(conversation);
+            localStorage.setItem('guestConversations', JSON.stringify(localConversations.slice(0, 7)));
+            
+            this.currentConversationId = conversation.id;
+            this.conversations.unshift(conversation);
+            this.renderConversationsList();
+            this.updateActiveConversation(conversation.id);
+            
+            return conversation.id;
+        }
         
         try {
             let conversation;
@@ -285,7 +309,34 @@ export class ChatManager {
 
     // Save message to database
     async saveMessage(content, role, model = null, creditsUsed = 0) {
-        if (!this.supabase || !this.currentConversationId) return;
+        if (!this.currentConversationId) return;
+        
+        // If no Supabase, save to localStorage
+        if (!this.supabase) {
+            const message = {
+                id: this.generateUUID(),
+                conversation_id: this.currentConversationId,
+                role: role,
+                content: content,
+                model: model || this.chatApp.modelSelect.value,
+                created_at: new Date().toISOString()
+            };
+            
+            this.messages.push(message);
+            
+            // Update localStorage
+            const localConversations = JSON.parse(localStorage.getItem('guestConversations') || '[]');
+            const convIndex = localConversations.findIndex(c => c.id === this.currentConversationId);
+            if (convIndex !== -1) {
+                if (!localConversations[convIndex].messages) {
+                    localConversations[convIndex].messages = [];
+                }
+                localConversations[convIndex].messages.push(message);
+                localConversations[convIndex].updated_at = new Date().toISOString();
+                localStorage.setItem('guestConversations', JSON.stringify(localConversations));
+            }
+            return message;
+        }
         
         try {
             let message;
@@ -416,7 +467,17 @@ export class ChatManager {
         this.chatApp.currentConversationId = null;
         this.chatApp.messages = [];
         this.chatApp.isFirstMessage = true;
-        this.chatApp.showWelcomeView();
+        
+        // Show welcome view if method exists
+        if (this.chatApp.showWelcomeView) {
+            this.chatApp.showWelcomeView();
+        } else {
+            // Fallback: manually show welcome view
+            const welcomeView = document.getElementById('welcomeView');
+            const chatView = document.getElementById('chatView');
+            if (welcomeView) welcomeView.style.display = 'block';
+            if (chatView) chatView.style.display = 'none';
+        }
         
         // Remove active state from sidebar items
         const conversationsList = document.querySelector('.conversations-list');
@@ -474,6 +535,8 @@ export class ChatManager {
                     e.stopPropagation();
                     this.deleteConversation(conv.id);
                 } else {
+                    // Update URL and load conversation
+                    window.history.pushState({}, '', `/chat/${conv.id}`);
                     this.loadConversation(conv.id);
                 }
             });
