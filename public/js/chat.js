@@ -1061,9 +1061,12 @@ class ChatApp {
     }
     
     showWelcomeView() {
-        this.welcomeView.style.display = 'block';
+        this.welcomeView.style.display = 'flex';
         this.chatView.style.display = 'none';
         document.getElementById('chatHeader').style.display = 'none';
+        
+        // Reset first message flag
+        this.isFirstMessage = true;
         
         // Remove class from auth buttons container
         const authContainer = document.querySelector('.auth-buttons-container');

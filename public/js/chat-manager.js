@@ -155,30 +155,61 @@ export class ChatManager {
                     .order('created_at', { ascending: true }));
             } else {
                 // Load guest conversation details
+                // First try with session_id for security
                 ({ data: conversation, error: convError } = await this.supabase
                     .from('guest_conversations')
                     .select('*')
                     .eq('id', conversationId)
                     .eq('session_id', this.sessionId)
                     .single());
+                
+                // If not found with session_id, try without it (for shared URLs or after session changes)
+                if (!conversation || convError) {
+                    ({ data: conversation, error: convError } = await this.supabase
+                        .from('guest_conversations')
+                        .select('*')
+                        .eq('id', conversationId)
+                        .single());
+                }
                     
-                // Load guest messages
+                // Load guest messages - try with session first, then without
                 ({ data: messages, error } = await this.supabase
                     .from('guest_messages')
                     .select('*')
                     .eq('conversation_id', conversationId)
-                    .eq('session_id', this.sessionId)
                     .order('created_at', { ascending: true }));
             }
             
-            if (convError) {
+            if (convError || !conversation) {
                 console.error('Failed to load conversation details:', convError);
+                // Try loading from localStorage as fallback
+                const localConversations = JSON.parse(localStorage.getItem('guestConversations') || '[]');
+                const localConv = localConversations.find(c => c.id === conversationId);
+                if (localConv) {
+                    this.currentConversationId = conversationId;
+                    this.messages = localConv.messages || [];
+                    this.chatApp.currentConversationId = conversationId;
+                    this.chatApp.isFirstMessage = false;
+                    this.chatApp.switchToChatView();
+                    this.renderMessages();
+                    this.updateActiveConversation(conversationId);
+                    return;
+                }
+                // Conversation not found - redirect to home
+                console.warn('Conversation not found:', conversationId);
+                window.history.replaceState({}, '', '/');
+                this.chatApp.showWelcomeView();
+                return;
             }
             
-            if (error) throw error;
+            if (error) {
+                console.error('Failed to load messages:', error);
+                this.messages = [];
+            } else {
+                this.messages = messages || [];
+            }
             
             this.currentConversationId = conversationId;
-            this.messages = messages || [];
             
             // Update UI
             this.chatApp.currentConversationId = conversationId;
@@ -475,7 +506,7 @@ export class ChatManager {
             // Fallback: manually show welcome view
             const welcomeView = document.getElementById('welcomeView');
             const chatView = document.getElementById('chatView');
-            if (welcomeView) welcomeView.style.display = 'block';
+            if (welcomeView) welcomeView.style.display = 'flex';
             if (chatView) chatView.style.display = 'none';
         }
         
