@@ -1022,6 +1022,9 @@ class ChatApp {
         this.chatView.style.display = 'flex';
         document.getElementById('chatHeader').style.display = 'flex';
         
+        // We're now in chat view, not the first message anymore
+        this.isFirstMessage = false;
+        
         // Add class to auth buttons container for proper spacing
         const authContainer = document.querySelector('.auth-buttons-container');
         if (authContainer) {
@@ -1240,21 +1243,8 @@ class ChatApp {
         
         if ((!message && !hasImages) || this.isStreaming) return;
 
-        // If using chat manager, handle through it (works for both guest and authenticated users)
-        if (window.chatManager) {
-            // Create conversation if first message
-            if (this.isFirstMessage) {
-                const title = window.chatManager.generateTitle(message);
-                const conversationId = await window.chatManager.createConversation(title, this.modelSelect.value);
-                if (conversationId) {
-                    this.currentConversationId = conversationId;
-                    this.isFirstMessage = false;
-                    // Update URL with the new chat ID
-                    window.history.pushState({}, '', `/chat/${conversationId}`);
-                }
-            }
-            
-            // Save user message to database
+        // Save user message to database if using chat manager and conversation exists
+        if (window.chatManager && this.currentConversationId) {
             await window.chatManager.saveMessage(message || "What's in this image?", 'user');
         }
 
