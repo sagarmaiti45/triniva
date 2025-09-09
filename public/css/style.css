@@ -471,7 +471,11 @@ textarea:focus {
     position: relative;
 }
 
-.logo-container:hover .header-logo,
+.logo-container:hover .header-logo {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(46%) sepia(69%) saturate(638%) hue-rotate(122deg) brightness(100%) contrast(91%);
+}
+
 .logo-container:hover .logo-text {
     opacity: 1;
 }
@@ -481,7 +485,9 @@ textarea:focus {
     height: 26px;
     object-fit: contain;
     transform: translateY(-2px);
-    opacity: 0.7;
+    opacity: 0.9;
+    /* Convert white logo to brand color using CSS filters */
+    filter: brightness(0) saturate(100%) invert(46%) sepia(69%) saturate(638%) hue-rotate(122deg) brightness(94%) contrast(91%);
 }
 
 .logo-text {
