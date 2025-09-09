@@ -830,9 +830,8 @@ textarea:focus {
 
 /* Simple 2-line hamburger style */
 .hamburger-line:nth-child(1) {
-    top: 11px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 12px;
+    left: 9px;
     width: 18px;
 }
 
@@ -841,9 +840,8 @@ textarea:focus {
 }
 
 .hamburger-line:nth-child(3) {
-    bottom: 11px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 12px;
+    left: 9px;
     width: 9px; /* Half width for second line */
 }
 
@@ -857,16 +855,16 @@ textarea:focus {
 
 /* Simple X animation for active state */
 .mobile-menu-toggle.active .hamburger-line:nth-child(1) {
-    transform: translateX(-50%) rotate(45deg);
+    transform: rotate(45deg);
     top: 17px;
-    left: 50%;
+    left: 9px;
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(3) {
-    transform: translateX(-50%) rotate(-45deg);
+    transform: rotate(-45deg);
     bottom: 17px;
     width: 18px; /* Full width when active */
-    left: 50%;
+    left: 9px;
 }
 
 .mobile-menu-toggle:active {
