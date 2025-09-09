@@ -279,16 +279,23 @@
 .payment-loading {
     display: none !important;
     text-align: center;
-    padding: 40px;
+    padding: 0;
     visibility: hidden;
     height: 0;
     overflow: hidden;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .payment-loading.show {
     display: block !important;
     visibility: visible;
     height: auto;
+    padding: 40px;
+    position: relative;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .payment-loading i {
@@ -306,16 +313,23 @@
 .payment-success {
     display: none !important;
     text-align: center;
-    padding: 40px;
+    padding: 0;
     visibility: hidden;
     height: 0;
     overflow: hidden;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .payment-success.show {
     display: block !important;
     visibility: visible;
     height: auto;
+    padding: 40px;
+    position: relative;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .payment-success i {
@@ -373,16 +387,23 @@
 .already-subscribed {
     display: none !important;
     text-align: center;
-    padding: 30px 20px;
+    padding: 0;
     visibility: hidden;
     height: 0;
     overflow: hidden;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .already-subscribed.show {
     display: block !important;
     visibility: visible;
     height: auto;
+    padding: 30px 20px;
+    position: relative;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .already-subscribed i {
@@ -465,10 +486,15 @@
         left: 0;
         right: 0;
         bottom: 0;
+        display: flex;
+        flex-direction: column;
     }
     
     .payment-modal-body {
         padding-bottom: 60px; /* Add padding to prevent content cut-off */
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
     
     /* Hide overflow content that shouldn't be visible */
@@ -476,9 +502,16 @@
     .payment-success:not(.show),
     .already-subscribed:not(.show) {
         display: none !important;
-        visibility: hidden;
-        height: 0;
-        overflow: hidden;
+        visibility: hidden !important;
+        height: 0 !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        opacity: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        position: absolute !important;
+        top: -9999px !important;
+        left: -9999px !important;
     }
     
     .auth-buttons {
