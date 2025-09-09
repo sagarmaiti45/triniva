@@ -114,6 +114,11 @@ export class PaymentModal {
     }
 
     async open(planId) {
+        // Prevent body scroll on mobile
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        
         // Plan configurations
         const plans = {
             starter: {
@@ -381,6 +386,11 @@ export class PaymentModal {
     close() {
         this.modalElement.classList.remove('show');
         this.currentPlan = null;
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
         this.session = null;
         
         // Reset states

@@ -423,11 +423,42 @@
 
 /* Mobile Responsiveness */
 @media (max-width: 480px) {
+    .payment-modal-overlay {
+        overflow: hidden;
+        position: fixed;
+        height: 100vh;
+        height: 100dvh; /* Use dynamic viewport height for mobile */
+    }
+    
     .payment-modal {
         width: 100%;
         height: 100%;
         max-height: 100%;
+        max-height: 100vh;
+        max-height: 100dvh;
         border-radius: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+    
+    .payment-modal-body {
+        padding-bottom: 60px; /* Add padding to prevent content cut-off */
+    }
+    
+    /* Hide overflow content that shouldn't be visible */
+    .payment-loading:not(.show),
+    .payment-success:not(.show),
+    .already-subscribed:not(.show) {
+        display: none !important;
+        visibility: hidden;
+        height: 0;
+        overflow: hidden;
     }
     
     .auth-buttons {
