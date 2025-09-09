@@ -2558,6 +2558,9 @@ h3.ai-heading {
         margin-top: auto;
         margin-bottom: 16px; /* Small space above footer */
         width: 100%;
+        background: rgba(20, 24, 23, 0.95); /* Darker background on mobile */
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(42, 54, 51, 0.3);
     }
     
     .footer-hint {
