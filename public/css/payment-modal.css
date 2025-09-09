@@ -61,6 +61,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    color: white;
 }
 
 .payment-modal-close:hover {
