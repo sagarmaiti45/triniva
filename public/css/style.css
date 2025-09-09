@@ -2831,10 +2831,13 @@ h3.ai-heading {
 .skeleton-item {
     padding: 12px 16px;
     background: var(--bg-secondary);
-    border-radius: 12px;
+    border-radius: 16px;
     position: relative;
     overflow: hidden;
     animation: skeleton-pulse 1.5s infinite;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* Skeleton for minimized sidebar */
@@ -2889,7 +2892,7 @@ h3.ai-heading {
 .skeleton-text {
     height: 14px;
     background: var(--bg-hover);
-    border-radius: 4px;
+    border-radius: 6px;
     margin-bottom: 8px;
 }
 
@@ -2902,6 +2905,7 @@ h3.ai-heading {
     height: 12px;
     opacity: 0.6;
     margin-bottom: 0;
+    margin-top: 4px;
 }
 
 /* Remove individual item opacity - using gradient fade instead */
