@@ -25,6 +25,7 @@
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
+    overflow-x: hidden;
     animation: slideUp 0.3s ease;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     position: relative;
@@ -276,13 +277,18 @@
 
 /* Loading State */
 .payment-loading {
-    display: none;
+    display: none !important;
     text-align: center;
     padding: 40px;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
 }
 
 .payment-loading.show {
-    display: block;
+    display: block !important;
+    visibility: visible;
+    height: auto;
 }
 
 .payment-loading i {
@@ -298,13 +304,18 @@
 
 /* Success State */
 .payment-success {
-    display: none;
+    display: none !important;
     text-align: center;
     padding: 40px;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
 }
 
 .payment-success.show {
-    display: block;
+    display: block !important;
+    visibility: visible;
+    height: auto;
 }
 
 .payment-success i {
@@ -360,9 +371,18 @@
 
 /* Already Subscribed State */
 .already-subscribed {
-    display: none;
+    display: none !important;
     text-align: center;
     padding: 30px 20px;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+}
+
+.already-subscribed.show {
+    display: block !important;
+    visibility: visible;
+    height: auto;
 }
 
 .already-subscribed i {

@@ -373,7 +373,7 @@ export class PaymentModal {
         // Update message and show already subscribed section
         document.getElementById('alreadySubscribedMessage').innerHTML = 
             `You're already on the <strong>${planName} Plan</strong>. Visit your billing page to manage your subscription or upgrade to a higher plan.`;
-        document.getElementById('alreadySubscribed').style.display = 'block';
+        document.getElementById('alreadySubscribed').classList.add('show');
         
         // Update modal header
         document.querySelector('.payment-modal-title').textContent = 'Already Subscribed';
@@ -398,7 +398,7 @@ export class PaymentModal {
         document.getElementById('paymentSection').style.display = 'none';
         document.getElementById('paymentLoading').classList.remove('show');
         document.getElementById('paymentSuccess').classList.remove('show');
-        document.getElementById('alreadySubscribed').style.display = 'none';
+        document.getElementById('alreadySubscribed').classList.remove('show');
         document.getElementById('planSummary').style.display = 'block';
         
         // Reset header text
