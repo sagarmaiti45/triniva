@@ -184,7 +184,7 @@
             
             <div class="chat-area">
                 <!-- Welcome/Hero View -->
-                <div id="welcomeView" class="welcome-view">
+                <div id="welcomeView" class="welcome-view" style="display: none;">
                     <div class="welcome-content">
                         <p class="welcome-subtitle" id="dynamicText">What's on your mind today?</p>
                         
@@ -363,6 +363,29 @@
         
         // Initialize upgrade prompt
         window.upgradePrompt = new UpgradePrompt();
+    </script>
+    
+    <!-- Set initial view based on URL before other scripts load -->
+    <script>
+        // Check if we're on a chat URL and set initial view accordingly
+        (function() {
+            const path = window.location.pathname;
+            const welcomeView = document.getElementById('welcomeView');
+            const chatView = document.getElementById('chatView');
+            const chatHeader = document.getElementById('chatHeader');
+            
+            if (path === '/' || path === '') {
+                // Homepage - show welcome view
+                if (welcomeView) welcomeView.style.display = 'flex';
+                if (chatView) chatView.style.display = 'none';
+                if (chatHeader) chatHeader.style.display = 'none';
+            } else if (path.startsWith('/chat/')) {
+                // Chat URL - show chat view to prevent flash
+                if (welcomeView) welcomeView.style.display = 'none';
+                if (chatView) chatView.style.display = 'flex';
+                if (chatHeader) chatHeader.style.display = 'flex';
+            }
+        })();
     </script>
     
     <script src="/js/chat.js"></script>
