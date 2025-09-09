@@ -1210,7 +1210,7 @@ textarea:focus {
     box-shadow: var(--shadow-lg);
     max-height: 320px;
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 10000;
     display: none;
     min-width: 220px;
 }
