@@ -459,6 +459,21 @@ class ChatApp {
             this.customDropdown.classList.toggle('open');
         });
         
+        // Handle scrollbar visibility for dropdown menu
+        let scrollTimeout;
+        this.dropdownMenu.addEventListener('scroll', () => {
+            // Add scrolling class to show scrollbar
+            this.dropdownMenu.classList.add('scrolling');
+            
+            // Clear existing timeout
+            clearTimeout(scrollTimeout);
+            
+            // Hide scrollbar after scroll stops
+            scrollTimeout = setTimeout(() => {
+                this.dropdownMenu.classList.remove('scrolling');
+            }, 1000);
+        });
+        
         // Handle item selection
         this.dropdownMenu.addEventListener('click', (e) => {
             const item = e.target.closest('.custom-model-dropdown-item');
