@@ -33,6 +33,9 @@ export class ChatManager {
         this.user = user;
         this.initialized = false;
         
+        // Show skeleton loader immediately on initialization
+        this.showSkeletonLoader();
+        
         if (user) {
             await this.loadUserConversations();
         } else {
@@ -44,8 +47,6 @@ export class ChatManager {
 
     // Load guest conversations from localStorage and database
     async loadGuestConversations() {
-        // Show skeleton loader
-        this.showSkeletonLoader();
         
         // If no Supabase, load from localStorage only
         if (!this.supabase) {
@@ -93,9 +94,6 @@ export class ChatManager {
     // Load all user conversations
     async loadUserConversations() {
         if (!this.supabase || !this.user) return;
-        
-        // Show skeleton loader
-        this.showSkeletonLoader();
         
         try {
             const { data: conversations, error } = await this.supabase

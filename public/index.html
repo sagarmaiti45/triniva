@@ -360,6 +360,8 @@
         // Always initialize chat manager (with or without Supabase)
         // This allows guest users to have chat sessions
         window.chatManager = new ChatManager(supabase, window.chatApp || {});
+        // Show skeleton loader immediately
+        window.chatManager.showSkeletonLoader();
         
         // Initialize upgrade prompt
         window.upgradePrompt = new UpgradePrompt();
