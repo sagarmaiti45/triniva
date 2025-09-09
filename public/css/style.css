@@ -790,10 +790,10 @@ textarea:focus {
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     flex-shrink: 0;
     margin-right: 8px;
-    border-radius: 0;
+    border-radius: 8px;
     position: relative;
     flex-direction: column;
     gap: 4px;
@@ -802,13 +802,29 @@ textarea:focus {
 }
 
 .hamburger-line {
-    width: 20px;
-    height: 2px;
+    width: 18px;
+    height: 2.5px;
     background: var(--text-primary);
-    border-radius: 2px;
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    position: relative;
-    opacity: 0.7;
+    border-radius: 3px;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: absolute;
+    opacity: 0.8;
+}
+
+/* Two-line unique hamburger style */
+.hamburger-line:nth-child(1) {
+    top: 14px;
+    width: 18px;
+}
+
+.hamburger-line:nth-child(2) {
+    display: none; /* Hide middle line for 2-line style */
+}
+
+.hamburger-line:nth-child(3) {
+    bottom: 14px;
+    width: 14px; /* Shorter bottom line for unique look */
+    align-self: flex-start;
 }
 
 .mobile-menu-toggle:hover {
@@ -822,17 +838,18 @@ textarea:focus {
     opacity: 1;
 }
 
+/* Unique X animation for active state */
 .mobile-menu-toggle.active .hamburger-line:nth-child(1) {
-    transform: translateY(6px) rotate(45deg);
-}
-
-.mobile-menu-toggle.active .hamburger-line:nth-child(2) {
-    opacity: 0;
-    transform: translateX(-10px);
+    transform: rotate(45deg);
+    top: 50%;
+    margin-top: -1px;
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(3) {
-    transform: translateY(-6px) rotate(-45deg);
+    transform: rotate(-45deg);
+    bottom: 50%;
+    margin-bottom: -1px;
+    width: 18px; /* Make equal width when active */
 }
 
 .mobile-menu-toggle:active {
