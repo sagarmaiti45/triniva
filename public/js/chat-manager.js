@@ -491,32 +491,10 @@ export class ChatManager {
         }
     }
 
-    // Start new chat
+    // Start new chat - redirects to homepage
     startNewChat() {
-        this.currentConversationId = null;
-        this.messages = [];
-        this.chatApp.currentConversationId = null;
-        this.chatApp.messages = [];
-        this.chatApp.isFirstMessage = true;
-        
-        // Show welcome view if method exists
-        if (this.chatApp.showWelcomeView) {
-            this.chatApp.showWelcomeView();
-        } else {
-            // Fallback: manually show welcome view
-            const welcomeView = document.getElementById('welcomeView');
-            const chatView = document.getElementById('chatView');
-            if (welcomeView) welcomeView.style.display = 'flex';
-            if (chatView) chatView.style.display = 'none';
-        }
-        
-        // Remove active state from sidebar items
-        const conversationsList = document.querySelector('.conversations-list');
-        if (conversationsList) {
-            conversationsList.querySelectorAll('.conversation-item').forEach(item => {
-                item.classList.remove('active');
-            });
-        }
+        // Redirect to homepage for new chat
+        window.location.href = '/';
     }
 
     // Render conversations list in sidebar

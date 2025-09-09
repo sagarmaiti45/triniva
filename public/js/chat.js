@@ -272,13 +272,10 @@ class ChatApp {
             this.enableSendButtons();
         });
 
-        // New chat button
+        // New chat button - redirects to homepage
         this.newChatBtn.addEventListener('click', () => {
-            if (window.chatManager) {
-                window.chatManager.startNewChat();
-            } else {
-                this.createNewConversation();
-            }
+            // Redirect to homepage for new chat
+            window.location.href = '/';
         });
 
         // Sidebar toggle button
