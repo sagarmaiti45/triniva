@@ -44,6 +44,9 @@ export class ChatManager {
 
     // Load guest conversations from localStorage and database
     async loadGuestConversations() {
+        // Show skeleton loader
+        this.showSkeletonLoader();
+        
         // If no Supabase, load from localStorage only
         if (!this.supabase) {
             this.conversations = JSON.parse(localStorage.getItem('guestConversations') || '[]');
@@ -90,6 +93,9 @@ export class ChatManager {
     // Load all user conversations
     async loadUserConversations() {
         if (!this.supabase || !this.user) return;
+        
+        // Show skeleton loader
+        this.showSkeletonLoader();
         
         try {
             const { data: conversations, error } = await this.supabase
@@ -497,6 +503,31 @@ export class ChatManager {
         window.location.href = '/';
     }
 
+    // Show skeleton loader while loading conversations
+    showSkeletonLoader() {
+        const conversationsList = document.querySelector('.conversations-list');
+        if (!conversationsList) return;
+        
+        // Calculate how many skeleton items to show based on available height
+        const containerHeight = conversationsList.offsetHeight || 600;
+        const itemHeight = 60; // Approximate height of each skeleton item
+        const itemCount = Math.ceil(containerHeight / itemHeight);
+        
+        // Create skeleton HTML
+        let skeletonHTML = '<div class="skeleton-loader">';
+        for (let i = 0; i < itemCount; i++) {
+            skeletonHTML += `
+                <div class="skeleton-item">
+                    <div class="skeleton-text title"></div>
+                    <div class="skeleton-text subtitle"></div>
+                </div>
+            `;
+        }
+        skeletonHTML += '</div>';
+        
+        conversationsList.innerHTML = skeletonHTML;
+    }
+    
     // Render conversations list in sidebar
     renderConversationsList() {
         const conversationsList = document.querySelector('.conversations-list');
