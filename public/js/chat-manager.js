@@ -507,9 +507,11 @@ export class ChatManager {
         if (!conversationsList) return;
         
         // Calculate how many skeleton items to show based on available height
-        const containerHeight = conversationsList.offsetHeight || 600;
-        const itemHeight = 60; // Approximate height of each skeleton item
-        const itemCount = Math.ceil(containerHeight / itemHeight);
+        const containerHeight = conversationsList.offsetHeight || window.innerHeight - 200;
+        const sidebar = document.querySelector('.sidebar');
+        const isExpanded = sidebar && sidebar.classList.contains('expanded');
+        const itemHeight = isExpanded ? 52 : 44; // Different heights for expanded vs minimized
+        const itemCount = Math.ceil(containerHeight / itemHeight) + 2; // Add extra items for full coverage
         
         // Create skeleton HTML
         let skeletonHTML = '<div class="skeleton-loader">';

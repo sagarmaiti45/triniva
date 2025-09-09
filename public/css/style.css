@@ -2812,6 +2812,20 @@ h3.ai-heading {
     gap: 8px;
     height: 100%;
     overflow: hidden;
+    position: relative;
+}
+
+/* Bottom fade effect for skeleton loader */
+.skeleton-loader::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to bottom, transparent, var(--bg-primary) 90%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .skeleton-item {
@@ -2890,31 +2904,7 @@ h3.ai-heading {
     margin-bottom: 0;
 }
 
-/* Fading effect for skeleton items */
-.skeleton-item:nth-child(n+5) {
-    opacity: 0.8;
-}
-
-.skeleton-item:nth-child(n+7) {
-    opacity: 0.6;
-}
-
-.skeleton-item:nth-child(n+9) {
-    opacity: 0.4;
-}
-
-.skeleton-item:nth-child(n+11) {
-    opacity: 0.2;
-}
-
-.skeleton-item:nth-child(n+13) {
-    opacity: 0.1;
-}
-
-/* No fading for minimized sidebar skeleton items */
-.sidebar:not(.expanded) .skeleton-item {
-    opacity: 1 !important;
-}
+/* Remove individual item opacity - using gradient fade instead */
 
 @keyframes skeleton-pulse {
     0% {
