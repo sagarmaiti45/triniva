@@ -2291,6 +2291,18 @@ h3.ai-heading {
     /* Match footer padding with header on mobile */
     .sidebar .sidebar-footer {
         padding: 12px !important; /* Same as header */
+        margin-top: auto; /* Push to bottom */
+    }
+    
+    /* Ensure sidebar flex layout on mobile */
+    .sidebar.open {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .sidebar.open .sidebar-footer {
+        margin-top: auto; /* Stick to bottom */
+        padding-bottom: 16px !important; /* Extra bottom padding for safety */
     }
     
     /* Overlay for mobile sidebar */
