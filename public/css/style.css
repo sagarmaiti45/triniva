@@ -2823,6 +2823,37 @@ h3.ai-heading {
     animation: skeleton-pulse 1.5s infinite;
 }
 
+/* Skeleton for minimized sidebar */
+.sidebar:not(.expanded) .skeleton-loader {
+    padding: 8px 4px;
+    gap: 4px;
+}
+
+.sidebar:not(.expanded) .skeleton-item {
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar:not(.expanded) .skeleton-text {
+    display: none;
+}
+
+/* Add a circular skeleton icon for minimized sidebar */
+.sidebar:not(.expanded) .skeleton-item::before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    background: var(--bg-hover);
+    border-radius: 50%;
+    opacity: 0.5;
+}
+
 .skeleton-item::after {
     content: "";
     position: absolute;
@@ -2876,6 +2907,11 @@ h3.ai-heading {
 
 .skeleton-item:nth-child(n+13) {
     opacity: 0.1;
+}
+
+/* No fading for minimized sidebar skeleton items */
+.sidebar:not(.expanded) .skeleton-item {
+    opacity: 1 !important;
 }
 
 @keyframes skeleton-pulse {
