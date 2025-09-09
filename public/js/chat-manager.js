@@ -510,7 +510,38 @@ export class ChatManager {
         const containerHeight = conversationsList.offsetHeight || window.innerHeight - 200;
         const sidebar = document.querySelector('.sidebar');
         const isExpanded = sidebar && sidebar.classList.contains('expanded');
-        const itemHeight = isExpanded ? 52 : 44; // Different heights for expanded vs minimized
+        const isOpen = sidebar && sidebar.classList.contains('open'); // Check for mobile open state
+        
+        // Different heights for different states
+        let itemHeight = 44; // Default for minimized
+        if (isExpanded || isOpen) {
+            itemHeight = 52; // Expanded or mobile open
+        }
+        
+        // For mobile, calculate based on actual available space
+        if (window.innerWidth <= 768 && isOpen) {
+            // Account for header and footer on mobile
+            const availableHeight = window.innerHeight - 120 - 60; // Subtract header and footer heights
+            const mobileItemCount = Math.floor(availableHeight / itemHeight);
+            const itemCount = mobileItemCount > 0 ? mobileItemCount : 10;
+            
+            // Create skeleton HTML for mobile
+            let skeletonHTML = '<div class="skeleton-loader">';
+            for (let i = 0; i < itemCount; i++) {
+                skeletonHTML += `
+                    <div class="skeleton-item">
+                        <div class="skeleton-text title"></div>
+                        <div class="skeleton-text subtitle"></div>
+                    </div>
+                `;
+            }
+            skeletonHTML += '</div>';
+            
+            conversationsList.innerHTML = skeletonHTML;
+            return;
+        }
+        
+        // Desktop calculation
         const itemCount = Math.ceil(containerHeight / itemHeight) + 2; // Add extra items for full coverage
         
         // Create skeleton HTML
