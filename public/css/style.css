@@ -391,7 +391,7 @@ textarea:focus {
     width: 100%;
     padding: 12px 16px;
     background: transparent;
-    border: 1px solid var(--border-color);
+    border: none;
     border-radius: 8px;
     color: var(--text-primary);
     font-size: 14px;
@@ -405,7 +405,6 @@ textarea:focus {
 
 .user-account-btn:hover {
     background: var(--bg-hover);
-    border-color: var(--accent-color);
 }
 
 .user-account-btn i {
@@ -556,12 +555,11 @@ textarea:focus {
 .login-btn {
     background: transparent;
     color: var(--text-primary);
-    border: 1px solid var(--border-color);
+    border: none;
 }
 
 .login-btn:hover {
     background: var(--bg-hover);
-    border-color: var(--accent-color);
     opacity: 1;
 }
 
@@ -713,8 +711,8 @@ textarea:focus {
     z-index: 1000;
     width: 36px;
     height: 36px;
-    border: 1px solid var(--border-color);
-    background: var(--bg-primary);
+    border: none;
+    background: transparent;
     color: var(--text-secondary);
     cursor: pointer;
     display: flex;
@@ -728,7 +726,6 @@ textarea:focus {
 .main-menu-button:hover {
     background: var(--bg-hover);
     color: var(--text-primary);
-    border-color: var(--text-secondary);
 }
 
 .main-menu-button i {
