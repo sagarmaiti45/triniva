@@ -2716,17 +2716,44 @@ h3.ai-heading {
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+    .model-restriction-popup {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
     .popup-content {
-        width: 95%;
-        margin: 20px;
+        width: 90%;
+        max-width: 400px;
+        margin: 0;
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: scale(0.95);
+    }
+    
+    .model-restriction-popup.show .popup-content {
+        transform: scale(1);
+    }
+    
+    .popup-header {
+        padding: 20px 20px 12px;
+    }
+    
+    .popup-body {
+        padding: 16px 20px;
     }
     
     .popup-actions {
         flex-direction: column;
+        padding: 12px 20px 20px;
+        gap: 10px;
     }
     
     .popup-btn {
         width: 100%;
+        padding: 14px 20px;
     }
 }
 
