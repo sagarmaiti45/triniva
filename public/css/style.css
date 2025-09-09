@@ -2888,7 +2888,7 @@ h3.ai-heading {
     opacity: 0.5;
 }
 
-/* Mobile sidebar skeleton - full width when open */
+/* Mobile sidebar skeleton - same style as desktop expanded */
 @media (max-width: 768px) {
     .sidebar.open .skeleton-loader {
         padding: 8px;
@@ -2900,15 +2900,16 @@ h3.ai-heading {
     
     .sidebar.open .skeleton-item {
         padding: 12px 16px;
-        width: 100%;
+        width: auto;
         height: auto;
-        margin: 0;
-        border-radius: 16px;
+        margin: 0 0 2px 0;
+        border-radius: 8px;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        align-items: stretch;
+        align-items: flex-start;
         flex-shrink: 0;
+        min-height: 40px;
     }
     
     .sidebar.open .skeleton-text {
@@ -2916,15 +2917,13 @@ h3.ai-heading {
     }
     
     .sidebar.open .skeleton-text.title {
-        width: 100%;
+        width: 70%;
         height: 14px;
-        margin-bottom: 8px;
+        margin-bottom: 0;
     }
     
     .sidebar.open .skeleton-text.subtitle {
-        width: 65%;
-        height: 12px;
-        margin-top: 4px;
+        display: none;
     }
     
     .sidebar.open .skeleton-item::before {

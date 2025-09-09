@@ -525,13 +525,12 @@ export class ChatManager {
             const mobileItemCount = Math.floor(availableHeight / itemHeight);
             const itemCount = mobileItemCount > 0 ? mobileItemCount : 10;
             
-            // Create skeleton HTML for mobile
+            // Create skeleton HTML for mobile - single line like desktop expanded
             let skeletonHTML = '<div class="skeleton-loader">';
             for (let i = 0; i < itemCount; i++) {
                 skeletonHTML += `
                     <div class="skeleton-item">
                         <div class="skeleton-text title"></div>
-                        <div class="skeleton-text subtitle"></div>
                     </div>
                 `;
             }
