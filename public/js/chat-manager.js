@@ -506,38 +506,20 @@ export class ChatManager {
         const conversationsList = document.querySelector('.conversations-list');
         if (!conversationsList) return;
         
+        // Skip skeleton loader on mobile
+        if (window.innerWidth <= 768) {
+            return;
+        }
+        
         // Calculate how many skeleton items to show based on available height
         const containerHeight = conversationsList.offsetHeight || window.innerHeight - 200;
         const sidebar = document.querySelector('.sidebar');
         const isExpanded = sidebar && sidebar.classList.contains('expanded');
-        const isOpen = sidebar && sidebar.classList.contains('open'); // Check for mobile open state
         
         // Different heights for different states
         let itemHeight = 44; // Default for minimized
-        if (isExpanded || isOpen) {
-            itemHeight = 52; // Expanded or mobile open
-        }
-        
-        // For mobile, calculate based on actual available space
-        if (window.innerWidth <= 768 && isOpen) {
-            // Account for header and footer on mobile
-            const availableHeight = window.innerHeight - 120 - 60; // Subtract header and footer heights
-            const mobileItemCount = Math.floor(availableHeight / itemHeight);
-            const itemCount = mobileItemCount > 0 ? mobileItemCount : 10;
-            
-            // Create skeleton HTML for mobile - single line like desktop expanded
-            let skeletonHTML = '<div class="skeleton-loader">';
-            for (let i = 0; i < itemCount; i++) {
-                skeletonHTML += `
-                    <div class="skeleton-item">
-                        <div class="skeleton-text title"></div>
-                    </div>
-                `;
-            }
-            skeletonHTML += '</div>';
-            
-            conversationsList.innerHTML = skeletonHTML;
-            return;
+        if (isExpanded) {
+            itemHeight = 52; // Expanded
         }
         
         // Desktop calculation
