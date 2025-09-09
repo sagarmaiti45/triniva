@@ -816,8 +816,7 @@ textarea:focus {
     border-radius: 8px;
     position: relative;
     flex-direction: column;
-    gap: 4px;
-    padding: 8px;
+    padding: 0;
     opacity: 1;
 }
 
@@ -827,12 +826,13 @@ textarea:focus {
     border-radius: 1px;
     transition: all 0.3s ease;
     position: absolute;
-    left: 9px; /* Same starting point for both lines */
 }
 
 /* Simple 2-line hamburger style */
 .hamburger-line:nth-child(1) {
     top: 11px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 18px;
 }
 
@@ -842,6 +842,8 @@ textarea:focus {
 
 .hamburger-line:nth-child(3) {
     bottom: 11px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 9px; /* Half width for second line */
 }
 
@@ -855,16 +857,16 @@ textarea:focus {
 
 /* Simple X animation for active state */
 .mobile-menu-toggle.active .hamburger-line:nth-child(1) {
-    transform: rotate(45deg);
+    transform: translateX(-50%) rotate(45deg);
     top: 17px;
-    left: 9px;
+    left: 50%;
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(3) {
-    transform: rotate(-45deg);
+    transform: translateX(-50%) rotate(-45deg);
     bottom: 17px;
     width: 18px; /* Full width when active */
-    left: 9px;
+    left: 50%;
 }
 
 .mobile-menu-toggle:active {
@@ -2390,9 +2392,9 @@ h3.ai-heading {
     /* Show mobile menu toggle on mobile */
     .mobile-menu-toggle {
         display: flex !important;
-        width: 32px;
-        height: 32px;
-        padding: 8px;
+        width: 36px;
+        height: 36px;
+        padding: 0;
     }
     
     /* Hide desktop collapse button, show mobile close button */
