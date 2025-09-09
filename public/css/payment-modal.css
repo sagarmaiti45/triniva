@@ -24,11 +24,12 @@
     max-width: 480px;
     width: 90%;
     max-height: 90vh;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     animation: slideUp 0.3s ease;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .payment-modal-header {
@@ -73,6 +74,27 @@
 
 .payment-modal-body {
     padding: 24px;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(90vh - 120px);
+    position: relative;
+}
+
+.modal-content-wrapper {
+    min-height: 200px;
+}
+
+.modal-hidden-states {
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0,0,0,0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
 }
 
 .plan-summary {
@@ -281,6 +303,21 @@
     padding: 40px;
 }
 
+/* Ensure hidden elements take no space */
+.payment-loading[style*="display: none"],
+.payment-success[style*="display: none"],
+.already-subscribed[style*="display: none"] {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0,0,0,0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
 .payment-loading i {
     font-size: 48px;
     color: var(--accent-color);
@@ -422,14 +459,12 @@
     
     .payment-modal {
         width: 100%;
-        height: 100%;
-        max-height: 100%;
+        height: 100vh;
+        height: 100dvh;
         max-height: 100vh;
         max-height: 100dvh;
         border-radius: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
+        overflow: hidden;
         position: fixed;
         top: 0;
         left: 0;
@@ -444,6 +479,9 @@
         flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        max-height: calc(100vh - 100px);
+        max-height: calc(100dvh - 100px);
     }
     
     

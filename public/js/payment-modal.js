@@ -28,64 +28,69 @@ export class PaymentModal {
                     </div>
                     
                     <div class="payment-modal-body">
-                        <!-- Plan Summary -->
-                        <div class="plan-summary" id="planSummary">
-                            <!-- Dynamically populated -->
-                        </div>
-                        
-                        <!-- Auth Section (for non-logged in users) -->
-                        <div class="auth-section" id="authSection" style="display: none;">
-                            <div class="auth-message">
-                                <p>Sign in to complete your subscription</p>
+                        <div class="modal-content-wrapper">
+                            <!-- Plan Summary -->
+                            <div class="plan-summary" id="planSummary">
+                                <!-- Dynamically populated -->
                             </div>
-                            <div class="auth-buttons">
-                                <button class="auth-button google" onclick="paymentModal.signInWithGoogle()">
-                                    <i class="fab fa-google"></i>
-                                    Continue with Google
+                            
+                            <!-- Auth Section (for non-logged in users) -->
+                            <div class="auth-section" id="authSection" style="display: none;">
+                                <div class="auth-message">
+                                    <p>Sign in to complete your subscription</p>
+                                </div>
+                                <div class="auth-buttons">
+                                    <button class="auth-button google" onclick="paymentModal.signInWithGoogle()">
+                                        <i class="fab fa-google"></i>
+                                        Continue with Google
+                                    </button>
+                                    <a href="/auth/signup.html" class="auth-button email">
+                                        <i class="fas fa-envelope"></i>
+                                        Sign up with Email
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Payment Section (for logged in users) -->
+                            <div class="payment-section" id="paymentSection" style="display: none;">
+                                <button class="proceed-button" id="proceedButton" onclick="paymentModal.proceedToPayment()">
+                                    <i class="fas fa-credit-card"></i>
+                                    Proceed to Payment
                                 </button>
-                                <a href="/auth/signup.html" class="auth-button email">
-                                    <i class="fas fa-envelope"></i>
-                                    Sign up with Email
-                                </a>
+                            </div>
+                            
+                            <div class="secure-badge" id="secureBadge">
+                                <i class="fas fa-lock"></i>
+                                <span>Secure payment with 256-bit encryption</span>
                             </div>
                         </div>
                         
-                        <!-- Payment Section (for logged in users) -->
-                        <div class="payment-section" id="paymentSection" style="display: none;">
-                            <button class="proceed-button" id="proceedButton" onclick="paymentModal.proceedToPayment()">
-                                <i class="fas fa-credit-card"></i>
-                                Proceed to Payment
-                            </button>
-                        </div>
-                        
-                        <!-- Loading State -->
-                        <div class="payment-loading" id="paymentLoading" style="display: none;">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Processing...</p>
-                        </div>
-                        
-                        <!-- Success State -->
-                        <div class="payment-success" id="paymentSuccess" style="display: none;">
-                            <i class="fas fa-check-circle"></i>
-                            <h3>Payment Successful!</h3>
-                            <p>Your subscription is now active</p>
-                            <a href="/dashboard" class="success-button">Go to Dashboard</a>
-                        </div>
-                        
-                        <!-- Already Subscribed State -->
-                        <div class="already-subscribed" id="alreadySubscribed" style="display: none;">
-                            <i class="fas fa-info-circle"></i>
-                            <h3>You're Already Subscribed!</h3>
-                            <p id="alreadySubscribedMessage">You already have an active subscription</p>
-                            <div class="already-subscribed-buttons">
-                                <a href="/dashboard/billing.html" class="success-button">View Billing</a>
-                                <button class="secondary-button" onclick="paymentModal.close()">Close</button>
+                        <!-- Hidden States Container -->
+                        <div class="modal-hidden-states" style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;">
+                            <!-- Loading State -->
+                            <div class="payment-loading" id="paymentLoading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Processing...</p>
                             </div>
-                        </div>
-                        
-                        <div class="secure-badge" id="secureBadge">
-                            <i class="fas fa-lock"></i>
-                            <span>Secure payment with 256-bit encryption</span>
+                            
+                            <!-- Success State -->
+                            <div class="payment-success" id="paymentSuccess" style="display: none;">
+                                <i class="fas fa-check-circle"></i>
+                                <h3>Payment Successful!</h3>
+                                <p>Your subscription is now active</p>
+                                <a href="/dashboard" class="success-button">Go to Dashboard</a>
+                            </div>
+                            
+                            <!-- Already Subscribed State -->
+                            <div class="already-subscribed" id="alreadySubscribed" style="display: none;">
+                                <i class="fas fa-info-circle"></i>
+                                <h3>You're Already Subscribed!</h3>
+                                <p id="alreadySubscribedMessage">You already have an active subscription</p>
+                                <div class="already-subscribed-buttons">
+                                    <a href="/dashboard/billing.html" class="success-button">View Billing</a>
+                                    <button class="secondary-button" onclick="paymentModal.close()">Close</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -197,23 +202,17 @@ export class PaymentModal {
         const loadingSection = document.getElementById('paymentLoading');
         const successSection = document.getElementById('paymentSuccess');
 
-        // Reset states
-        authSection.style.display = 'none';
-        paymentSection.style.display = 'none';
-        loadingSection.style.display = 'none';
-        successSection.style.display = 'none';
-        document.getElementById('secureBadge').style.display = 'block';
-
+        // Reset states and show appropriate section
         if (!session) {
             // Show auth section
-            authSection.style.display = 'block';
+            this.showModalState('authSection');
             
             // Store plan for after auth
             sessionStorage.setItem('selectedPlan', planId);
             sessionStorage.setItem('redirectAfterAuth', 'checkout');
         } else {
             // Show payment section
-            paymentSection.style.display = 'block';
+            this.showModalState('paymentSection');
         }
 
         // Show modal
@@ -246,8 +245,7 @@ export class PaymentModal {
     async signInWithGoogle() {
         try {
             // Show loading
-            document.getElementById('paymentLoading').style.display = 'block';
-            document.getElementById('authSection').style.display = 'none';
+            this.showModalState('paymentLoading');
 
             const { data, error } = await this.supabase.auth.signInWithOAuth({
                 provider: 'google',
@@ -260,8 +258,7 @@ export class PaymentModal {
         } catch (error) {
             console.error('Auth error:', error);
             alert('Authentication failed. Please try again.');
-            document.getElementById('paymentLoading').style.display = 'none';
-            document.getElementById('authSection').style.display = 'block';
+            this.showModalState('authSection');
         }
     }
 
@@ -312,8 +309,7 @@ export class PaymentModal {
 
     async handlePaymentSuccess(response) {
         // Hide payment section, show success
-        document.getElementById('paymentSection').style.display = 'none';
-        document.getElementById('paymentLoading').style.display = 'block';
+        this.showModalState('paymentLoading');
 
         try {
             // Update user in database (in production, this should be done via secure backend)
@@ -342,9 +338,7 @@ export class PaymentModal {
                 });
 
             // Show success
-            document.getElementById('paymentLoading').style.display = 'none';
-            document.getElementById('paymentSuccess').style.display = 'block';
-            document.getElementById('secureBadge').style.display = 'none';
+            this.showModalState('paymentSuccess');
 
             // Clear session storage
             sessionStorage.removeItem('selectedPlan');
@@ -365,18 +359,11 @@ export class PaymentModal {
         
         const planName = planNames[planId] || planId;
         
-        // Hide all other sections
-        document.getElementById('authSection').style.display = 'none';
-        document.getElementById('paymentSection').style.display = 'none';
-        document.getElementById('paymentLoading').style.display = 'none';
-        document.getElementById('paymentSuccess').style.display = 'none';
-        document.getElementById('planSummary').style.display = 'none';
-        document.getElementById('secureBadge').style.display = 'none';
-        
         // Update message and show already subscribed section
         document.getElementById('alreadySubscribedMessage').innerHTML = 
             `You're already on the <strong>${planName} Plan</strong>. Visit your billing page to manage your subscription or upgrade to a higher plan.`;
-        document.getElementById('alreadySubscribed').style.display = 'block';
+        document.getElementById('planSummary').style.display = 'none';
+        this.showModalState('alreadySubscribed');
         
         // Update modal header
         document.querySelector('.payment-modal-title').textContent = 'Already Subscribed';
@@ -386,6 +373,42 @@ export class PaymentModal {
         this.modalElement.classList.add('show');
     }
 
+    showModalState(stateId) {
+        // Hide all states first
+        const states = ['authSection', 'paymentSection', 'paymentLoading', 'paymentSuccess', 'alreadySubscribed'];
+        const contentWrapper = document.querySelector('.modal-content-wrapper');
+        const hiddenContainer = document.querySelector('.modal-hidden-states');
+        
+        states.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.display = 'none';
+                // Move to hidden container if not the one we're showing
+                if (id !== stateId && id !== 'authSection' && id !== 'paymentSection') {
+                    hiddenContainer.appendChild(element);
+                }
+            }
+        });
+        
+        // Show the requested state
+        if (stateId) {
+            const element = document.getElementById(stateId);
+            if (element) {
+                element.style.display = 'block';
+                // Move special states to content wrapper
+                if (stateId === 'paymentLoading' || stateId === 'paymentSuccess' || stateId === 'alreadySubscribed') {
+                    contentWrapper.appendChild(element);
+                }
+            }
+        }
+        
+        // Handle secure badge visibility
+        const secureBadge = document.getElementById('secureBadge');
+        if (secureBadge) {
+            secureBadge.style.display = (stateId === 'authSection' || stateId === 'paymentSection') ? 'block' : 'none';
+        }
+    }
+    
     close() {
         this.modalElement.classList.remove('show');
         this.currentPlan = null;
