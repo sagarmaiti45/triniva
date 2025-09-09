@@ -809,17 +809,18 @@ textarea:focus {
 
 .hamburger-line {
     width: 18px;
-    height: 2.5px;
-    background: var(--text-primary);
-    border-radius: 3px;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    height: 2px;
+    background: var(--text-secondary);
+    border-radius: 1px;
+    transition: all 0.3s ease;
     position: absolute;
-    opacity: 0.8;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-/* Two-line unique hamburger style */
+/* Simple 2-line hamburger style */
 .hamburger-line:nth-child(1) {
-    top: 14px;
+    top: 13px;
     width: 18px;
 }
 
@@ -828,34 +829,32 @@ textarea:focus {
 }
 
 .hamburger-line:nth-child(3) {
-    bottom: 14px;
-    width: 14px; /* Shorter bottom line for unique look */
-    align-self: flex-start;
+    bottom: 13px;
+    width: 9px; /* Half width for second line */
+    left: 9px; /* Align to left */
+    transform: none;
 }
 
 .mobile-menu-toggle:hover {
-    background: transparent;
-    border: none;
-    opacity: 1;
+    background: var(--bg-hover);
 }
 
 .mobile-menu-toggle:hover .hamburger-line {
-    background: var(--accent-color);
-    opacity: 1;
+    background: var(--text-primary);
 }
 
-/* Unique X animation for active state */
+/* Simple X animation for active state */
 .mobile-menu-toggle.active .hamburger-line:nth-child(1) {
-    transform: rotate(45deg);
-    top: 50%;
-    margin-top: -1px;
+    transform: translateX(-50%) rotate(45deg);
+    top: 17px;
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(3) {
     transform: rotate(-45deg);
-    bottom: 50%;
-    margin-bottom: -1px;
-    width: 18px; /* Make equal width when active */
+    bottom: 17px;
+    width: 18px; /* Full width when active */
+    left: 50%;
+    transform: translateX(-50%) rotate(-45deg);
 }
 
 .mobile-menu-toggle:active {
