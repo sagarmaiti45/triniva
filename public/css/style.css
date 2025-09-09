@@ -2894,11 +2894,11 @@ h3.ai-heading {
 }
 
 .skeleton-text.title {
-    width: 75%;
+    width: 100%;
 }
 
 .skeleton-text.subtitle {
-    width: 50%;
+    width: 65%;
     height: 12px;
     opacity: 0.6;
     margin-bottom: 0;
