@@ -905,7 +905,7 @@ textarea:focus {
 /* Desktop only - welcome content positioning */
 @media (min-width: 769px) {
     .welcome-content {
-        transform: translateY(-20%);
+        transform: translateY(-30%);
     }
 }
 
