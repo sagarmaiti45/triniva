@@ -59,13 +59,13 @@ export class PaymentModal {
                         </div>
                         
                         <!-- Loading State -->
-                        <div class="payment-loading" id="paymentLoading">
+                        <div class="payment-loading" id="paymentLoading" style="display: none;">
                             <i class="fas fa-spinner fa-spin"></i>
                             <p>Processing...</p>
                         </div>
                         
                         <!-- Success State -->
-                        <div class="payment-success" id="paymentSuccess">
+                        <div class="payment-success" id="paymentSuccess" style="display: none;">
                             <i class="fas fa-check-circle"></i>
                             <h3>Payment Successful!</h3>
                             <p>Your subscription is now active</p>
@@ -83,7 +83,7 @@ export class PaymentModal {
                             </div>
                         </div>
                         
-                        <div class="secure-badge">
+                        <div class="secure-badge" id="secureBadge">
                             <i class="fas fa-lock"></i>
                             <span>Secure payment with 256-bit encryption</span>
                         </div>
@@ -200,8 +200,9 @@ export class PaymentModal {
         // Reset states
         authSection.style.display = 'none';
         paymentSection.style.display = 'none';
-        loadingSection.classList.remove('show');
-        successSection.classList.remove('show');
+        loadingSection.style.display = 'none';
+        successSection.style.display = 'none';
+        document.getElementById('secureBadge').style.display = 'block';
 
         if (!session) {
             // Show auth section
@@ -245,7 +246,7 @@ export class PaymentModal {
     async signInWithGoogle() {
         try {
             // Show loading
-            document.getElementById('paymentLoading').classList.add('show');
+            document.getElementById('paymentLoading').style.display = 'block';
             document.getElementById('authSection').style.display = 'none';
 
             const { data, error } = await this.supabase.auth.signInWithOAuth({
@@ -259,7 +260,7 @@ export class PaymentModal {
         } catch (error) {
             console.error('Auth error:', error);
             alert('Authentication failed. Please try again.');
-            document.getElementById('paymentLoading').classList.remove('show');
+            document.getElementById('paymentLoading').style.display = 'none';
             document.getElementById('authSection').style.display = 'block';
         }
     }
@@ -312,7 +313,7 @@ export class PaymentModal {
     async handlePaymentSuccess(response) {
         // Hide payment section, show success
         document.getElementById('paymentSection').style.display = 'none';
-        document.getElementById('paymentLoading').classList.add('show');
+        document.getElementById('paymentLoading').style.display = 'block';
 
         try {
             // Update user in database (in production, this should be done via secure backend)
@@ -341,8 +342,9 @@ export class PaymentModal {
                 });
 
             // Show success
-            document.getElementById('paymentLoading').classList.remove('show');
-            document.getElementById('paymentSuccess').classList.add('show');
+            document.getElementById('paymentLoading').style.display = 'none';
+            document.getElementById('paymentSuccess').style.display = 'block';
+            document.getElementById('secureBadge').style.display = 'none';
 
             // Clear session storage
             sessionStorage.removeItem('selectedPlan');
@@ -366,14 +368,15 @@ export class PaymentModal {
         // Hide all other sections
         document.getElementById('authSection').style.display = 'none';
         document.getElementById('paymentSection').style.display = 'none';
-        document.getElementById('paymentLoading').classList.remove('show');
-        document.getElementById('paymentSuccess').classList.remove('show');
+        document.getElementById('paymentLoading').style.display = 'none';
+        document.getElementById('paymentSuccess').style.display = 'none';
         document.getElementById('planSummary').style.display = 'none';
+        document.getElementById('secureBadge').style.display = 'none';
         
         // Update message and show already subscribed section
         document.getElementById('alreadySubscribedMessage').innerHTML = 
             `You're already on the <strong>${planName} Plan</strong>. Visit your billing page to manage your subscription or upgrade to a higher plan.`;
-        document.getElementById('alreadySubscribed').classList.add('show');
+        document.getElementById('alreadySubscribed').style.display = 'block';
         
         // Update modal header
         document.querySelector('.payment-modal-title').textContent = 'Already Subscribed';
@@ -397,8 +400,8 @@ export class PaymentModal {
         document.getElementById('authSection').style.display = 'none';
         document.getElementById('paymentSection').style.display = 'none';
         document.getElementById('paymentLoading').classList.remove('show');
-        document.getElementById('paymentSuccess').classList.remove('show');
-        document.getElementById('alreadySubscribed').classList.remove('show');
+        document.getElementById('paymentSuccess').style.display = 'none';
+        document.getElementById('alreadySubscribed').style.display = 'none';
         document.getElementById('planSummary').style.display = 'block';
         
         // Reset header text
