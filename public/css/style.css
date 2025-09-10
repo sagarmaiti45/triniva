@@ -2797,24 +2797,20 @@ h3.ai-heading {
 /* Mobile responsive */
 @media (max-width: 768px) {
     .model-restriction-popup {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
+        display: block;
     }
     
     .popup-content {
         width: 90%;
         max-width: 400px;
-        margin: 0;
-        position: relative;
-        top: auto;
-        left: auto;
-        transform: scale(0.95);
+        position: fixed;
+        bottom: 70px; /* Same level as input area - adjusted to match prompt area height */
+        left: 50%;
+        transform: translateX(-50%) translateY(20px) scale(0.95); /* Center horizontally and slide up animation */
     }
     
     .model-restriction-popup.show .popup-content {
-        transform: scale(1);
+        transform: translateX(-50%) translateY(0) scale(1);
     }
     
     .popup-header {
