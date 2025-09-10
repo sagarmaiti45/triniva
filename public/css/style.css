@@ -2804,7 +2804,7 @@ h3.ai-heading {
         width: 90%;
         max-width: 400px;
         position: fixed;
-        bottom: 70px; /* Same level as input area - adjusted to match prompt area height */
+        bottom: 10px; /* Minimal spacing - sits just above the prompt area */
         left: 50%;
         transform: translateX(-50%) translateY(20px) scale(0.95); /* Center horizontally and slide up animation */
     }
