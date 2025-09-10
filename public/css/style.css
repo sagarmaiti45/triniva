@@ -822,17 +822,17 @@ textarea:focus {
 
 .hamburger-line {
     height: 2px;
-    background: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.8); /* Brighter color */
     border-radius: 1px;
     transition: all 0.3s ease;
     position: absolute;
 }
 
-/* Simple 2-line hamburger style */
+/* Simple 2-line hamburger style - reduced spacing */
 .hamburger-line:nth-child(1) {
-    top: 12px;
-    left: 9px;
-    width: 18px;
+    top: 13px; /* Moved down slightly */
+    left: 10px; /* Centered better */
+    width: 16px; /* Reduced width */
 }
 
 .hamburger-line:nth-child(2) {
@@ -840,9 +840,9 @@ textarea:focus {
 }
 
 .hamburger-line:nth-child(3) {
-    bottom: 12px;
-    left: 9px;
-    width: 9px; /* Half width for second line */
+    bottom: 13px; /* Moved up slightly for less spacing */
+    left: 10px; /* Centered better */
+    width: 8px; /* Half width for second line, proportionally reduced */
 }
 
 .mobile-menu-toggle:hover {
@@ -850,21 +850,21 @@ textarea:focus {
 }
 
 .mobile-menu-toggle:hover .hamburger-line {
-    background: var(--text-primary);
+    background: rgba(255, 255, 255, 1); /* Full white on hover */
 }
 
 /* Simple X animation for active state */
 .mobile-menu-toggle.active .hamburger-line:nth-child(1) {
     transform: rotate(45deg);
     top: 17px;
-    left: 9px;
+    left: 10px;
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(3) {
     transform: rotate(-45deg);
     bottom: 17px;
-    width: 18px; /* Full width when active */
-    left: 9px;
+    width: 16px; /* Full width when active, matching reduced size */
+    left: 10px;
 }
 
 .mobile-menu-toggle:active {
