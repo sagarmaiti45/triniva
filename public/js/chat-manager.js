@@ -52,6 +52,8 @@ export class ChatManager {
         if (!this.supabase) {
             this.conversations = JSON.parse(localStorage.getItem('guestConversations') || '[]');
             this.renderConversationsList();
+            // Make sure skeleton is hidden when using localStorage only
+            this.hideSkeletonLoader();
             return;
         }
         

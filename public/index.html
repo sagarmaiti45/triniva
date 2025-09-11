@@ -466,25 +466,8 @@
                 });
             }
             
-            // Main menu button
-            const mainMenuBtn = document.querySelector('.main-menu-button');
-            const mainMenuDropdown = document.querySelector('.main-menu-dropdown');
-            
-            if (mainMenuBtn && mainMenuDropdown) {
-                mainMenuBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const isOpen = mainMenuDropdown.classList.contains('show');
-                    // Close all modals
-                    document.querySelectorAll('.custom-model-dropdown-menu, .attach-menu, .main-menu-dropdown').forEach(el => {
-                        el.classList.remove('open', 'show');
-                    });
-                    document.querySelectorAll('.attach-button').forEach(btn => btn.classList.remove('active'));
-                    // Toggle this modal
-                    if (!isOpen) {
-                        mainMenuDropdown.classList.add('show');
-                    }
-                });
-            }
+            // Main menu button - Skip this since it's handled in chat.js initMainMenu()
+            // to avoid duplicate event listeners
             
             // Close modals when clicking outside
             document.addEventListener('click', function() {
