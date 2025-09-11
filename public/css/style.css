@@ -2871,7 +2871,8 @@ h3.ai-heading {
         transform: none;
         width: calc(100% - 32px);
         max-width: 320px;
-        max-height: 380px; /* Increased height for better visibility */
+        max-height: 60vh; /* Dynamic height - up to 60% of viewport */
+        min-height: 400px; /* Minimum height to show models without cropping */
     }
     
     /* Ensure both menus appear at same level */
