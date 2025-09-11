@@ -146,15 +146,25 @@
             
             <!-- 3-dot menu dropdown -->
             <div class="main-menu-dropdown" id="mainMenuDropdown">
+                <!-- Login/Signup items for non-logged in users -->
+                <a href="/auth/login.html" class="menu-item" id="loginMenuItem" style="display: none;">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+                <a href="/auth/signup.html" class="menu-item" id="signupMenuItem" style="display: none;">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Sign Up</span>
+                </a>
+                <div class="menu-divider" id="authDivider" style="display: none;"></div>
+                
+                <!-- Share option (shown in chat view) -->
                 <div class="menu-item" id="shareMenuItem" style="display: none;">
                     <i class="fas fa-share"></i>
                     <span>Share</span>
                 </div>
-                <div class="menu-item" id="signupMenuItem" style="display: none;">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Sign Up</span>
-                </div>
                 <div class="menu-divider" id="menuDivider" style="display: none;"></div>
+                
+                <!-- General menu items -->
                 <a href="/plans" class="menu-item">
                     <i class="fas fa-dollar-sign"></i>
                     <span>Pricing Plans</span>
@@ -167,6 +177,8 @@
                     <i class="fas fa-envelope"></i>
                     <span>Contact Us</span>
                 </a>
+                
+                <!-- Logout for logged in users -->
                 <div class="menu-divider" id="logoutDivider" style="display: none;"></div>
                 <div class="menu-item" id="logoutMenuItem" style="display: none;">
                     <i class="fas fa-sign-out-alt"></i>

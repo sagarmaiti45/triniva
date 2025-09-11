@@ -529,15 +529,9 @@ textarea:focus {
     display: none;
 }
 
-/* Simple navbar buttons - proper way */
+/* Simple navbar buttons - HIDDEN - Login moved to 3-dot menu */
 .auth-buttons-container {
-    position: fixed;
-    top: 12px; /* Same as 3-dot menu button */
-    right: 60px; /* Slight increase to prevent touching */
-    display: flex;
-    align-items: center;
-    gap: 15px; /* Reduced spacing between login and signup */
-    z-index: 999; /* Below the 3-dot menu */
+    display: none !important; /* Login/signup now in 3-dot menu */
 }
 
 /* No need for special chat view spacing since share is in menu */
@@ -630,25 +624,7 @@ textarea:focus {
         display: none;
     }
     
-    /* Mobile - simple positioning */
-    .auth-buttons-container {
-        top: 10px !important; /* Align with larger 3-dot menu */
-        right: 55px !important; /* More space for larger 3-dot menu */
-        gap: 8px; /* Reduced gap on mobile */
-    }
-    
-    .auth-buttons-container.in-chat-view {
-        top: 10px !important; /* Consistent alignment */
-        right: 55px !important; /* Consistent spacing */
-    }
-    
-    /* Slightly increase button sizes on mobile */
-    .header-auth-btn {
-        padding: 12px 20px !important; /* Increased padding for better touch */
-        font-size: 16px !important; /* Slightly larger font */
-        min-height: 40px; /* Larger touch target */
-        border-radius: 10px !important;
-    }
+    /* Auth buttons removed - Login/signup now in 3-dot menu */
     
     /* Ensure 3-dot menu is properly positioned */
     .main-menu-button {

@@ -958,24 +958,36 @@ class ChatApp {
             shareMenuItem.style.display = isInChatView ? 'flex' : 'none';
         }
         
-        // Show signup button and divider only if not logged in
+        // Show login/signup items only if not logged in
         const isLoggedIn = !!this.authToken;
+        const loginMenuItem = document.getElementById('loginMenuItem');
+        const authDivider = document.getElementById('authDivider');
         
         console.log('Updating main menu items:', {
             isLoggedIn: isLoggedIn,
             authToken: this.authToken,
+            loginMenuItem: !!loginMenuItem,
             signupMenuItem: !!signupMenuItem,
             logoutMenuItem: !!logoutMenuItem,
             menuDivider: !!menuDivider
         });
+        
+        // Show login/signup for non-logged in users
+        if (loginMenuItem) {
+            loginMenuItem.style.display = isLoggedIn ? 'none' : 'flex';
+        }
         
         if (signupMenuItem) {
             signupMenuItem.style.display = isLoggedIn ? 'none' : 'flex';
             console.log('Signup menu item display set to:', signupMenuItem.style.display);
         }
         
+        if (authDivider) {
+            authDivider.style.display = isLoggedIn ? 'none' : 'block';
+        }
+        
         if (menuDivider) {
-            menuDivider.style.display = isLoggedIn ? 'none' : 'block';
+            menuDivider.style.display = 'none'; // Hide old divider
         }
         
         // Show logout button only if logged in
