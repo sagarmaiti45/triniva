@@ -54,16 +54,27 @@
 
                 <!-- Step 2: Email Verification -->
                 <div class="form-step" data-step="2" style="display: none;">
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <i class="fas fa-envelope" style="font-size: 48px; color: var(--accent-color); margin-bottom: 15px;"></i>
-                        <h3 style="margin: 0 0 10px 0;">Check Your Email</h3>
-                        <p style="color: var(--text-secondary); margin: 0;">We've sent a verification code to <strong id="emailDisplay"></strong></p>
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <i class="fas fa-envelope-open-text" style="font-size: 64px; color: var(--accent-color); margin-bottom: 20px;"></i>
+                        <h3 style="margin: 0 0 15px 0;">Verify Your Email</h3>
+                        <p style="color: var(--text-secondary); margin: 0 0 10px 0;">We've sent a confirmation link to:</p>
+                        <p style="font-weight: 600; color: var(--text-primary); font-size: 16px; margin: 0;" id="emailDisplay"></p>
                     </div>
 
-                    <div class="form-group">
-                        <label for="otp">Verification Code</label>
-                        <input type="text" id="otp" name="otp" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}">
-                        <small class="form-hint">Enter the 6-digit code from your email or click the sign-in link</small>
+                    <div style="background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 15px;">
+                            <i class="fas fa-info-circle" style="color: var(--accent-color);"></i> Next Steps:
+                        </h4>
+                        <ol style="margin: 0; padding-left: 20px; color: var(--text-secondary); line-height: 1.6;">
+                            <li>Check your email inbox (and spam folder)</li>
+                            <li>Click the confirmation link in the email</li>
+                            <li>You'll be automatically signed in</li>
+                        </ol>
+                    </div>
+
+                    <div style="text-align: center; padding: 15px; background: var(--bg-hover); border-radius: 8px; margin-bottom: 20px;">
+                        <i class="fas fa-clock" style="color: var(--text-secondary); margin-right: 8px;"></i>
+                        <span style="color: var(--text-secondary); font-size: 14px;">The confirmation link expires in 24 hours</span>
                     </div>
 
                     <div class="step-buttons">
@@ -71,14 +82,17 @@
                             <i class="fas fa-arrow-left"></i>
                             <span>Back</span>
                         </button>
-                        <button type="button" class="auth-button" id="verifyOtp">
-                            <span>Verify Code</span>
-                            <i class="fas fa-check"></i>
+                        <button type="button" class="auth-button" id="completeSignup" style="background: var(--accent-color); color: white;">
+                            <span>I've Verified My Email</span>
+                            <i class="fas fa-check-circle"></i>
                         </button>
                     </div>
                     
-                    <div style="margin-top: 15px; text-align: center;">
-                        <a href="#" id="resendLink" style="color: var(--accent-color); text-decoration: none; font-size: 14px;">Resend verification code</a>
+                    <div style="margin-top: 20px; text-align: center; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px;">Didn't receive the email?</p>
+                        <a href="#" id="resendLink" style="color: var(--accent-color); text-decoration: none; font-size: 14px; font-weight: 500;">
+                            <i class="fas fa-redo" style="margin-right: 5px;"></i>Resend confirmation email
+                        </a>
                     </div>
                 </div>
 
@@ -207,15 +221,15 @@
             userEmail = email;
             userFullName = fullName;
             
-            // Send OTP
+            // Send signup email with confirmation link
             const errorMessage = document.getElementById('errorMessage');
             const successMessage = document.getElementById('successMessage');
             
             try {
-                const { data, error } = await supabase.auth.signInWithOtp({
+                const { data, error } = await supabase.auth.signUp({
                     email: email,
+                    password: Math.random().toString(36).slice(-16) + Math.random().toString(36).slice(-16), // Generate random password for email link auth
                     options: {
-                        shouldCreateUser: true,
                         data: {
                             full_name: fullName
                         },
@@ -225,68 +239,55 @@
                 
                 if (error) throw error;
                 
+                // Check if email confirmation is required
+                if (data?.user?.identities?.length === 0) {
+                    // Email already exists but not confirmed
+                    errorMessage.textContent = 'This email is already registered but not confirmed. Please check your email for the confirmation link.';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                
                 document.getElementById('emailDisplay').textContent = email;
                 document.getElementById('errorMessage').style.display = 'none';
                 showStep(2);
                 
             } catch (error) {
-                errorMessage.textContent = error.message || 'Failed to send verification email. Please try again.';
+                errorMessage.textContent = error.message || 'Failed to send confirmation email. Please try again.';
                 errorMessage.style.display = 'block';
             }
         });
         
-        // Handle OTP Verification
-        document.getElementById('verifyOtp').addEventListener('click', async () => {
-            const otp = document.getElementById('otp').value;
+        // Handle email verification completion
+        document.getElementById('completeSignup').addEventListener('click', async () => {
             const errorMessage = document.getElementById('errorMessage');
             const successMessage = document.getElementById('successMessage');
             
-            if (!otp) {
-                // User might have clicked the email link, check for session
-                try {
-                    const { data: { session }, error } = await supabase.auth.getSession();
-                    
-                    if (session) {
-                        // User verified via email link
-                        localStorage.setItem('authToken', session.access_token);
-                        localStorage.setItem('userId', session.user.id);
-                        localStorage.setItem('userEmail', session.user.email || '');
-                        localStorage.setItem('userName', userFullName || session.user.email?.split('@')[0] || 'User');
-                        
-                        showStep(3);
-                        return;
-                    } else {
-                        errorMessage.textContent = 'Please enter the 6-digit verification code from your email';
-                        errorMessage.style.display = 'block';
-                        return;
-                    }
-                } catch (error) {
-                    console.error('Session check error:', error);
-                }
-            }
-            
+            // Check if user has verified their email
             try {
-                const { data, error } = await supabase.auth.verifyOtp({
-                    email: userEmail,
-                    token: otp,
-                    type: 'email'
-                });
+                const { data: { session }, error } = await supabase.auth.getSession();
                 
                 if (error) throw error;
                 
-                // Store auth info
-                if (data.session) {
-                    localStorage.setItem('authToken', data.session.access_token);
-                    localStorage.setItem('userId', data.user.id);
-                    localStorage.setItem('userEmail', data.user.email || '');
-                    localStorage.setItem('userName', userFullName || data.user.email?.split('@')[0] || 'User');
+                if (session) {
+                    // User has verified via email link
+                    localStorage.setItem('authToken', session.access_token);
+                    localStorage.setItem('userId', session.user.id);
+                    localStorage.setItem('userEmail', session.user.email || '');
+                    localStorage.setItem('userName', userFullName || session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User');
+                    
+                    // Proceed to final step
+                    showStep(3);
+                } else {
+                    // No session found - user hasn't verified yet
+                    errorMessage.innerHTML = `
+                        <i class="fas fa-exclamation-circle"></i> Email not verified yet<br>
+                        <small>Please click the confirmation link in your email first, then try again.</small>
+                    `;
+                    errorMessage.style.display = 'block';
                 }
-                
-                document.getElementById('errorMessage').style.display = 'none';
-                showStep(3);
-                
             } catch (error) {
-                errorMessage.textContent = error.message || 'Invalid verification code. Please try again.';
+                console.error('Session check error:', error);
+                errorMessage.textContent = 'Unable to verify email confirmation. Please try again or resend the email.';
                 errorMessage.style.display = 'block';
             }
         });
@@ -295,14 +296,18 @@
         document.getElementById('resendLink').addEventListener('click', async (e) => {
             e.preventDefault();
             
+            const resendLink = e.target;
+            const originalText = resendLink.innerHTML;
+            
+            // Show loading state
+            resendLink.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            resendLink.style.pointerEvents = 'none';
+            
             try {
-                const { error } = await supabase.auth.signInWithOtp({
+                const { error } = await supabase.auth.resend({
+                    type: 'signup',
                     email: userEmail,
                     options: {
-                        shouldCreateUser: true,
-                        data: {
-                            full_name: userFullName
-                        },
                         emailRedirectTo: `${window.location.origin}/auth/callback.html`
                     }
                 });
@@ -310,16 +315,46 @@
                 if (error) throw error;
                 
                 const successMessage = document.getElementById('successMessage');
-                successMessage.textContent = 'New verification code sent to your email!';
+                successMessage.innerHTML = '<i class="fas fa-check-circle"></i> New confirmation email sent! Check your inbox.';
                 successMessage.style.display = 'block';
                 
                 setTimeout(() => {
                     successMessage.style.display = 'none';
-                }, 3000);
+                }, 5000);
                 
             } catch (error) {
-                document.getElementById('errorMessage').textContent = 'Failed to resend email. Please try again.';
-                document.getElementById('errorMessage').style.display = 'block';
+                // Try alternative method - resend signup
+                try {
+                    const { error: retryError } = await supabase.auth.signUp({
+                        email: userEmail,
+                        password: Math.random().toString(36).slice(-16) + Math.random().toString(36).slice(-16),
+                        options: {
+                            data: {
+                                full_name: userFullName
+                            },
+                            emailRedirectTo: `${window.location.origin}/auth/callback.html`
+                        }
+                    });
+                    
+                    if (!retryError) {
+                        const successMessage = document.getElementById('successMessage');
+                        successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Confirmation email resent! Check your inbox.';
+                        successMessage.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                        }, 5000);
+                    } else {
+                        throw retryError;
+                    }
+                } catch (finalError) {
+                    document.getElementById('errorMessage').textContent = 'Failed to resend email. Please try again later.';
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            } finally {
+                // Restore button state
+                resendLink.innerHTML = originalText;
+                resendLink.style.pointerEvents = 'auto';
             }
         });
         
