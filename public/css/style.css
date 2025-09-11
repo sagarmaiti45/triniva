@@ -454,7 +454,7 @@ textarea:focus {
     flex-direction: column;
     background: var(--bg-primary);
     position: relative;
-    overflow-y: auto;
+    /* height and overflow properties removed to fix corner overflow */
     -webkit-overflow-scrolling: touch; /* Enable momentum scrolling on iOS */
 }
 
