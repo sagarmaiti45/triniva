@@ -2866,11 +2866,12 @@ h3.ai-heading {
         position: fixed;
         bottom: 80px; /* Same level as attach menu - above prompt area */
         top: auto;
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
+        left: auto;
+        right: 16px; /* Position on right side to match model button location */
+        transform: none;
         width: calc(100% - 32px);
         max-width: 320px;
+        max-height: 380px; /* Increased height for better visibility */
     }
     
     /* Ensure both menus appear at same level */
