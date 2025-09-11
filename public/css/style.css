@@ -628,7 +628,7 @@ textarea:focus {
     
     /* Ensure 3-dot menu matches hamburger size */
     .main-menu-button {
-        top: 12px !important; /* Align with hamburger */
+        top: 7px !important; /* Center in 50px header: (50-36)/2 = 7px */
         right: 10px !important; /* 3-dot menu on mobile */
         width: 36px !important; /* Match hamburger size */
         height: 36px !important; /* Match hamburger size */
@@ -2874,21 +2874,22 @@ h3.ai-heading {
 /* Mobile responsive */
 @media (max-width: 768px) {
     .model-restriction-popup {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .popup-content {
         width: 90%;
         max-width: 400px;
         position: fixed;
-        bottom: 60px; /* Lower position - slightly overlapping prompt area */
-        right: 10px; /* Align to right side */
-        left: auto;
-        transform: translateY(20px) scale(0.95); /* Slide up animation */
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95); /* Center with scale animation */
     }
     
     .model-restriction-popup.show .popup-content {
-        transform: translateY(0) scale(1);
+        transform: translate(-50%, -50%) scale(1);
     }
     
     .popup-header {

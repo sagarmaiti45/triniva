@@ -255,10 +255,14 @@ export class UpgradePrompt {
                     }
                     
                     .upgrade-prompt {
-                        width: 100%;
-                        height: 100%;
-                        max-height: 100%;
-                        border-radius: 0;
+                        width: 95%;
+                        max-width: 400px;
+                        max-height: 85vh;
+                        border-radius: 20px;
+                    }
+                    
+                    .upgrade-prompt-overlay {
+                        padding: 20px;
                     }
                 }
 
