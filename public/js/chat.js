@@ -224,9 +224,11 @@ class ChatApp {
                 // Clear messages from chat view
                 this.chatMessages.innerHTML = '';
                 
-                // Clear any input fields
+                // Clear any input fields and reset heights
                 this.messageInput.value = '';
                 this.heroMessageInput.value = '';
+                this.messageInput.style.height = 'auto';
+                this.heroMessageInput.style.height = 'auto';
                 
                 // Remove active state from sidebar conversations
                 document.querySelectorAll('.conversation-item').forEach(item => {
@@ -1110,6 +1112,11 @@ class ChatApp {
         // Reset first message flag
         this.isFirstMessage = true;
         
+        // Reset hero textarea height to default
+        if (this.heroMessageInput) {
+            this.heroMessageInput.style.height = 'auto';
+        }
+        
         // Remove class from auth buttons container
         const authContainer = document.querySelector('.auth-buttons-container');
         if (authContainer) {
@@ -1146,9 +1153,11 @@ class ChatApp {
         // Clear messages
         this.chatMessages.innerHTML = '';
         
-        // Clear input fields
+        // Clear input fields and reset heights
         this.messageInput.value = '';
         this.heroMessageInput.value = '';
+        this.messageInput.style.height = 'auto';
+        this.heroMessageInput.style.height = 'auto';
         
         // Clear attached images
         this.clearAttachedImages('hero');
