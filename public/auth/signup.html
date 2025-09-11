@@ -17,25 +17,9 @@
                 <p>Start your AI journey with Triniva</p>
             </div>
 
-            <!-- Step Indicators -->
-            <div class="step-indicators">
-                <div class="step active" data-step="1">
-                    <span class="step-number">1</span>
-                    <span class="step-label">Account</span>
-                </div>
-                <div class="step" data-step="2">
-                    <span class="step-number">2</span>
-                    <span class="step-label">Verify</span>
-                </div>
-                <div class="step" data-step="3">
-                    <span class="step-number">3</span>
-                    <span class="step-label">Complete</span>
-                </div>
-            </div>
-
             <form id="signupForm" class="auth-form">
-                <!-- Step 1: Basic Info -->
-                <div class="form-step active" data-step="1">
+                <!-- Single Step: Basic Info -->
+                <div class="form-step active" id="signupStep">
                     <div class="form-group">
                         <label for="fullName">Full Name</label>
                         <input type="text" id="fullName" name="fullName" required placeholder="Enter your full name">
@@ -46,17 +30,26 @@
                         <input type="email" id="email" name="email" required placeholder="Enter your email">
                     </div>
 
-                    <button type="button" class="auth-button" id="nextStep1">
-                        <span>Continue</span>
-                        <i class="fas fa-arrow-right"></i>
+                    <div style="margin: 20px 0; padding: 15px; background: var(--bg-secondary); border-radius: 8px;">
+                        <p style="margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 1.5;">
+                            <i class="fas fa-info-circle" style="color: var(--accent-color); margin-right: 6px;"></i>
+                            By signing up, you agree to our <a href="/terms-conditions.html" target="_blank" style="color: var(--accent-color);">Terms & Conditions</a> and <a href="/privacy-policy.html" target="_blank" style="color: var(--accent-color);">Privacy Policy</a>. You'll receive 5,000 free tokens monthly and access to all AI models.
+                        </p>
+                    </div>
+
+                    <button type="submit" class="auth-button" id="signupButton">
+                        <span class="button-text">Create Account</span>
+                        <div class="button-loader" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
                     </button>
                 </div>
 
-                <!-- Step 2: Email Verification -->
-                <div class="form-step" data-step="2" style="display: none;">
+                <!-- Email Verification Notice -->
+                <div class="form-step" id="verificationStep" style="display: none;">
                     <div style="text-align: center; margin-bottom: 30px;">
                         <i class="fas fa-envelope-open-text" style="font-size: 64px; color: var(--accent-color); margin-bottom: 20px;"></i>
-                        <h3 style="margin: 0 0 15px 0;">Verify Your Email</h3>
+                        <h3 style="margin: 0 0 15px 0;">Check Your Email</h3>
                         <p style="color: var(--text-secondary); margin: 0 0 10px 0;">We've sent a confirmation link to:</p>
                         <p style="font-weight: 600; color: var(--text-primary); font-size: 16px; margin: 0;" id="emailDisplay"></p>
                     </div>
@@ -76,52 +69,12 @@
                         <i class="fas fa-clock" style="color: var(--text-secondary); margin-right: 8px;"></i>
                         <span style="color: var(--text-secondary); font-size: 14px;">The confirmation link expires in 24 hours</span>
                     </div>
-
-                    <div class="step-buttons">
-                        <button type="button" class="auth-button secondary" id="prevStep2">
-                            <i class="fas fa-arrow-left"></i>
-                            <span>Back</span>
-                        </button>
-                        <button type="button" class="auth-button" id="completeSignup" style="background: var(--accent-color); color: white;">
-                            <span>I've Verified My Email</span>
-                            <i class="fas fa-check-circle"></i>
-                        </button>
-                    </div>
                     
                     <div style="margin-top: 20px; text-align: center; padding-top: 20px; border-top: 1px solid var(--border-color);">
                         <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px;">Didn't receive the email?</p>
                         <a href="#" id="resendLink" style="color: var(--accent-color); text-decoration: none; font-size: 14px; font-weight: 500;">
                             <i class="fas fa-redo" style="margin-right: 5px;"></i>Resend confirmation email
                         </a>
-                    </div>
-                </div>
-
-                <!-- Step 3: Terms & Submit -->
-                <div class="form-step" data-step="3" style="display: none;">
-                    <div class="form-options">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="terms" name="terms" required>
-                            <span>I agree to the <a href="/terms-conditions.html" target="_blank">Terms & Conditions</a> and <a href="/privacy-policy.html" target="_blank">Privacy Policy</a></span>
-                        </label>
-                    </div>
-
-                    <div class="signup-benefits-compact">
-                        <p><i class="fas fa-check"></i> 5,000 free tokens monthly</p>
-                        <p><i class="fas fa-check"></i> Access to all AI models</p>
-                        <p><i class="fas fa-check"></i> Save chat history</p>
-                    </div>
-
-                    <div class="step-buttons">
-                        <button type="button" class="auth-button secondary" id="prevStep3">
-                            <i class="fas fa-arrow-left"></i>
-                            <span>Back</span>
-                        </button>
-                        <button type="submit" class="auth-button" id="signupButton">
-                            <span class="button-text">Create Account</span>
-                            <div class="button-loader" style="display: none;">
-                                <i class="fas fa-spinner fa-spin"></i>
-                            </div>
-                        </button>
                     </div>
                 </div>
 
@@ -169,61 +122,33 @@
         
         const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-        // Multi-step form logic
-        let currentStep = 1;
-        const totalSteps = 3;
-        
-        function showStep(step) {
-            // Hide all steps
-            document.querySelectorAll('.form-step').forEach(s => {
-                s.style.display = 'none';
-                s.classList.remove('active');
-            });
-            
-            // Show current step
-            const currentStepElement = document.querySelector(`.form-step[data-step="${step}"]`);
-            if (currentStepElement) {
-                currentStepElement.style.display = 'block';
-                currentStepElement.classList.add('active');
-            }
-            
-            // Update step indicators
-            document.querySelectorAll('.step').forEach(s => {
-                const stepNum = parseInt(s.dataset.step);
-                if (stepNum < step) {
-                    s.classList.add('completed');
-                    s.classList.remove('active');
-                } else if (stepNum === step) {
-                    s.classList.add('active');
-                    s.classList.remove('completed');
-                } else {
-                    s.classList.remove('active', 'completed');
-                }
-            });
-            
-            currentStep = step;
-        }
-        
-        // Step navigation
         let userEmail = '';
         let userFullName = '';
         
-        document.getElementById('nextStep1').addEventListener('click', async () => {
-            const fullName = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
+        // Handle signup form submission
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const signupButton = document.getElementById('signupButton');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
             
             if (!fullName || !email) {
-                document.getElementById('errorMessage').textContent = 'Please fill in all fields';
-                document.getElementById('errorMessage').style.display = 'block';
+                errorMessage.textContent = 'Please fill in all fields';
+                errorMessage.style.display = 'block';
                 return;
             }
             
             userEmail = email;
             userFullName = fullName;
             
-            // Send signup email with confirmation link
-            const errorMessage = document.getElementById('errorMessage');
-            const successMessage = document.getElementById('successMessage');
+            // Show loading state
+            signupButton.disabled = true;
+            signupButton.querySelector('.button-text').style.display = 'none';
+            signupButton.querySelector('.button-loader').style.display = 'block';
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
             
             try {
                 const { data, error } = await supabase.auth.signUp({
@@ -244,55 +169,30 @@
                     // Email already exists but not confirmed
                     errorMessage.textContent = 'This email is already registered but not confirmed. Please check your email for the confirmation link.';
                     errorMessage.style.display = 'block';
+                    signupButton.disabled = false;
+                    signupButton.querySelector('.button-text').style.display = 'inline';
+                    signupButton.querySelector('.button-loader').style.display = 'none';
                     return;
                 }
                 
+                // Show verification step
                 document.getElementById('emailDisplay').textContent = email;
-                document.getElementById('errorMessage').style.display = 'none';
-                showStep(2);
+                document.getElementById('signupStep').style.display = 'none';
+                document.getElementById('verificationStep').style.display = 'block';
+                
+                successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Account created successfully! Check your email to confirm.';
+                successMessage.style.display = 'block';
                 
             } catch (error) {
-                errorMessage.textContent = error.message || 'Failed to send confirmation email. Please try again.';
+                errorMessage.textContent = error.message || 'Failed to create account. Please try again.';
                 errorMessage.style.display = 'block';
+                signupButton.disabled = false;
+                signupButton.querySelector('.button-text').style.display = 'inline';
+                signupButton.querySelector('.button-loader').style.display = 'none';
             }
         });
         
-        // Handle email verification completion
-        document.getElementById('completeSignup').addEventListener('click', async () => {
-            const errorMessage = document.getElementById('errorMessage');
-            const successMessage = document.getElementById('successMessage');
-            
-            // Check if user has verified their email
-            try {
-                const { data: { session }, error } = await supabase.auth.getSession();
-                
-                if (error) throw error;
-                
-                if (session) {
-                    // User has verified via email link
-                    localStorage.setItem('authToken', session.access_token);
-                    localStorage.setItem('userId', session.user.id);
-                    localStorage.setItem('userEmail', session.user.email || '');
-                    localStorage.setItem('userName', userFullName || session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User');
-                    
-                    // Proceed to final step
-                    showStep(3);
-                } else {
-                    // No session found - user hasn't verified yet
-                    errorMessage.innerHTML = `
-                        <i class="fas fa-exclamation-circle"></i> Email not verified yet<br>
-                        <small>Please click the confirmation link in your email first, then try again.</small>
-                    `;
-                    errorMessage.style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Session check error:', error);
-                errorMessage.textContent = 'Unable to verify email confirmation. Please try again or resend the email.';
-                errorMessage.style.display = 'block';
-            }
-        });
-        
-        // Handle Resend
+        // Handle Resend Confirmation Email
         document.getElementById('resendLink').addEventListener('click', async (e) => {
             e.preventDefault();
             
@@ -356,58 +256,6 @@
                 resendLink.innerHTML = originalText;
                 resendLink.style.pointerEvents = 'auto';
             }
-        });
-        
-        document.getElementById('prevStep2').addEventListener('click', () => {
-            showStep(1);
-            document.getElementById('errorMessage').style.display = 'none';
-        });
-        
-        document.getElementById('prevStep3').addEventListener('click', () => {
-            showStep(2);
-            document.getElementById('errorMessage').style.display = 'none';
-        });
-        
-        // Handle signup form submission (final step)
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const terms = document.getElementById('terms').checked;
-            const signupButton = document.getElementById('signupButton');
-            const errorMessage = document.getElementById('errorMessage');
-            const successMessage = document.getElementById('successMessage');
-            
-            // Validate terms accepted
-            if (!terms) {
-                errorMessage.textContent = 'Please accept the terms and conditions';
-                errorMessage.style.display = 'block';
-                return;
-            }
-            
-            // Check if user is already authenticated
-            const { data: { session }, error } = await supabase.auth.getSession();
-            
-            if (!session) {
-                errorMessage.textContent = 'Please complete email verification first';
-                errorMessage.style.display = 'block';
-                return;
-            }
-            
-            // Show loading state
-            signupButton.disabled = true;
-            signupButton.querySelector('.button-text').style.display = 'none';
-            signupButton.querySelector('.button-loader').style.display = 'block';
-            errorMessage.style.display = 'none';
-            successMessage.style.display = 'none';
-            
-            // Account is already created and verified, just redirect
-            successMessage.innerHTML = 'Account setup complete! Redirecting...';
-            successMessage.style.display = 'block';
-            
-            // Redirect to main app
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 1000);
         });
         
         // Handle Google OAuth
