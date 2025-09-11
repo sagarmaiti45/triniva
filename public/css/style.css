@@ -586,6 +586,11 @@ textarea:focus {
 
 /* Hide text on mobile */
 @media (max-width: 768px) {
+    /* Slightly increase base font size for better readability */
+    body {
+        font-size: 15px; /* Slightly larger than desktop */
+    }
+    
     /* Enable pull-to-refresh on mobile */
     body {
         overflow-y: auto !important;
@@ -633,6 +638,40 @@ textarea:focus {
         right: 38px !important; /* Consistent spacing */
     }
     
+    /* Slightly increase button sizes on mobile */
+    .header-auth-btn {
+        padding: 10px 18px !important; /* Slightly larger padding */
+        font-size: 15px !important; /* Slightly larger font */
+        min-height: 38px; /* Ensure minimum height */
+    }
+    
+    /* Increase input and textarea sizes */
+    .hero-message-input,
+    .message-input {
+        font-size: 16px !important; /* Larger for better readability */
+        line-height: 1.5;
+        padding: 12px 0; /* More padding */
+    }
+    
+    /* Larger send buttons */
+    .hero-send-button,
+    .send-button {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 18px !important;
+    }
+    
+    /* Larger attach and model buttons */
+    .attach-button {
+        width: 36px !important;
+        height: 36px !important;
+    }
+    
+    .model-button-mobile {
+        width: 38px !important;
+        height: 38px !important;
+    }
+    
     .chat-header {
         top: 9px !important; /* Same level as other buttons on mobile */
         right: 100px !important; /* Adjusted for new login button position */
@@ -640,12 +679,38 @@ textarea:focus {
     
     .main-menu-button {
         right: 10px !important; /* 3-dot menu on mobile */
+        width: 36px !important;
+        height: 36px !important;
     }
     
     .main-menu-dropdown {
         top: 50px !important;
         right: 10px !important;
         min-width: 160px !important;
+    }
+    
+    /* Increase message bubble text size on mobile */
+    .message-bubble {
+        font-size: 15px !important; /* Slightly larger text */
+        line-height: 1.6; /* Better line spacing */
+        padding: 12px 16px; /* More padding */
+    }
+    
+    /* Larger conversation list items */
+    .conversation-item {
+        padding: 14px 16px !important;
+        font-size: 15px !important;
+    }
+    
+    /* Larger modal text */
+    .custom-model-dropdown-item {
+        padding: 10px 14px !important;
+        font-size: 14px !important;
+    }
+    
+    .attach-menu-item {
+        padding: 12px 14px !important;
+        font-size: 15px !important;
     }
 }
 
