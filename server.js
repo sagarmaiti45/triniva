@@ -58,6 +58,28 @@ app.get('/contact-us', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'contact-us.html'));
 });
 
+// Auth routes without .html extension
+app.get('/auth/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'auth', 'login.html'));
+});
+
+app.get('/auth/signup', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'auth', 'signup.html'));
+});
+
+app.get('/auth/callback', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'auth', 'callback.html'));
+});
+
+// Redirect old .html URLs to clean URLs
+app.get('/auth/login.html', (req, res) => {
+    res.redirect(301, '/auth/login');
+});
+
+app.get('/auth/signup.html', (req, res) => {
+    res.redirect(301, '/auth/signup');
+});
+
 // Chat routing with unique IDs
 app.get('/chat/:id', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));

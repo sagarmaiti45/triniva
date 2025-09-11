@@ -503,7 +503,7 @@ class ChatApp {
                 if (!isAvailable) {
                     // Show login prompt for paid models
                     if (confirm('This model requires authentication. Would you like to login now?')) {
-                        window.location.href = '/auth/login.html';
+                        window.location.href = '/auth/login';
                     }
                     return;
                 }
@@ -804,7 +804,7 @@ class ChatApp {
             actionButton = `
                 <div class="popup-actions">
                     <button class="popup-btn secondary" onclick="this.closest('.model-restriction-popup').remove()">Cancel</button>
-                    <a href="/auth/login.html" class="popup-btn primary">
+                    <a href="/auth/login" class="popup-btn primary">
                         <i class="fas fa-sign-in-alt"></i> Sign In
                     </a>
                 </div>`;
@@ -931,7 +931,7 @@ class ChatApp {
         // Handle signup button click
         if (signupMenuItem) {
             signupMenuItem.addEventListener('click', () => {
-                window.location.href = '/auth/signup.html';
+                window.location.href = '/auth/signup';
             });
         }
         
@@ -1337,7 +1337,7 @@ class ChatApp {
         
         if (!isFreeModel && !this.authToken) {
             // User trying to use paid model without login
-            this.addMessage('⚠️ This model requires authentication. Please [login](/auth/login.html) or [sign up](/auth/signup.html) to use paid models, or switch to a free model.', 'assistant');
+            this.addMessage('⚠️ This model requires authentication. Please [login](/auth/login) or [sign up](/auth/signup) to use paid models, or switch to a free model.', 'assistant');
             this.setStreamingState(false);
             return;
         }

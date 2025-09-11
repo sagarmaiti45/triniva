@@ -44,7 +44,7 @@ export class PaymentModal {
                                         <i class="fab fa-google"></i>
                                         Continue with Google
                                     </button>
-                                    <a href="/auth/signup.html" class="auth-button email">
+                                    <a href="/auth/signup" class="auth-button email">
                                         <i class="fas fa-envelope"></i>
                                         Sign up with Email
                                     </a>

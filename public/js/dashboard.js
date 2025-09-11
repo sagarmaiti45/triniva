@@ -7,7 +7,7 @@ class Dashboard {
         this.conversations = [];
         
         if (!this.authToken) {
-            window.location.href = '/auth/login.html';
+            window.location.href = '/auth/login';
             return;
         }
         
@@ -376,7 +376,7 @@ class Dashboard {
     
     logout() {
         localStorage.removeItem('authToken');
-        window.location.href = '/auth/login.html';
+        window.location.href = '/auth/login';
     }
     
     startAutoRefresh() {

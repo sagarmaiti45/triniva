@@ -208,7 +208,7 @@
             const { data: { session }, error } = await supabase.auth.getSession();
             
             if (!session) {
-                window.location.href = '/auth/login.html';
+                window.location.href = '/auth/login';
                 return null;
             }
             
