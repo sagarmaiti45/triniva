@@ -598,6 +598,18 @@ textarea:focus {
         overscroll-behavior-y: auto !important;
     }
     
+    /* Model dropdown menu positioning on mobile */
+    .custom-model-dropdown-menu {
+        bottom: calc(100% + 4px) !important; /* Closer to button */
+        top: auto !important;
+        max-height: 350px !important; /* Increased height on mobile */
+    }
+    
+    /* Attach menu positioning on mobile - align with model selector */
+    .attach-menu {
+        bottom: calc(100% + 4px) !important; /* Same spacing as model dropdown */
+    }
+    
     .header-auth-btn span {
         display: none;
     }
@@ -1321,23 +1333,35 @@ textarea:focus {
     background: transparent;
 }
 
-/* Scrollbar styling for dropdown - hidden by default, shows on scroll */
+/* Hide all default scrollbars completely */
 .custom-model-dropdown-menu {
-    scrollbar-width: none; /* Firefox - hide scrollbar */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
 .custom-model-dropdown-menu::-webkit-scrollbar {
-    width: 0;
-    background: transparent;
+    width: 0 !important;
+    display: none !important;
 }
 
-/* Show scrollbar when scrolling */
-.custom-model-dropdown-menu.scrolling {
-    scrollbar-width: thin; /* Firefox - show thin scrollbar */
+/* For Firefox - use thin scrollbar but make it transparent */
+@-moz-document url-prefix() {
+    .custom-model-dropdown-menu {
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+    }
+    
+    .custom-model-dropdown-menu.scrolling {
+        scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
+    }
 }
 
-.custom-model-dropdown-menu.scrolling::-webkit-scrollbar {
-    width: 6px;
+/* Webkit browsers - custom minimal scrollbar */
+.custom-model-dropdown-menu::-webkit-scrollbar {
+    width: 3px;
 }
 
 .custom-model-dropdown-menu::-webkit-scrollbar-track {
@@ -1345,12 +1369,16 @@ textarea:focus {
 }
 
 .custom-model-dropdown-menu::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.1);
+    background: transparent;
     border-radius: 3px;
 }
 
+.custom-model-dropdown-menu.scrolling::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.3);
+}
+
 .custom-model-dropdown-menu::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(128, 128, 128, 0.5);
 }
 
 .hero-message-input::placeholder {
@@ -2804,13 +2832,14 @@ h3.ai-heading {
         width: 90%;
         max-width: 400px;
         position: fixed;
-        bottom: 10px; /* Minimal spacing - sits just above the prompt area */
-        left: 50%;
-        transform: translateX(-50%) translateY(20px) scale(0.95); /* Center horizontally and slide up animation */
+        bottom: 60px; /* Lower position - slightly overlapping prompt area */
+        right: 10px; /* Align to right side */
+        left: auto;
+        transform: translateY(20px) scale(0.95); /* Slide up animation */
     }
     
     .model-restriction-popup.show .popup-content {
-        transform: translateX(-50%) translateY(0) scale(1);
+        transform: translateY(0) scale(1);
     }
     
     .popup-header {
@@ -2830,6 +2859,36 @@ h3.ai-heading {
     .popup-btn {
         width: 100%;
         padding: 14px 20px;
+    }
+    
+    /* Custom model dropdown alignment on mobile */
+    .custom-model-dropdown-menu {
+        position: fixed;
+        bottom: 80px; /* Same level as attach menu - above prompt area */
+        top: auto;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: calc(100% - 32px);
+        max-width: 320px;
+    }
+    
+    /* Ensure both menus appear at same level */
+    .attach-menu {
+        position: fixed;
+        bottom: 80px; /* Consistent positioning with model dropdown */
+        left: 16px;
+        right: auto;
+    }
+    
+    /* Mobile model button positioning */
+    .model-button-mobile {
+        display: flex;
+    }
+    
+    /* Hide desktop model selector on mobile */
+    .custom-model-dropdown-trigger {
+        display: none;
     }
 }
 

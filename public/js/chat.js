@@ -471,7 +471,7 @@ class ChatApp {
             // Hide scrollbar after scroll stops
             scrollTimeout = setTimeout(() => {
                 this.dropdownMenu.classList.remove('scrolling');
-            }, 1000);
+            }, 500); // Faster hide for cleaner look
         });
         
         // Handle item selection
