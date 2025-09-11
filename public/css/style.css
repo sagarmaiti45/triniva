@@ -626,13 +626,13 @@ textarea:focus {
     
     /* Auth buttons removed - Login/signup now in 3-dot menu */
     
-    /* Ensure 3-dot menu is properly positioned */
+    /* Ensure 3-dot menu matches hamburger size */
     .main-menu-button {
-        top: 10px !important; /* Adjusted for larger size */
+        top: 12px !important; /* Align with hamburger */
         right: 10px !important; /* 3-dot menu on mobile */
-        width: 40px !important; /* Increased size */
-        height: 40px !important; /* Increased size */
-        font-size: 18px !important; /* Larger icon */
+        width: 36px !important; /* Match hamburger size */
+        height: 36px !important; /* Match hamburger size */
+        font-size: 16px !important; /* Proportional icon size */
     }
     
     /* Increase input and textarea sizes */
@@ -2593,11 +2593,11 @@ h3.ai-heading {
     }
     
     .main-menu-button {
-        top: 9px;
+        top: 12px;
         right: 10px;
-        width: 32px;
-        height: 32px;
-        font-size: 12px;
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
     }
     
     /* Share button mobile adjustments */
