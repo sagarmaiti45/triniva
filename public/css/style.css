@@ -305,7 +305,8 @@ textarea:focus {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: calc(100% - 50px); /* Account for icon (16px) + gap (12px) + some padding */
+    max-width: calc(100% - 40px); /* Account for delete button space */
+    padding-right: 5px; /* Add small padding to prevent touching delete button */
 }
 
 .sidebar:not(.expanded) .conversation-item {
