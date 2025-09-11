@@ -36,13 +36,27 @@ export class ChatManager {
         // Show skeleton loader immediately on initialization
         this.showSkeletonLoader();
         
-        if (user) {
-            await this.loadUserConversations();
-        } else {
-            await this.loadGuestConversations();
+        // Failsafe: Hide skeleton after 2 seconds no matter what
+        setTimeout(() => {
+            this.hideSkeletonLoader();
+        }, 2000);
+        
+        try {
+            if (user) {
+                await this.loadUserConversations();
+            } else {
+                await this.loadGuestConversations();
+            }
+        } catch (error) {
+            console.error('Error during initialization:', error);
+            // Make sure skeleton is hidden on error
+            this.hideSkeletonLoader();
         }
         
         this.initialized = true;
+        
+        // Make sure skeleton is hidden after initialization
+        this.hideSkeletonLoader();
     }
 
     // Load guest conversations from localStorage and database

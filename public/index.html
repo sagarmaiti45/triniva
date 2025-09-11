@@ -367,8 +367,7 @@
         // Always initialize chat manager (with or without Supabase)
         // This allows guest users to have chat sessions
         window.chatManager = new ChatManager(supabase, window.chatApp || {});
-        // Show skeleton loader immediately
-        window.chatManager.showSkeletonLoader();
+        // Don't show skeleton here - it will be shown in initialize()
         
         // Initialize upgrade prompt
         window.upgradePrompt = new UpgradePrompt();
@@ -490,6 +489,11 @@
     <script type="module">
         // Initialize chat manager immediately when ready
         const initChatManager = async () => {
+            console.log('Initializing chat manager...', { 
+                chatApp: !!window.chatApp, 
+                chatManager: !!window.chatManager 
+            });
+            
             if (window.chatApp && window.chatManager) {
                 window.chatManager.chatApp = window.chatApp;
                 
@@ -506,6 +510,12 @@
                     // No Supabase, initialize for guest user
                     await window.chatManager.initialize(null);
                 }
+            } else {
+                // If chatApp isn't ready yet, wait a bit and try again
+                if (!window.chatApp) {
+                    console.log('ChatApp not ready, retrying in 100ms...');
+                    setTimeout(initChatManager, 100);
+                }
             }
         };
         
@@ -514,7 +524,7 @@
             document.addEventListener('DOMContentLoaded', initChatManager);
         } else {
             // DOM is already loaded, initialize immediately
-            initChatManager();
+            setTimeout(initChatManager, 0);
         }
     </script>
 </body>
