@@ -283,13 +283,16 @@ class ChatApp {
             this.toggleSidebar();
         });
         
-        // Mobile model button - open the dropdown
+        // Mobile model button - toggle the dropdown
         if (this.modelButtonMobile) {
             this.modelButtonMobile.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (this.customDropdown) {
+                    const isOpen = this.customDropdown.classList.contains('open');
                     this.closeAllModals();
-                    this.customDropdown.classList.toggle('open');
+                    if (!isOpen) {
+                        this.customDropdown.classList.add('open');
+                    }
                 }
             });
         }
@@ -455,8 +458,11 @@ class ChatApp {
         // Toggle dropdown on trigger click
         this.dropdownTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
+            const isOpen = this.customDropdown.classList.contains('open');
             this.closeAllModals();
-            this.customDropdown.classList.toggle('open');
+            if (!isOpen) {
+                this.customDropdown.classList.add('open');
+            }
         });
         
         // Handle scrollbar visibility for dropdown menu
@@ -543,21 +549,27 @@ class ChatApp {
     
 
     initAttachMenu() {
-        // Hero attach button
+        // Hero attach button - toggle functionality
         if (this.heroAttachButton) {
             this.heroAttachButton.addEventListener('click', (e) => {
                 e.stopPropagation();
+                const isOpen = this.heroAttachMenu && this.heroAttachMenu.classList.contains('show');
                 this.closeAllModals();
-                this.toggleAttachMenu('hero');
+                if (!isOpen) {
+                    this.toggleAttachMenu('hero');
+                }
             });
         }
         
-        // Chat attach button
+        // Chat attach button - toggle functionality
         if (this.chatAttachButton) {
             this.chatAttachButton.addEventListener('click', (e) => {
                 e.stopPropagation();
+                const isOpen = this.chatAttachMenu && this.chatAttachMenu.classList.contains('show');
                 this.closeAllModals();
-                this.toggleAttachMenu('chat');
+                if (!isOpen) {
+                    this.toggleAttachMenu('chat');
+                }
             });
         }
         
@@ -888,8 +900,11 @@ class ChatApp {
         // Toggle menu on button click
         menuButton.addEventListener('click', (e) => {
             e.stopPropagation();
+            const isOpen = menuDropdown.classList.contains('show');
             this.closeAllModals();
-            menuDropdown.classList.toggle('show');
+            if (!isOpen) {
+                menuDropdown.classList.add('show');
+            }
         });
         
         // Close menu on outside click
@@ -994,6 +1009,9 @@ class ChatApp {
         if (mainMenuDropdown) {
             mainMenuDropdown.classList.remove('show');
         }
+        
+        // Close attach menus and reset button states
+        this.closeAllAttachMenus();
         
         // Close custom model dropdown
         const customDropdown = document.getElementById('customModelDropdown');
@@ -1883,8 +1901,11 @@ class ChatApp {
                     e.stopPropagation();
                     const mobileDropdown = document.getElementById('mobileUserDropdown');
                     if (mobileDropdown) {
+                        const isOpen = mobileDropdown.classList.contains('show');
                         this.closeAllModals();
-                        mobileDropdown.classList.toggle('show');
+                        if (!isOpen) {
+                            mobileDropdown.classList.add('show');
+                        }
                     }
                 });
                 
@@ -1977,8 +1998,11 @@ class ChatApp {
         if (userMenuBtn && userDropdown) {
             userMenuBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                const isOpen = userDropdown.classList.contains('show');
                 this.closeAllModals();
-                userDropdown.classList.toggle('show');
+                if (!isOpen) {
+                    userDropdown.classList.add('show');
+                }
             });
             
             // Close dropdown when clicking outside
