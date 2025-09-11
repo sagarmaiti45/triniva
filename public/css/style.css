@@ -299,6 +299,15 @@ textarea:focus {
     position: relative; /* For delete button positioning */
 }
 
+/* Prevent text overflow - add ellipsis for long conversation names */
+.conversation-item .conv-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 50px); /* Account for icon (16px) + gap (12px) + some padding */
+}
+
 .sidebar:not(.expanded) .conversation-item {
     padding: 8px;
     justify-content: center;
@@ -341,6 +350,8 @@ textarea:focus {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    z-index: 2; /* Ensure button stays above text */
 }
 
 .conversation-item:hover .conv-delete-btn {
