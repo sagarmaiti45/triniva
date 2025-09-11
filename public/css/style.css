@@ -632,29 +632,31 @@ textarea:focus {
     
     /* Mobile - simple positioning */
     .auth-buttons-container {
-        top: 12px !important; /* Align with 3-dot menu */
-        right: 48px !important; /* Space for 3-dot menu */
+        top: 10px !important; /* Align with larger 3-dot menu */
+        right: 55px !important; /* More space for larger 3-dot menu */
         gap: 8px; /* Reduced gap on mobile */
     }
     
     .auth-buttons-container.in-chat-view {
-        top: 12px !important; /* Consistent alignment */
-        right: 48px !important; /* Consistent spacing */
+        top: 10px !important; /* Consistent alignment */
+        right: 55px !important; /* Consistent spacing */
     }
     
     /* Slightly increase button sizes on mobile */
     .header-auth-btn {
-        padding: 10px 18px !important; /* Slightly larger padding */
-        font-size: 15px !important; /* Slightly larger font */
-        min-height: 36px; /* Match 3-dot menu height */
+        padding: 12px 20px !important; /* Increased padding for better touch */
+        font-size: 16px !important; /* Slightly larger font */
+        min-height: 40px; /* Larger touch target */
+        border-radius: 10px !important;
     }
     
     /* Ensure 3-dot menu is properly positioned */
     .main-menu-button {
-        top: 12px !important; /* Consistent top position */
+        top: 10px !important; /* Adjusted for larger size */
         right: 10px !important; /* 3-dot menu on mobile */
-        width: 36px !important;
-        height: 36px !important;
+        width: 40px !important; /* Increased size */
+        height: 40px !important; /* Increased size */
+        font-size: 18px !important; /* Larger icon */
     }
     
     /* Increase input and textarea sizes */
