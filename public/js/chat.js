@@ -1213,6 +1213,17 @@ class ChatApp {
     }
 
     updateConversationsList() {
+        // If using chat manager, let it handle the sidebar - don't duplicate
+        if (window.chatManager && window.chatManager.initialized) {
+            // Just update the title in chat manager if needed
+            const currentConv = this.conversations.find(c => c.id === this.currentConversationId);
+            if (currentConv && window.chatManager.currentConversationId === this.currentConversationId) {
+                window.chatManager.updateConversationTitle(this.currentConversationId, currentConv.title);
+            }
+            return;
+        }
+
+        // Original code for when not using chat manager (fallback)
         const currentConv = this.conversations.find(c => c.id === this.currentConversationId);
         if (!currentConv) return;
 
