@@ -625,17 +625,17 @@ textarea:focus {
     
     /* Mobile - simple positioning */
     .auth-buttons-container {
-        right: 50px; /* Reduced space between login and 3-dot */
-        gap: 12px; /* Spacing for login button only on mobile */
+        right: 38px; /* Minimal space between login and 3-dot menu */
+        gap: 8px; /* Reduced gap on mobile */
     }
     
     .auth-buttons-container.in-chat-view {
-        right: 55px !important; /* Same as homepage since share is below */
+        right: 38px !important; /* Consistent spacing */
     }
     
     .chat-header {
         top: 9px !important; /* Same level as other buttons on mobile */
-        right: 125px !important; /* Increased space before login button on mobile */
+        right: 100px !important; /* Adjusted for new login button position */
     }
     
     .main-menu-button {
