@@ -88,6 +88,8 @@ export class ChatManager {
             // Fall back to localStorage only
             this.conversations = JSON.parse(localStorage.getItem('guestConversations') || '[]');
             this.renderConversationsList();
+            // Make sure skeleton is hidden even on error
+            this.hideSkeletonLoader();
         }
     }
 
@@ -113,6 +115,8 @@ export class ChatManager {
             // Only load if we're on a chat URL (handled by handleInitialRoute)
         } catch (error) {
             console.error('Failed to load conversations:', error);
+            // Make sure skeleton is hidden even on error
+            this.hideSkeletonLoader();
         }
     }
 
@@ -540,12 +544,25 @@ export class ChatManager {
         conversationsList.innerHTML = skeletonHTML;
     }
     
+    // Hide skeleton loader
+    hideSkeletonLoader() {
+        const conversationsList = document.querySelector('.conversations-list');
+        if (!conversationsList) return;
+        
+        // Remove all skeleton items
+        const skeletonItems = conversationsList.querySelectorAll('.conversation-skeleton');
+        skeletonItems.forEach(item => item.remove());
+    }
+    
     // Render conversations list in sidebar
     renderConversationsList() {
         const conversationsList = document.querySelector('.conversations-list');
         if (!conversationsList) return;
         
-        // Clear existing items
+        // Hide skeleton loader first
+        this.hideSkeletonLoader();
+        
+        // Clear existing items (except skeleton items which are already removed)
         conversationsList.innerHTML = '';
         
         // If no conversations, show placeholder
