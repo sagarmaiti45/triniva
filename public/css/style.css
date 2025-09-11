@@ -637,11 +637,11 @@ textarea:focus {
     
     /* Ensure 3-dot menu matches hamburger size */
     .main-menu-button {
-        top: 7px !important; /* Center in 50px header: (50-36)/2 = 7px */
+        top: 5px !important; /* Center in 50px header: (50-40)/2 = 5px */
         right: 10px !important; /* 3-dot menu on mobile */
-        width: 36px !important; /* Match hamburger size */
-        height: 36px !important; /* Match hamburger size */
-        font-size: 16px !important; /* Proportional icon size */
+        width: 40px !important; /* Match hamburger size - increased from 36px */
+        height: 40px !important; /* Match hamburger size - increased from 36px */
+        font-size: 18px !important; /* Proportional icon size - increased from 16px */
     }
     
     /* Increase input and textarea sizes */
@@ -873,8 +873,8 @@ textarea:focus {
 /* Mobile menu toggle - hidden on desktop */
 .mobile-menu-toggle {
     display: none;
-    width: 36px;
-    height: 36px;
+    width: 40px; /* Increased from 36px */
+    height: 40px; /* Increased from 36px */
     border: none;
     background: transparent;
     cursor: pointer;
@@ -898,11 +898,11 @@ textarea:focus {
     position: absolute;
 }
 
-/* Simple 2-line hamburger style - reduced spacing */
+/* Simple 2-line hamburger style - adjusted for 40px button */
 .hamburger-line:nth-child(1) {
-    top: 13px; /* Moved down slightly */
-    left: 10px; /* Centered better */
-    width: 16px; /* Reduced width */
+    top: 14px; /* Adjusted for 40px height */
+    left: 12px; /* Centered for 40px width */
+    width: 16px; /* Keep same width */
 }
 
 .hamburger-line:nth-child(2) {
@@ -910,9 +910,9 @@ textarea:focus {
 }
 
 .hamburger-line:nth-child(3) {
-    bottom: 13px; /* Moved up slightly for less spacing */
-    left: 10px; /* Centered better */
-    width: 8px; /* Half width for second line, proportionally reduced */
+    bottom: 14px; /* Adjusted for 40px height */
+    left: 12px; /* Centered for 40px width */
+    width: 8px; /* Half width for second line */
 }
 
 .mobile-menu-toggle:hover {
@@ -923,18 +923,18 @@ textarea:focus {
     background: rgba(255, 255, 255, 1); /* Full white on hover */
 }
 
-/* Simple X animation for active state */
+/* Simple X animation for active state - adjusted for 40px button */
 .mobile-menu-toggle.active .hamburger-line:nth-child(1) {
     transform: rotate(45deg);
-    top: 17px;
-    left: 10px;
+    top: 19px; /* Centered for 40px */
+    left: 12px;
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(3) {
     transform: rotate(-45deg);
-    bottom: 17px;
-    width: 16px; /* Full width when active, matching reduced size */
-    left: 10px;
+    bottom: 19px; /* Centered for 40px */
+    width: 16px; /* Full width when active */
+    left: 12px;
 }
 
 .mobile-menu-toggle:active {
@@ -2524,12 +2524,12 @@ h3.ai-heading {
     }
     
     .logo-text {
-        font-size: 16px;
+        font-size: 18px; /* Increased from 16px */
     }
     
     .header-logo {
-        width: 22px;
-        height: 22px;
+        width: 24px; /* Increased from 22px */
+        height: 24px; /* Increased from 22px */
         transform: translateY(-2px);
     }
     
