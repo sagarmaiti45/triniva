@@ -399,10 +399,114 @@
     
     <script src="/js/chat.js"></script>
     
+    <!-- Immediate button initialization for instant responsiveness -->
+    <script>
+        // Initialize critical UI elements immediately for instant interaction
+        (function() {
+            // Model dropdown button
+            const modelButton = document.getElementById('mobileModelButton');
+            const modelDropdown = document.querySelector('.custom-model-dropdown-menu');
+            
+            if (modelButton && modelDropdown) {
+                modelButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = modelDropdown.classList.contains('open');
+                    // Close all modals
+                    document.querySelectorAll('.custom-model-dropdown-menu, .attach-menu, .main-menu-dropdown').forEach(el => {
+                        el.classList.remove('open', 'show');
+                    });
+                    // Toggle this modal
+                    if (!isOpen) {
+                        modelDropdown.classList.add('open');
+                    }
+                });
+            }
+            
+            // Attach button for hero view
+            const heroAttachBtn = document.querySelector('.hero-input-wrapper .attach-button');
+            const heroAttachMenu = document.querySelector('.hero-input-wrapper .attach-menu');
+            
+            if (heroAttachBtn && heroAttachMenu) {
+                heroAttachBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = heroAttachMenu.classList.contains('show');
+                    // Close all modals
+                    document.querySelectorAll('.custom-model-dropdown-menu, .attach-menu, .main-menu-dropdown').forEach(el => {
+                        el.classList.remove('open', 'show');
+                    });
+                    // Toggle this modal
+                    if (!isOpen) {
+                        heroAttachMenu.classList.add('show');
+                        heroAttachBtn.classList.add('active');
+                    } else {
+                        heroAttachBtn.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Attach button for chat view
+            const chatAttachBtn = document.querySelector('.chat-input-wrapper .attach-button');
+            const chatAttachMenu = document.querySelector('.chat-input-wrapper .attach-menu');
+            
+            if (chatAttachBtn && chatAttachMenu) {
+                chatAttachBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = chatAttachMenu.classList.contains('show');
+                    // Close all modals
+                    document.querySelectorAll('.custom-model-dropdown-menu, .attach-menu, .main-menu-dropdown').forEach(el => {
+                        el.classList.remove('open', 'show');
+                    });
+                    // Reset attach buttons
+                    document.querySelectorAll('.attach-button').forEach(btn => btn.classList.remove('active'));
+                    // Toggle this modal
+                    if (!isOpen) {
+                        chatAttachMenu.classList.add('show');
+                        chatAttachBtn.classList.add('active');
+                    }
+                });
+            }
+            
+            // Main menu button
+            const mainMenuBtn = document.querySelector('.main-menu-button');
+            const mainMenuDropdown = document.querySelector('.main-menu-dropdown');
+            
+            if (mainMenuBtn && mainMenuDropdown) {
+                mainMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = mainMenuDropdown.classList.contains('show');
+                    // Close all modals
+                    document.querySelectorAll('.custom-model-dropdown-menu, .attach-menu, .main-menu-dropdown').forEach(el => {
+                        el.classList.remove('open', 'show');
+                    });
+                    document.querySelectorAll('.attach-button').forEach(btn => btn.classList.remove('active'));
+                    // Toggle this modal
+                    if (!isOpen) {
+                        mainMenuDropdown.classList.add('show');
+                    }
+                });
+            }
+            
+            // Close modals when clicking outside
+            document.addEventListener('click', function() {
+                document.querySelectorAll('.custom-model-dropdown-menu, .attach-menu, .main-menu-dropdown').forEach(el => {
+                    el.classList.remove('open', 'show');
+                });
+                document.querySelectorAll('.attach-button').forEach(btn => btn.classList.remove('active'));
+            });
+            
+            // Prevent modal clicks from closing themselves
+            document.querySelectorAll('.custom-model-dropdown-menu, .attach-menu, .main-menu-dropdown').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+        })();
+    </script>
+    
     <!-- Initialize chat manager after chat.js loads -->
     <script type="module">
-        // Wait for chat app to be initialized
-        setTimeout(async () => {
+        // Initialize chat manager immediately when ready
+        const initChatManager = async () => {
             if (window.chatApp && window.chatManager) {
                 window.chatManager.chatApp = window.chatApp;
                 
@@ -420,7 +524,15 @@
                     await window.chatManager.initialize(null);
                 }
             }
-        }, 500);
+        };
+        
+        // Try to initialize immediately, or wait for DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initChatManager);
+        } else {
+            // DOM is already loaded, initialize immediately
+            initChatManager();
+        }
     </script>
 </body>
 </html>
