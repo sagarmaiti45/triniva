@@ -56,6 +56,18 @@
       "dest": "/public/images/$1"
     },
     {
+      "src": "/auth/login$",
+      "dest": "/public/auth/login.html"
+    },
+    {
+      "src": "/auth/signup$",
+      "dest": "/public/auth/signup.html"
+    },
+    {
+      "src": "/auth/callback$",
+      "dest": "/public/auth/callback.html"
+    },
+    {
       "src": "/auth/(.*)",
       "dest": "/public/auth/$1"
     },
