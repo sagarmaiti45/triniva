@@ -23,36 +23,53 @@
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" required placeholder="Enter your email">
-                        <small class="form-hint">We'll send you a 6-digit code to sign in</small>
+                        <small class="form-hint">We'll send you a magic link to sign in instantly</small>
                     </div>
 
-                    <button type="button" class="auth-button" id="sendOtpButton">
-                        <span class="button-text">Send OTP Code</span>
+                    <button type="button" class="auth-button" id="sendMagicLinkButton">
+                        <span class="button-text">
+                            <i class="fas fa-magic" style="margin-right: 8px;"></i>
+                            Send Magic Link
+                        </span>
                         <div class="button-loader" style="display: none;">
                             <i class="fas fa-spinner fa-spin"></i>
                         </div>
                     </button>
                 </div>
 
-                <!-- OTP Verification Step -->
-                <div id="otpStep" style="display: none;">
-                    <div class="form-group">
-                        <label for="otp">Verification Code</label>
-                        <input type="text" id="otp" name="otp" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}">
-                        <small class="form-hint">Enter the 6-digit code from your email</small>
+                <!-- Magic Link Sent Step -->
+                <div id="magicLinkStep" style="display: none;">
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <i class="fas fa-envelope-open-text" style="font-size: 56px; color: var(--accent-color); margin-bottom: 20px;"></i>
+                        <h3 style="margin: 0 0 12px 0; color: var(--text-primary);">Check Your Email</h3>
+                        <p style="color: var(--text-secondary); margin: 0 0 8px 0;">We've sent a magic link to:</p>
+                        <p style="font-weight: 600; color: var(--text-primary); font-size: 16px; margin: 0;" id="emailDisplay"></p>
                     </div>
 
-                    <button type="submit" class="auth-button" id="verifyButton">
-                        <span class="button-text">Verify & Sign In</span>
-                        <div class="button-loader" style="display: none;">
-                            <i class="fas fa-spinner fa-spin"></i>
-                        </div>
-                    </button>
+                    <div style="background: var(--bg-secondary); border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: var(--text-primary); font-size: 14px;">
+                            <i class="fas fa-info-circle" style="color: var(--accent-color);"></i> How it works:
+                        </h4>
+                        <ol style="margin: 0; padding-left: 20px; color: var(--text-secondary); line-height: 1.5; font-size: 14px;">
+                            <li>Open your email inbox</li>
+                            <li>Click the "Sign in to Triniva" button</li>
+                            <li>You'll be instantly logged in</li>
+                        </ol>
+                    </div>
 
-                    <div style="margin-top: 15px; text-align: center;">
-                        <a href="#" id="resendLink" style="color: var(--accent-color); text-decoration: none; font-size: 14px;">Resend code</a>
-                        <span style="margin: 0 10px; color: var(--text-tertiary);">|</span>
-                        <a href="#" id="changeEmailLink" style="color: var(--accent-color); text-decoration: none; font-size: 14px;">Change email</a>
+                    <div style="text-align: center; padding: 12px; background: var(--bg-hover); border-radius: 8px; margin-bottom: 20px;">
+                        <i class="fas fa-clock" style="color: var(--text-secondary); margin-right: 6px;"></i>
+                        <span style="color: var(--text-secondary); font-size: 13px;">The magic link expires in 1 hour</span>
+                    </div>
+
+                    <div style="margin-top: 20px; text-align: center; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                        <a href="#" id="resendLink" style="color: var(--accent-color); text-decoration: none; font-size: 14px; font-weight: 500;">
+                            <i class="fas fa-redo" style="margin-right: 5px;"></i>Resend magic link
+                        </a>
+                        <span style="margin: 0 12px; color: var(--text-tertiary);">|</span>
+                        <a href="#" id="changeEmailLink" style="color: var(--accent-color); text-decoration: none; font-size: 14px; font-weight: 500;">
+                            <i class="fas fa-edit" style="margin-right: 5px;"></i>Change email
+                        </a>
                     </div>
                 </div>
 
@@ -103,10 +120,10 @@
 
         let userEmail = '';
         
-        // Handle Send OTP
-        document.getElementById('sendOtpButton').addEventListener('click', async () => {
+        // Handle Send Magic Link
+        document.getElementById('sendMagicLinkButton').addEventListener('click', async () => {
             const email = document.getElementById('email').value;
-            const sendButton = document.getElementById('sendOtpButton');
+            const sendButton = document.getElementById('sendMagicLinkButton');
             const errorMessage = document.getElementById('errorMessage');
             const successMessage = document.getElementById('successMessage');
             
@@ -134,23 +151,27 @@
                     }
                 });
                 
-                if (error) throw error;
+                if (error) {
+                    // Check if it's a "signups not allowed" error
+                    if (error.message && error.message.includes('Signups not allowed')) {
+                        throw new Error('This email is not registered. Please sign up first.');
+                    }
+                    throw error;
+                }
                 
-                // Show OTP verification step
+                // Show magic link sent step
                 document.getElementById('emailStep').style.display = 'none';
-                document.getElementById('otpStep').style.display = 'block';
+                document.getElementById('magicLinkStep').style.display = 'block';
+                document.getElementById('emailDisplay').textContent = email;
                 
                 successMessage.innerHTML = `
-                    <i class="fas fa-check-circle"></i> OTP code sent!<br>
-                    <small>Check your email for the 6-digit verification code or click the sign-in link.</small>
+                    <i class="fas fa-check-circle"></i> Magic link sent!<br>
+                    <small>Check your email and click the link to sign in instantly.</small>
                 `;
                 successMessage.style.display = 'block';
                 
-                // Focus on OTP input
-                document.getElementById('otp').focus();
-                
             } catch (error) {
-                errorMessage.textContent = error.message || 'Failed to send OTP code. Please try again.';
+                errorMessage.textContent = error.message || 'Failed to send magic link. Please try again.';
                 errorMessage.style.display = 'block';
             } finally {
                 sendButton.disabled = false;
@@ -159,74 +180,61 @@
             }
         });
         
-        // Handle OTP Verification
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        // Magic link will be handled via email - no verification needed here
+        
+        // Handle Resend Magic Link
+        document.getElementById('resendLink').addEventListener('click', async (e) => {
             e.preventDefault();
             
-            const otp = document.getElementById('otp').value;
-            const verifyButton = document.getElementById('verifyButton');
+            const resendLink = e.target.closest('a');
+            const originalText = resendLink.innerHTML;
+            
+            // Show loading state
+            resendLink.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            resendLink.style.pointerEvents = 'none';
+            
             const errorMessage = document.getElementById('errorMessage');
             const successMessage = document.getElementById('successMessage');
             
-            if (!otp) {
-                errorMessage.textContent = 'Please enter the verification code';
-                errorMessage.style.display = 'block';
-                return;
-            }
-            
-            // Show loading state
-            verifyButton.disabled = true;
-            verifyButton.querySelector('.button-text').style.display = 'none';
-            verifyButton.querySelector('.button-loader').style.display = 'block';
-            errorMessage.style.display = 'none';
-            
             try {
-                const { data, error } = await supabase.auth.verifyOtp({
+                const { error } = await supabase.auth.signInWithOtp({
                     email: userEmail,
-                    token: otp,
-                    type: 'email'
+                    options: {
+                        shouldCreateUser: false,
+                        emailRedirectTo: `${window.location.origin}/auth/callback.html`
+                    }
                 });
                 
-                if (error) throw error;
-                
-                // Store auth token and user info
-                if (data.session) {
-                    localStorage.setItem('authToken', data.session.access_token);
-                    localStorage.setItem('userId', data.user.id);
-                    localStorage.setItem('userEmail', data.user.email || '');
-                    localStorage.setItem('userName', data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User');
-                    
-                    // Show success message
-                    successMessage.textContent = 'Verification successful! Redirecting...';
-                    successMessage.style.display = 'block';
-                    
-                    // Redirect to main app
-                    setTimeout(() => {
-                        window.location.href = '/';
-                    }, 1000);
+                if (error) {
+                    if (error.message && error.message.includes('Signups not allowed')) {
+                        throw new Error('This email is not registered. Please sign up first.');
+                    }
+                    throw error;
                 }
                 
+                successMessage.innerHTML = '<i class="fas fa-check-circle"></i> New magic link sent! Check your inbox.';
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+                
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 5000);
+                
             } catch (error) {
-                errorMessage.textContent = error.message || 'Invalid verification code. Please try again.';
+                errorMessage.textContent = error.message || 'Failed to resend magic link. Please try again.';
                 errorMessage.style.display = 'block';
             } finally {
-                verifyButton.disabled = false;
-                verifyButton.querySelector('.button-text').style.display = 'inline';
-                verifyButton.querySelector('.button-loader').style.display = 'none';
+                // Restore button state
+                resendLink.innerHTML = originalText;
+                resendLink.style.pointerEvents = 'auto';
             }
-        });
-        
-        // Handle Resend Code
-        document.getElementById('resendLink').addEventListener('click', async (e) => {
-            e.preventDefault();
-            document.getElementById('sendOtpButton').click();
         });
         
         // Handle Change Email
         document.getElementById('changeEmailLink').addEventListener('click', (e) => {
             e.preventDefault();
             document.getElementById('emailStep').style.display = 'block';
-            document.getElementById('otpStep').style.display = 'none';
+            document.getElementById('magicLinkStep').style.display = 'none';
             document.getElementById('email').focus();
             document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('successMessage').style.display = 'none';
