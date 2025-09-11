@@ -1,9 +1,27 @@
+/* Instagram Browser and In-App Browser Fixes */
+@supports (-webkit-touch-callout: none) {
+    /* Target WebKit browsers (Instagram uses WebKit) */
+    html {
+        -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape */
+        text-size-adjust: 100%;
+    }
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
     -webkit-touch-callout: none; /* Disable callout on long-press */
+}
+
+/* Force minimum font sizes for Instagram browser */
+html {
+    font-size: 16px !important; /* Base font size */
+    -webkit-text-size-adjust: 100% !important;
+    -moz-text-size-adjust: 100% !important;
+    -ms-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
 }
 
 :root {
@@ -586,6 +604,19 @@ textarea:focus {
 
 /* Hide text on mobile */
 @media (max-width: 768px) {
+    /* Instagram browser specific fixes */
+    html, body {
+        min-height: 100vh !important;
+        min-height: -webkit-fill-available !important;
+    }
+    
+    /* Force proper scaling for Instagram browser */
+    body {
+        font-size: 16px !important; /* Prevent text from being too small */
+        -webkit-text-size-adjust: 100% !important;
+        text-size-adjust: 100% !important;
+    }
+    
     /* Enable pull-to-refresh on mobile */
     body {
         overflow-y: auto !important;
@@ -631,6 +662,23 @@ textarea:focus {
     
     .auth-buttons-container.in-chat-view {
         right: 38px !important; /* Consistent spacing */
+    }
+    
+    /* Instagram browser fixes - ensure minimum sizes */
+    .header-auth-btn {
+        min-height: 36px !important;
+        font-size: 14px !important;
+        padding: 10px 16px !important;
+    }
+    
+    button, input, textarea, select {
+        font-size: 16px !important; /* Prevent zoom on focus in iOS/Instagram */
+        min-height: 44px; /* Apple's recommended minimum touch target */
+    }
+    
+    .hero-message-input,
+    .message-input {
+        font-size: 16px !important; /* Prevent zoom on focus */
     }
     
     .chat-header {
