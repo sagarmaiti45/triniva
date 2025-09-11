@@ -85,7 +85,7 @@ textarea:focus {
     display: flex;
     height: 100vh;
     height: 100dvh; /* Dynamic viewport height for mobile */
-    width: 100vw;
+    width: 100%;
 }
 
 /* Sidebar Styles */
@@ -454,10 +454,7 @@ textarea:focus {
     flex-direction: column;
     background: var(--bg-primary);
     position: relative;
-    height: 100vh;
-    height: 100dvh; /* Dynamic viewport height for mobile */
     overflow-y: auto;
-    overflow-x: hidden;
     -webkit-overflow-scrolling: touch; /* Enable momentum scrolling on iOS */
 }
 
