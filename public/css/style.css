@@ -2504,8 +2504,8 @@ h3.ai-heading {
     /* Show mobile menu toggle on mobile */
     .mobile-menu-toggle {
         display: flex !important;
-        width: 36px;
-        height: 36px;
+        width: 40px; /* Keep consistent with earlier definition */
+        height: 40px; /* Keep consistent with earlier definition */
         padding: 0;
     }
     
@@ -2602,11 +2602,11 @@ h3.ai-heading {
     }
     
     .main-menu-button {
-        top: 12px;
+        top: 5px; /* Align with hamburger: (50-40)/2 = 5px */
         right: 10px;
-        width: 36px;
-        height: 36px;
-        font-size: 16px;
+        width: 40px; /* Match hamburger size */
+        height: 40px; /* Match hamburger size */
+        font-size: 18px; /* Consistent with earlier definition */
     }
     
     /* Share button mobile adjustments */
