@@ -916,8 +916,8 @@ textarea:focus {
 
 /* Logo icon for sidebar toggle */
 .sidebar-logo-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px; /* Reduced for rectangular button */
+    height: 18px; /* Reduced for rectangular button */
     object-fit: contain;
     /* Make it white like hamburger was */
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
@@ -2530,8 +2530,8 @@ h3.ai-heading {
     /* Show mobile menu toggle on mobile */
     .mobile-menu-toggle {
         display: flex !important;
-        width: 40px;
-        height: 40px;
+        width: 36px; /* Reduced width */
+        height: 32px; /* Reduced height for rectangular shape */
         padding: 0;
         background: var(--bg-hover);
         margin-left: -12px; /* Stick to left edge by countering header padding */
