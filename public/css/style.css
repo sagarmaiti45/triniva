@@ -2520,6 +2520,7 @@ h3.ai-heading {
         min-height: 50px;
         height: 50px;
         padding: 0 12px;
+        align-items: center; /* Ensure vertical centering */
     }
     
     /* Show mobile menu toggle on mobile */
@@ -2563,12 +2564,14 @@ h3.ai-heading {
         font-size: 18px; /* Increased from 16px */
         font-weight: 500; /* Further reduced for even lighter appearance on mobile */
         letter-spacing: 0.3px; /* Added subtle letter spacing */
+        line-height: 32px; /* Match button height for vertical centering */
+        transform: none; /* Remove any transform */
     }
     
     .header-logo {
         width: 24px; /* Increased from 22px */
         height: 24px; /* Increased from 22px */
-        transform: translateY(-2px);
+        transform: none; /* Remove translateY for better alignment */
     }
     
     .logo-container {
