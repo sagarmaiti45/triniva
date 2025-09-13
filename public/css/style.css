@@ -2637,15 +2637,15 @@ h3.ai-heading {
         width: 32px; /* Further reduced from 36px */
         height: 32px; /* Further reduced from 36px */
         font-size: 14px; /* Reduced from 16px */
-        background: var(--bg-hover); /* Lighter but not too bright */
-        border-radius: 50%; /* Make it round */
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Lighter shadow */
+        background: transparent; /* Remove background */
+        border-radius: 8px; /* Less round for cleaner look */
+        box-shadow: none; /* Remove shadow */
         padding: 0; /* Remove padding */
     }
     
     .main-menu-button:hover {
-        background: var(--bg-secondary) !important; /* Slightly darker on hover */
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important; /* Slightly stronger shadow on hover */
+        background: var(--bg-hover) !important; /* Subtle hover background */
+        box-shadow: none !important; /* No shadow */
     }
     
     /* Share button mobile adjustments */
