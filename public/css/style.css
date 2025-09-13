@@ -2436,6 +2436,16 @@ h3.ai-heading {
         max-width: 100%;
     }
     
+    /* Reduce padding on input area for more width */
+    .input-area {
+        padding: 10px 8px; /* Reduced from 20px */
+    }
+    
+    /* Reduce padding on messages container for more width */
+    .messages-container {
+        padding: 10px; /* Reduced from 20px */
+    }
+    
     .suggestions-grid {
         grid-template-columns: 1fr;
     }
@@ -2682,7 +2692,7 @@ h3.ai-heading {
         flex-direction: column;
         height: 100%;
         justify-content: space-between;
-        padding: 0 20px; /* Horizontal padding */
+        padding: 0 10px; /* Reduced horizontal padding for more width */
         padding-bottom: 0;
     }
     
