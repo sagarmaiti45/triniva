@@ -503,14 +503,17 @@ textarea:focus {
 
 .logo-text {
     font-size: 20px;
-    font-weight: 600; /* Reduced from 700 */
-    color: var(--text-primary);
-    opacity: 0.7;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95); /* Clean white */
+    opacity: 1;
     margin: 0;
     line-height: 1;
     display: flex;
     align-items: center;
-    letter-spacing: 0.3px; /* Added subtle letter spacing */
+    letter-spacing: 1px; /* Professional letter spacing */
+    font-family: 'Inter', 'SF Pro Display', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; /* Modern professional font stack */
+    text-transform: uppercase; /* Makes it look more like a logo */
+    font-feature-settings: 'kern' 1; /* Better kerning */
 }
 
 /* Mobile user menu button */
@@ -2562,11 +2565,12 @@ h3.ai-heading {
     }
     
     .logo-text {
-        font-size: 18px; /* Increased from 16px */
-        font-weight: 500; /* Further reduced for even lighter appearance on mobile */
-        letter-spacing: 0.3px; /* Added subtle letter spacing */
+        font-size: 17px; /* Mobile size */
+        font-weight: 500; /* Keep consistent weight */
+        letter-spacing: 0.8px; /* Professional letter spacing for mobile */
         line-height: 32px; /* Match button height for vertical centering */
         transform: none; /* Remove any transform */
+        /* Inherits white color and font from main style */
     }
     
     .header-logo {
