@@ -1182,9 +1182,6 @@ class ChatApp {
 
         this.currentConversationId = conversationId;
         this.isFirstMessage = conversation.messages.length === 0;
-        
-        // Close sidebar on mobile when a chat session is loaded
-        this.closeMobileSidebar();
 
         if (this.isFirstMessage) {
             this.welcomeView.style.display = 'flex';
