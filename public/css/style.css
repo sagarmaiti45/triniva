@@ -919,18 +919,24 @@ textarea:focus {
 
 /* Logo icon for sidebar toggle */
 .sidebar-logo-icon {
-    width: 18px; /* Reduced for rectangular button */
-    height: 18px; /* Reduced for rectangular button */
+    width: 14px; /* Smaller icon for round button */
+    height: 14px; /* Smaller icon for round button */
     object-fit: contain;
     /* Make it white like hamburger was */
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
     opacity: 1;
+    /* Round button style */
+    background: rgba(255, 255, 255, 0.15); /* Transparent white background */
+    padding: 5px;
+    border-radius: 50%;
+    box-sizing: content-box;
 }
 
 .mobile-menu-toggle.active .sidebar-logo-icon {
     /* Keep white when active on gradient */
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
     opacity: 1;
+    background: rgba(255, 255, 255, 0.25); /* Slightly more opaque when active */
 }
 
 /* Remove hamburger lines - no longer needed */
