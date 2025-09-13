@@ -825,8 +825,8 @@ textarea:focus {
 
 /* Logo icon in menu button for mobile */
 .menu-logo-icon {
-    width: 16px; /* Further reduced for smaller button */
-    height: 16px; /* Further reduced for smaller button */
+    width: 18px; /* Keep original size */
+    height: 18px; /* Keep original size */
     object-fit: contain;
     display: none; /* Hidden by default, shown on mobile */
 }
