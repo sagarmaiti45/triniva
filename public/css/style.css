@@ -898,7 +898,7 @@ textarea:focus {
 /* Mobile menu toggle - hidden on desktop */
 .mobile-menu-toggle {
     display: none;
-    width: 36px;
+    width: 42px; /* Increased width to stretch more from edge */
     height: 36px;
     border: none;
     background: transparent;
@@ -910,7 +910,7 @@ textarea:focus {
     margin-right: 8px;
     border-radius: 0 16px 16px 0; /* More rounded on right side */
     position: relative;
-    padding: 0;
+    padding: 0 0 0 6px; /* Add left padding to push icon right */
     opacity: 1;
 }
 
@@ -2530,9 +2530,9 @@ h3.ai-heading {
     /* Show mobile menu toggle on mobile */
     .mobile-menu-toggle {
         display: flex !important;
-        width: 36px; /* Reduced width */
+        width: 42px; /* Stretched width */
         height: 32px; /* Reduced height for rectangular shape */
-        padding: 0;
+        padding: 0 0 0 6px; /* Left padding for spacing */
         background: var(--bg-hover);
         margin-left: -12px; /* Stick to left edge by countering header padding */
         margin-right: 8px;
