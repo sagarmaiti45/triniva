@@ -39,8 +39,6 @@ class ChatApp {
                             // Try to load the conversation
                             await window.chatManager.loadConversation(chatId);
                             this.currentConversationId = chatId;
-                            // Close sidebar on mobile when loading chat from URL
-                            window.chatManager.closeMobileSidebar();
                         } catch (error) {
                             console.error('Failed to load chat from URL:', error);
                             // If loading fails, redirect to home
