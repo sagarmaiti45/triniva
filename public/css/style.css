@@ -502,7 +502,7 @@ textarea:focus {
 }
 
 .logo-text {
-    font-size: 20px;
+    font-size: 17px; /* Reduced from 20px */
     font-weight: 500;
     color: rgba(255, 255, 255, 0.95); /* Clean white */
     opacity: 1;
@@ -2607,7 +2607,7 @@ h3.ai-heading {
     }
     
     .logo-text {
-        font-size: 17px; /* Mobile size */
+        font-size: 15px; /* Reduced mobile size */
         font-weight: 500; /* Keep consistent weight */
         letter-spacing: 0.8px; /* Professional letter spacing for mobile */
         line-height: 32px; /* Match button height for vertical centering */
