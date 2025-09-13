@@ -2564,6 +2564,16 @@ h3.ai-heading {
         margin-right: 8px;
     }
     
+    /* When sidebar is open, position the button at sidebar's right edge */
+    .sidebar.open ~ .main-content .mobile-menu-toggle {
+        position: fixed;
+        left: 228px; /* Sidebar width (240px) minus button overlap */
+        top: 12px; /* Match the header top position */
+        margin: 0;
+        z-index: 1001;
+        border-radius: 16px 0 0 16px; /* Rounded on left side when attached to sidebar */
+    }
+    
     .mobile-menu-toggle:hover {
         background: linear-gradient(135deg, #2E7D32, #1565C0); /* Even darker on hover */
     }
