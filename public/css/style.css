@@ -639,7 +639,7 @@ textarea:focus {
     /* Ensure 3-dot menu matches hamburger size */
     .main-menu-button {
         top: 9px !important; /* Center in 50px header: (50-32)/2 = 9px */
-        right: 10px !important; /* 3-dot menu on mobile */
+        right: 12px !important; /* Match header padding for symmetry */
         width: 32px !important; /* Reduced size */
         height: 32px !important; /* Reduced size */
         font-size: 14px !important; /* Smaller icon size */
@@ -2623,7 +2623,7 @@ h3.ai-heading {
     
     .main-menu-button {
         top: 9px; /* Adjusted for 32px button: (50-32)/2 = 9px */
-        right: 10px;
+        right: 12px; /* Match header padding for symmetry */
         width: 32px; /* Further reduced from 36px */
         height: 32px; /* Further reduced from 36px */
         font-size: 14px; /* Reduced from 16px */
