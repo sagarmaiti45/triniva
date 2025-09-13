@@ -825,8 +825,8 @@ textarea:focus {
 
 /* Logo icon in menu button for mobile */
 .menu-logo-icon {
-    width: 18px; /* Reduced from 22px */
-    height: 18px; /* Reduced from 22px */
+    width: 16px; /* Further reduced for smaller button */
+    height: 16px; /* Further reduced for smaller button */
     object-fit: contain;
     display: none; /* Hidden by default, shown on mobile */
 }
@@ -2620,11 +2620,11 @@ h3.ai-heading {
     }
     
     .main-menu-button {
-        top: 5px; /* Align with hamburger: (50-40)/2 = 5px */
+        top: 7px; /* Adjusted for 36px button: (50-36)/2 = 7px */
         right: 10px;
-        width: 40px; /* Match hamburger size */
-        height: 40px; /* Match hamburger size */
-        font-size: 18px; /* Consistent with earlier definition */
+        width: 36px; /* Reduced from 40px */
+        height: 36px; /* Reduced from 40px */
+        font-size: 16px; /* Reduced from 18px */
         background: var(--bg-secondary); /* Add background for logo button */
         border-radius: 50%; /* Make it round */
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
