@@ -1525,7 +1525,7 @@ textarea:focus {
     height: 40px;
     border-radius: 50%;
     border: none;
-    background: linear-gradient(135deg, #388E3C 0%, #388E3C 75%, #1976D2 100%); /* 75% green, 25% blue */
+    background: linear-gradient(135deg, #10A37F 0%, #10A37F 75%, #42A5F5 100%); /* 75% teal, 25% light blue */
     color: white;
     cursor: pointer;
     display: flex;
@@ -1541,12 +1541,12 @@ textarea:focus {
 }
 
 .hero-send-button:hover:not(:disabled) {
-    background: linear-gradient(135deg, #2E7D32 0%, #2E7D32 75%, #1565C0 100%); /* Darker: 75% green, 25% blue */
+    background: linear-gradient(135deg, #0e9571 0%, #0e9571 75%, #2196F3 100%); /* Darker: 75% teal, 25% blue */
     transform: scale(1.05);
 }
 
 .hero-send-button:disabled {
-    background: linear-gradient(135deg, #388E3C 0%, #388E3C 75%, #1976D2 100%);
+    background: linear-gradient(135deg, #10A37F 0%, #10A37F 75%, #42A5F5 100%);
     opacity: 0.3;
     color: white;
     cursor: not-allowed;
@@ -2008,7 +2008,7 @@ h3.ai-heading {
     height: 32px;
     border-radius: 50%;
     border: none;
-    background: linear-gradient(135deg, #388E3C 0%, #388E3C 75%, #1976D2 100%); /* 75% green, 25% blue */
+    background: linear-gradient(135deg, #10A37F 0%, #10A37F 75%, #42A5F5 100%); /* 75% teal, 25% light blue */
     color: white;
     cursor: pointer;
     display: flex;
@@ -2024,11 +2024,11 @@ h3.ai-heading {
 }
 
 .send-button:hover:not(:disabled) {
-    background: linear-gradient(135deg, #2E7D32 0%, #2E7D32 75%, #1565C0 100%); /* Darker: 75% green, 25% blue */
+    background: linear-gradient(135deg, #0e9571 0%, #0e9571 75%, #2196F3 100%); /* Darker: 75% teal, 25% blue */
 }
 
 .send-button:disabled {
-    background: linear-gradient(135deg, #388E3C 0%, #388E3C 75%, #1976D2 100%);
+    background: linear-gradient(135deg, #10A37F 0%, #10A37F 75%, #42A5F5 100%);
     opacity: 0.3;
     color: white;
     cursor: not-allowed;
@@ -2558,7 +2558,7 @@ h3.ai-heading {
         width: 42px; /* Stretched width */
         height: 32px; /* Reduced height for rectangular shape */
         padding: 0 0 0 6px; /* Left padding for spacing */
-        background: linear-gradient(135deg, #388E3C 0%, #388E3C 75%, #1976D2 100%); /* 75% green, 25% blue */
+        background: linear-gradient(135deg, #10A37F 0%, #10A37F 75%, #42A5F5 100%); /* 75% teal, 25% light blue */
         margin-left: -12px; /* Stick to left edge by countering header padding */
         margin-right: 8px;
         position: relative;
@@ -2580,7 +2580,7 @@ h3.ai-heading {
     }
     
     .mobile-menu-toggle:hover {
-        background: linear-gradient(135deg, #2E7D32 0%, #2E7D32 75%, #1565C0 100%); /* Darker: 75% green, 25% blue */
+        background: linear-gradient(135deg, #0e9571 0%, #0e9571 75%, #2196F3 100%); /* Darker: 75% teal, 25% blue */
     }
     
     .mobile-menu-toggle.active::before {
