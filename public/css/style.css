@@ -882,7 +882,7 @@ textarea:focus {
     justify-content: center;
     transition: all 0.3s ease;
     flex-shrink: 0;
-    margin-right: 8px;
+    margin-right: 4px; /* Reduced from 8px for tighter spacing */
     border-radius: 8px;
     position: relative;
     flex-direction: column;
