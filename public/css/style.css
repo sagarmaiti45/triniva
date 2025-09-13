@@ -925,9 +925,9 @@ textarea:focus {
     height: 24px;
     background: rgba(0, 0, 0, 0.4); /* 60% transparent, 40% opacity - dark background */
     border-radius: 50%;
-    left: 50%;
+    left: 10px; /* Adjusted to align with logo position */
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateY(-50%);
     transition: background 0.3s ease;
     z-index: 0;
 }
