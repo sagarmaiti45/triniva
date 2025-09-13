@@ -921,12 +921,12 @@ textarea:focus {
     object-fit: contain;
     /* Make it white like hamburger was */
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
-    opacity: 0.9;
+    opacity: 1;
 }
 
 .mobile-menu-toggle.active .sidebar-logo-icon {
-    /* Brand color when active */
-    filter: brightness(0) saturate(100%) invert(56%) sepia(39%) saturate(1418%) hue-rotate(122deg) brightness(95%) contrast(87%);
+    /* Keep white when active on gradient */
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
     opacity: 1;
 }
 
@@ -2533,13 +2533,13 @@ h3.ai-heading {
         width: 42px; /* Stretched width */
         height: 32px; /* Reduced height for rectangular shape */
         padding: 0 0 0 6px; /* Left padding for spacing */
-        background: var(--bg-hover);
+        background: linear-gradient(135deg, #4CAF50, #42A5F5); /* Gradient from brand green to light blue */
         margin-left: -12px; /* Stick to left edge by countering header padding */
         margin-right: 8px;
     }
     
     .mobile-menu-toggle:hover {
-        background: var(--bg-secondary);
+        background: linear-gradient(135deg, #45a049, #2196F3); /* Slightly darker gradient on hover */
     }
     
     /* Hide desktop collapse button, show mobile close button */
