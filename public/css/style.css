@@ -908,7 +908,7 @@ textarea:focus {
     transition: all 0.3s ease;
     flex-shrink: 0;
     margin-right: 8px;
-    border-radius: 0 8px 8px 0; /* Rounded only on right side */
+    border-radius: 0 16px 16px 0; /* More rounded on right side */
     position: relative;
     padding: 0;
     opacity: 1;
