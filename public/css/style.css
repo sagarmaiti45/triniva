@@ -638,11 +638,12 @@ textarea:focus {
     
     /* Ensure 3-dot menu matches hamburger size */
     .main-menu-button {
-        top: 5px !important; /* Center in 50px header: (50-40)/2 = 5px */
+        top: 9px !important; /* Center in 50px header: (50-32)/2 = 9px */
         right: 10px !important; /* 3-dot menu on mobile */
-        width: 40px !important; /* Match hamburger size - increased from 36px */
-        height: 40px !important; /* Match hamburger size - increased from 36px */
-        font-size: 18px !important; /* Proportional icon size - increased from 16px */
+        width: 32px !important; /* Reduced size */
+        height: 32px !important; /* Reduced size */
+        font-size: 14px !important; /* Smaller icon size */
+        padding: 0 !important; /* Remove any padding */
     }
     
     /* Increase input and textarea sizes */
@@ -812,6 +813,7 @@ textarea:focus {
     transition: all 0.2s ease;
     font-size: 14px;
     border-radius: 8px;
+    padding: 0; /* Remove padding */
 }
 
 .main-menu-button:hover {
@@ -882,8 +884,8 @@ textarea:focus {
 /* Mobile menu toggle - hidden on desktop */
 .mobile-menu-toggle {
     display: none;
-    width: 40px; /* Increased from 36px */
-    height: 40px; /* Increased from 36px */
+    width: 32px; /* Reduced to match menu button */
+    height: 32px; /* Reduced to match menu button */
     border: none;
     background: transparent;
     cursor: pointer;
@@ -907,10 +909,10 @@ textarea:focus {
     position: absolute;
 }
 
-/* Simple 2-line hamburger style - adjusted for 40px button */
+/* Simple 2-line hamburger style - adjusted for 32px button */
 .hamburger-line:nth-child(1) {
-    top: 16px; /* Moved closer to center */
-    left: 12px; /* Centered for 40px width */
+    top: 12px; /* Adjusted for 32px height */
+    left: 8px; /* Centered for 32px width */
     width: 16px; /* Keep same width */
 }
 
@@ -919,8 +921,8 @@ textarea:focus {
 }
 
 .hamburger-line:nth-child(3) {
-    bottom: 16px; /* Moved closer to center */
-    left: 12px; /* Centered for 40px width */
+    bottom: 12px; /* Adjusted for 32px height */
+    left: 8px; /* Centered for 32px width */
     width: 8px; /* Half width for second line */
 }
 
@@ -932,18 +934,18 @@ textarea:focus {
     background: rgba(255, 255, 255, 1); /* Full white on hover */
 }
 
-/* Simple X animation for active state - adjusted for 40px button */
+/* Simple X animation for active state - adjusted for 32px button */
 .mobile-menu-toggle.active .hamburger-line:nth-child(1) {
     transform: rotate(45deg);
-    top: 19px; /* Centered for 40px */
-    left: 12px;
+    top: 15px; /* Centered for 32px */
+    left: 8px;
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(3) {
     transform: rotate(-45deg);
-    bottom: 19px; /* Centered for 40px */
+    bottom: 15px; /* Centered for 32px */
     width: 16px; /* Full width when active */
-    left: 12px;
+    left: 8px;
 }
 
 .mobile-menu-toggle:active {
@@ -2513,8 +2515,8 @@ h3.ai-heading {
     /* Show mobile menu toggle on mobile */
     .mobile-menu-toggle {
         display: flex !important;
-        width: 40px; /* Keep consistent with earlier definition */
-        height: 40px; /* Keep consistent with earlier definition */
+        width: 32px; /* Reduced to match menu button */
+        height: 32px; /* Reduced to match menu button */
         padding: 0;
     }
     
@@ -2625,13 +2627,15 @@ h3.ai-heading {
         width: 32px; /* Further reduced from 36px */
         height: 32px; /* Further reduced from 36px */
         font-size: 14px; /* Reduced from 16px */
-        background: var(--bg-secondary); /* Add background for logo button */
+        background: var(--bg-hover); /* Lighter but not too bright */
         border-radius: 50%; /* Make it round */
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Lighter shadow */
+        padding: 0; /* Remove padding */
     }
     
     .main-menu-button:hover {
-        background: var(--bg-hover) !important;
+        background: var(--bg-secondary) !important; /* Slightly darker on hover */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important; /* Slightly stronger shadow on hover */
     }
     
     /* Share button mobile adjustments */
