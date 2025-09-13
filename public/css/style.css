@@ -2536,13 +2536,13 @@ h3.ai-heading {
         width: 42px; /* Stretched width */
         height: 32px; /* Reduced height for rectangular shape */
         padding: 0 0 0 6px; /* Left padding for spacing */
-        background: linear-gradient(135deg, #4CAF50, #42A5F5); /* Gradient from brand green to light blue */
+        background: linear-gradient(135deg, #388E3C, #1976D2); /* Darker gradient - forest green to darker blue */
         margin-left: -12px; /* Stick to left edge by countering header padding */
         margin-right: 8px;
     }
     
     .mobile-menu-toggle:hover {
-        background: linear-gradient(135deg, #45a049, #2196F3); /* Slightly darker gradient on hover */
+        background: linear-gradient(135deg, #2E7D32, #1565C0); /* Even darker on hover */
     }
     
     /* Hide desktop collapse button, show mobile close button */
