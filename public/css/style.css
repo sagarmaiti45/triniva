@@ -503,13 +503,14 @@ textarea:focus {
 
 .logo-text {
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600; /* Reduced from 700 */
     color: var(--text-primary);
     opacity: 0.7;
     margin: 0;
     line-height: 1;
     display: flex;
     align-items: center;
+    letter-spacing: 0.3px; /* Added subtle letter spacing */
 }
 
 /* Mobile user menu button */
@@ -2525,7 +2526,8 @@ h3.ai-heading {
     
     .logo-text {
         font-size: 18px; /* Increased from 16px */
-        font-weight: 600; /* Reduced from 700 for lighter appearance */
+        font-weight: 500; /* Further reduced for even lighter appearance on mobile */
+        letter-spacing: 0.3px; /* Added subtle letter spacing */
     }
     
     .header-logo {
