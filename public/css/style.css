@@ -900,7 +900,7 @@ textarea:focus {
 
 /* Simple 2-line hamburger style - adjusted for 40px button */
 .hamburger-line:nth-child(1) {
-    top: 14px; /* Adjusted for 40px height */
+    top: 16px; /* Moved closer to center */
     left: 12px; /* Centered for 40px width */
     width: 16px; /* Keep same width */
 }
@@ -910,7 +910,7 @@ textarea:focus {
 }
 
 .hamburger-line:nth-child(3) {
-    bottom: 14px; /* Adjusted for 40px height */
+    bottom: 16px; /* Moved closer to center */
     left: 12px; /* Centered for 40px width */
     width: 8px; /* Half width for second line */
 }
@@ -2525,6 +2525,7 @@ h3.ai-heading {
     
     .logo-text {
         font-size: 18px; /* Increased from 16px */
+        font-weight: 600; /* Reduced from 700 for lighter appearance */
     }
     
     .header-logo {
