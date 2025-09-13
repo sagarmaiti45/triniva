@@ -917,6 +917,25 @@ textarea:focus {
     opacity: 1;
 }
 
+/* Dark round background behind the icon */
+.mobile-menu-toggle::before {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background: rgba(0, 0, 0, 0.4); /* 60% transparent, 40% opacity - dark background */
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: background 0.3s ease;
+    z-index: 0;
+}
+
+.mobile-menu-toggle.active::before {
+    background: rgba(0, 0, 0, 0.5); /* Darker when active */
+}
+
 
 /* Logo icon for sidebar toggle */
 .sidebar-logo-icon {
@@ -926,18 +945,15 @@ textarea:focus {
     /* Make it white */
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
     opacity: 1;
-    /* Round button style with black transparent background */
-    background: rgba(0, 0, 0, 0.4); /* 60% transparent, 40% opacity */
-    padding: 5px;
-    border-radius: 50%;
-    box-sizing: content-box;
+    position: relative;
+    z-index: 1;
+    /* Remove background from here since filter affects it */
 }
 
 .mobile-menu-toggle.active .sidebar-logo-icon {
     /* Keep white when active */
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
     opacity: 1;
-    background: rgba(0, 0, 0, 0.5); /* Slightly less transparent when active */
 }
 
 /* Remove hamburger lines - no longer needed */
