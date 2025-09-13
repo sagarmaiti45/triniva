@@ -825,12 +825,26 @@ textarea:focus {
     font-size: 16px;
 }
 
-/* Logo icon in menu button for mobile */
-.menu-logo-icon {
-    width: 16px; /* Reduced to fit 32px button */
-    height: 16px; /* Reduced to fit 32px button */
-    object-fit: contain;
-    display: none; /* Hidden by default, shown on mobile */
+/* Two dots menu for mobile */
+.two-dots {
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+}
+
+.two-dots .dot {
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.main-menu-button:hover .two-dots .dot,
+.main-menu-button.active .two-dots .dot {
+    background: var(--accent-color);
 }
 
 /* 3-dot menu dropdown */
@@ -884,8 +898,8 @@ textarea:focus {
 /* Mobile menu toggle - hidden on desktop */
 .mobile-menu-toggle {
     display: none;
-    width: 32px; /* Reduced to match menu button */
-    height: 32px; /* Reduced to match menu button */
+    width: 36px;
+    height: 36px;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -893,20 +907,32 @@ textarea:focus {
     justify-content: center;
     transition: all 0.3s ease;
     flex-shrink: 0;
-    margin-right: 4px; /* Reduced from 8px for tighter spacing */
-    border-radius: 8px;
+    margin-right: 8px;
+    border-radius: 0 8px 8px 0; /* Rounded only on right side */
     position: relative;
-    flex-direction: column;
     padding: 0;
     opacity: 1;
 }
 
+/* Logo icon for sidebar toggle */
+.sidebar-logo-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    /* Make it white like hamburger was */
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+    opacity: 0.9;
+}
+
+.mobile-menu-toggle.active .sidebar-logo-icon {
+    /* Brand color when active */
+    filter: brightness(0) saturate(100%) invert(56%) sepia(39%) saturate(1418%) hue-rotate(122deg) brightness(95%) contrast(87%);
+    opacity: 1;
+}
+
+/* Remove hamburger lines - no longer needed */
 .hamburger-line {
-    height: 2px;
-    background: rgba(255, 255, 255, 0.8); /* Brighter color */
-    border-radius: 1px;
-    transition: all 0.3s ease;
-    position: absolute;
+    display: none;
 }
 
 /* Simple 2-line hamburger style - adjusted for 32px button */
@@ -926,30 +952,8 @@ textarea:focus {
     width: 8px; /* Half width for second line */
 }
 
-.mobile-menu-toggle:hover {
-    background: var(--bg-hover);
-}
-
-.mobile-menu-toggle:hover .hamburger-line {
-    background: rgba(255, 255, 255, 1); /* Full white on hover */
-}
-
-/* Simple X animation for active state - adjusted for 32px button */
-.mobile-menu-toggle.active .hamburger-line:nth-child(1) {
-    transform: rotate(45deg);
-    top: 15px; /* Centered for 32px */
-    left: 8px;
-}
-
-.mobile-menu-toggle.active .hamburger-line:nth-child(3) {
-    transform: rotate(-45deg);
-    bottom: 15px; /* Centered for 32px */
-    width: 16px; /* Full width when active */
-    left: 8px;
-}
-
 .mobile-menu-toggle:active {
-    transform: scale(0.9);
+    transform: scale(0.95);
 }
 
 
@@ -2526,9 +2530,16 @@ h3.ai-heading {
     /* Show mobile menu toggle on mobile */
     .mobile-menu-toggle {
         display: flex !important;
-        width: 32px; /* Reduced to match menu button */
-        height: 32px; /* Reduced to match menu button */
+        width: 40px;
+        height: 40px;
         padding: 0;
+        background: var(--bg-hover);
+        margin-left: -12px; /* Stick to left edge by countering header padding */
+        margin-right: 8px;
+    }
+    
+    .mobile-menu-toggle:hover {
+        background: var(--bg-secondary);
     }
     
     /* Hide desktop collapse button, show mobile close button */
@@ -2540,19 +2551,9 @@ h3.ai-heading {
         display: flex !important;
     }
     
-    /* Show logo icon in menu button on mobile */
-    .menu-logo-icon {
-        display: block !important;
-        /* Make it white like hamburger icon */
-        filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
-        opacity: 0.8; /* Match hamburger opacity */
-    }
-    
-    /* Brand color when menu is open */
-    .main-menu-dropdown.show ~ .main-menu-button .menu-logo-icon,
-    .main-menu-button.active .menu-logo-icon {
-        filter: brightness(0) saturate(100%) invert(56%) sepia(39%) saturate(1418%) hue-rotate(122deg) brightness(95%) contrast(87%);
-        opacity: 1;
+    /* Show two-dots on mobile */
+    .two-dots {
+        display: flex !important;
     }
     
     /* Mobile sidebar should fully close */
