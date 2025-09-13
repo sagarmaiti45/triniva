@@ -2542,8 +2542,16 @@ h3.ai-heading {
     /* Show logo icon in menu button on mobile */
     .menu-logo-icon {
         display: block !important;
-        /* Apply brand color filter */
+        /* Make it white like hamburger icon */
+        filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+        opacity: 0.8; /* Match hamburger opacity */
+    }
+    
+    /* Brand color when menu is open */
+    .main-menu-dropdown.show ~ .main-menu-button .menu-logo-icon,
+    .main-menu-button.active .menu-logo-icon {
         filter: brightness(0) saturate(100%) invert(56%) sepia(39%) saturate(1418%) hue-rotate(122deg) brightness(95%) contrast(87%);
+        opacity: 1;
     }
     
     /* Mobile sidebar should fully close */

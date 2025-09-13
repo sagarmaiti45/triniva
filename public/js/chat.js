@@ -906,12 +906,16 @@ class ChatApp {
             this.closeAllModals();
             if (!isOpen) {
                 menuDropdown.classList.add('show');
+                menuButton.classList.add('active'); // Add active class for brand color
+            } else {
+                menuButton.classList.remove('active'); // Remove active class
             }
         });
         
         // Close menu on outside click
         document.addEventListener('click', () => {
             menuDropdown.classList.remove('show');
+            menuButton.classList.remove('active'); // Remove active class when closing
         });
         
         // Prevent menu from closing when clicking inside
