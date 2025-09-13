@@ -927,7 +927,7 @@ textarea:focus {
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
     opacity: 1;
     /* Round button style with black transparent background */
-    background: rgba(0, 0, 0, 0.15); /* 85% transparent, 15% opacity */
+    background: rgba(0, 0, 0, 0.4); /* 60% transparent, 40% opacity */
     padding: 5px;
     border-radius: 50%;
     box-sizing: content-box;
@@ -937,7 +937,7 @@ textarea:focus {
     /* Keep white when active */
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
     opacity: 1;
-    background: rgba(0, 0, 0, 0.2); /* Slightly less transparent when active */
+    background: rgba(0, 0, 0, 0.5); /* Slightly less transparent when active */
 }
 
 /* Remove hamburger lines - no longer needed */
