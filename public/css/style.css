@@ -2562,10 +2562,108 @@ h3.ai-heading {
         background: linear-gradient(135deg, #388E3C, #1976D2); /* Darker gradient - forest green to darker blue */
         margin-left: -12px; /* Stick to left edge by countering header padding */
         margin-right: 8px;
+        overflow: hidden; /* Hide stars that go outside button */
+    }
+    
+    /* Animated glowing stars */
+    @keyframes twinkle {
+        0% {
+            opacity: 0;
+            transform: scale(0) rotate(0deg);
+        }
+        20% {
+            opacity: 1;
+            transform: scale(1) rotate(180deg);
+        }
+        80% {
+            opacity: 1;
+            transform: scale(1) rotate(360deg);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(0) rotate(540deg);
+        }
+    }
+    
+    /* Star animation span */
+    .star-animation {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }
+    
+    /* Create multiple stars with pseudo-elements */
+    .star-animation::before,
+    .star-animation::after {
+        content: '✦';
+        position: absolute;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 10px;
+        animation: twinkle 4s ease-in-out infinite;
+    }
+    
+    .star-animation::before {
+        top: 5px;
+        left: 8px;
+        animation-delay: 0s;
+    }
+    
+    .star-animation::after {
+        bottom: 5px;
+        right: 10px;
+        animation-delay: 2s;
+        font-size: 8px;
+    }
+    
+    /* Dark circle background remains */
+    .mobile-menu-toggle::before {
+        content: '';
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        background: rgba(0, 0, 0, 0.4); /* Keep the dark circle */
+        border-radius: 50%;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: background 0.3s ease;
+        z-index: 0;
+    }
+    
+    /* Add glowing star particles */
+    @keyframes sparkle {
+        0%, 100% {
+            opacity: 0;
+            transform: translateY(0) scale(0);
+        }
+        50% {
+            opacity: 0.8;
+            transform: translateY(-2px) scale(1);
+        }
+    }
+    
+    /* Additional star layer */
+    .mobile-menu-toggle {
+        position: relative;
     }
     
     .mobile-menu-toggle:hover {
         background: linear-gradient(135deg, #2E7D32, #1565C0); /* Even darker on hover */
+    }
+    
+    .mobile-menu-toggle:hover .star-animation::before,
+    .mobile-menu-toggle:hover .star-animation::after {
+        animation-duration: 2s; /* Faster animation on hover */
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .mobile-menu-toggle.active::before {
+        background: rgba(0, 0, 0, 0.5); /* Darker when active */
     }
     
     /* Hide desktop collapse button, show mobile close button */
