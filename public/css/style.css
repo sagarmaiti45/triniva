@@ -1539,6 +1539,7 @@ textarea:focus {
     transition: all 0.2s ease;
     flex-shrink: 0;
     font-size: 16px;
+    box-shadow: 0 2px 8px rgba(16, 163, 127, 0.3);
 }
 
 .hero-send-button i {
@@ -1548,6 +1549,7 @@ textarea:focus {
 .hero-send-button:hover:not(:disabled) {
     background: linear-gradient(135deg, #0e9571 0%, #0e9571 75%, #2196F3 100%); /* Darker: 75% teal, 25% blue */
     transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(16, 163, 127, 0.4);
 }
 
 .hero-send-button:disabled {
@@ -2022,6 +2024,7 @@ h3.ai-heading {
     transition: all 0.2s ease;
     flex-shrink: 0;
     font-size: 14px;
+    box-shadow: 0 2px 8px rgba(16, 163, 127, 0.3);
 }
 
 .send-button i {
@@ -2030,6 +2033,7 @@ h3.ai-heading {
 
 .send-button:hover:not(:disabled) {
     background: linear-gradient(135deg, #0e9571 0%, #0e9571 75%, #2196F3 100%); /* Darker: 75% teal, 25% blue */
+    box-shadow: 0 4px 12px rgba(16, 163, 127, 0.4);
 }
 
 .send-button:disabled {
@@ -2571,6 +2575,7 @@ h3.ai-heading {
         align-items: center;
         justify-content: center;
         opacity: 0.7; /* Faded appearance */
+        box-shadow: 0 2px 8px rgba(16, 163, 127, 0.25);
     }
 
     /* Dark circle background */
@@ -2591,6 +2596,7 @@ h3.ai-heading {
     .mobile-menu-toggle:hover {
         background: linear-gradient(135deg, #0e9571 0%, #0e9571 75%, #2196F3 100%); /* Darker: 75% teal, 25% blue */
         opacity: 0.9; /* Less faded on hover */
+        box-shadow: 0 4px 12px rgba(16, 163, 127, 0.35);
     }
     
     .mobile-menu-toggle.active::before {
