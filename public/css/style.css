@@ -996,6 +996,7 @@ textarea:focus {
 .messages-container {
     flex: 1;
     padding: 20px;
+    overflow-y: auto; /* Enable scrolling */
     scroll-behavior: smooth;
     display: flex;
     flex-direction: column;
