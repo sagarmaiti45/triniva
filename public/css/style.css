@@ -901,8 +901,8 @@ textarea:focus {
 /* Mobile menu toggle - hidden on desktop */
 .mobile-menu-toggle {
     display: none;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -921,8 +921,8 @@ textarea:focus {
 .mobile-menu-toggle::before {
     content: '';
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     background: rgba(0, 0, 0, 0.3); /* Lighter dark background */
     border-radius: 50%;
     left: 50%;
@@ -2560,8 +2560,8 @@ h3.ai-heading {
     /* Show mobile menu toggle on mobile */
     .mobile-menu-toggle {
         display: flex !important;
-        width: 36px; /* Proper size for padding */
-        height: 36px; /* Proper size for padding */
+        width: 32px; /* Back to smaller size */
+        height: 32px; /* Back to smaller size */
         padding: 0;
         background: linear-gradient(135deg, #10A37F 0%, #10A37F 75%, #42A5F5 100%); /* 75% teal, 25% light blue */
         margin-left: 0; /* Normal margin */
@@ -2572,13 +2572,13 @@ h3.ai-heading {
         justify-content: center;
         opacity: 0.7; /* Faded appearance */
     }
-    
+
     /* Dark circle background */
     .mobile-menu-toggle::before {
         content: '';
         position: absolute;
-        width: 20px; /* Smaller for 32px button */
-        height: 20px; /* Smaller for 32px button */
+        width: 22px; /* Proper padding - larger circle for 12px icon */
+        height: 22px; /* Proper padding - larger circle for 12px icon */
         background: rgba(0, 0, 0, 0.3); /* Lighter dark circle */
         border-radius: 50%;
         left: 50%;
