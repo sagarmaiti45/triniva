@@ -901,8 +901,8 @@ textarea:focus {
 /* Mobile menu toggle - hidden on desktop */
 .mobile-menu-toggle {
     display: none;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -2560,8 +2560,8 @@ h3.ai-heading {
     /* Show mobile menu toggle on mobile */
     .mobile-menu-toggle {
         display: flex !important;
-        width: 32px; /* Smaller size */
-        height: 32px; /* Smaller size */
+        width: 36px; /* Proper size for padding */
+        height: 36px; /* Proper size for padding */
         padding: 0;
         background: linear-gradient(135deg, #10A37F 0%, #10A37F 75%, #42A5F5 100%); /* 75% teal, 25% light blue */
         margin-left: 0; /* Normal margin */
