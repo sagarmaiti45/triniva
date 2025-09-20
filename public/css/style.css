@@ -939,8 +939,8 @@ textarea:focus {
 
 /* Logo icon for sidebar toggle */
 .sidebar-logo-icon {
-    width: 14px; /* Smaller icon for round button */
-    height: 14px; /* Smaller icon for round button */
+    width: 12px; /* Even smaller for 32px button */
+    height: 12px; /* Even smaller for 32px button */
     object-fit: contain;
     /* Make it white */
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
@@ -2556,8 +2556,8 @@ h3.ai-heading {
     /* Show mobile menu toggle on mobile */
     .mobile-menu-toggle {
         display: flex !important;
-        width: 36px; /* Normal circle size */
-        height: 36px; /* Normal circle size */
+        width: 32px; /* Smaller size */
+        height: 32px; /* Smaller size */
         padding: 0;
         background: linear-gradient(135deg, #10A37F 0%, #10A37F 75%, #42A5F5 100%); /* 75% teal, 25% light blue */
         margin-left: 0; /* Normal margin */
@@ -2566,25 +2566,27 @@ h3.ai-heading {
         border-radius: 50%; /* Full circle */
         align-items: center;
         justify-content: center;
+        opacity: 0.7; /* Faded appearance */
     }
     
     /* Dark circle background */
     .mobile-menu-toggle::before {
         content: '';
         position: absolute;
-        width: 24px;
-        height: 24px;
-        background: rgba(0, 0, 0, 0.4); /* Dark circle */
+        width: 20px; /* Smaller for 32px button */
+        height: 20px; /* Smaller for 32px button */
+        background: rgba(0, 0, 0, 0.3); /* Lighter dark circle */
         border-radius: 50%;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%); /* Center perfectly */
-        transition: background 0.3s ease;
+        transition: all 0.3s ease;
         z-index: 0;
     }
-    
+
     .mobile-menu-toggle:hover {
         background: linear-gradient(135deg, #0e9571 0%, #0e9571 75%, #2196F3 100%); /* Darker: 75% teal, 25% blue */
+        opacity: 0.9; /* Less faded on hover */
     }
     
     .mobile-menu-toggle.active::before {
