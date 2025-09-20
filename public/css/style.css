@@ -901,7 +901,7 @@ textarea:focus {
 /* Mobile menu toggle - hidden on desktop */
 .mobile-menu-toggle {
     display: none;
-    width: 42px; /* Increased width to stretch more from edge */
+    width: 36px;
     height: 36px;
     border: none;
     background: transparent;
@@ -911,9 +911,9 @@ textarea:focus {
     transition: all 0.3s ease;
     flex-shrink: 0;
     margin-right: 8px;
-    border-radius: 0 16px 16px 0; /* More rounded on right side */
+    border-radius: 50%; /* Circle shape */
     position: relative;
-    padding: 0 0 0 6px; /* Add left padding to push icon right */
+    padding: 0;
     opacity: 1;
 }
 
@@ -925,9 +925,9 @@ textarea:focus {
     height: 24px;
     background: rgba(0, 0, 0, 0.4); /* 60% transparent, 40% opacity - dark background */
     border-radius: 50%;
-    left: 12px; /* Positioned to center with flexbox-centered icon */
+    left: 50%;
     top: 50%;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%); /* Center perfectly */
     transition: background 0.3s ease;
     z-index: 0;
 }
@@ -2556,13 +2556,16 @@ h3.ai-heading {
     /* Show mobile menu toggle on mobile */
     .mobile-menu-toggle {
         display: flex !important;
-        width: 42px; /* Stretched width */
-        height: 32px; /* Reduced height for rectangular shape */
-        padding: 0 0 0 6px; /* Left padding for spacing */
+        width: 36px; /* Normal circle size */
+        height: 36px; /* Normal circle size */
+        padding: 0;
         background: linear-gradient(135deg, #10A37F 0%, #10A37F 75%, #42A5F5 100%); /* 75% teal, 25% light blue */
-        margin-left: -12px; /* Stick to left edge by countering header padding */
+        margin-left: 0; /* Normal margin */
         margin-right: 8px;
         position: relative;
+        border-radius: 50%; /* Full circle */
+        align-items: center;
+        justify-content: center;
     }
     
     /* Dark circle background */
@@ -2573,9 +2576,9 @@ h3.ai-heading {
         height: 24px;
         background: rgba(0, 0, 0, 0.4); /* Dark circle */
         border-radius: 50%;
-        left: 12px;
+        left: 50%;
         top: 50%;
-        transform: translateY(-50%);
+        transform: translate(-50%, -50%); /* Center perfectly */
         transition: background 0.3s ease;
         z-index: 0;
     }
